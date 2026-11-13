@@ -42,8 +42,8 @@ public final class BasaltBungee {
         return proxy;
     }
 
-    /** Starts the proxy facade and loads the plugins in the folder. */
-    public static void boot(String folder) {
+    /** Starts the proxy facade over the plugins folder and loads the jars staged for it. */
+    public static void boot(String folder, String jars) {
         enter();
         final java.util.logging.Logger root = java.util.logging.Logger.getLogger("");
         for (final java.util.logging.Handler handler : root.getHandlers()) {
@@ -68,7 +68,7 @@ public final class BasaltBungee {
         proxy = new BasaltProxy(new File(folder));
         ProxyServer.setInstance(proxy);
         proxy.sync();
-        proxy.getPluginManager().detectPlugins(bungeeJars(proxy.getPluginsFolder()));
+        proxy.getPluginManager().detectPlugins(bungeeJars(new File(jars)));
         proxy.getPluginManager().loadPlugins();
         proxy.getPluginManager().enablePlugins();
     }
@@ -95,28 +95,21 @@ public final class BasaltBungee {
         }
     }
 
-    /** A folder of links to the jars that are BungeeCord plugins, so other kinds of jar are not tried and reported. */
+    /** The proxy already put only the jars meant for this facade in the folder; this reports their missing libraries. */
     private static File bungeeJars(File folder) {
-        try {
-            final java.nio.file.Path only = java.nio.file.Files.createTempDirectory("basalt-bungee");
-            final File[] jars = folder.listFiles((dir, name) -> name.endsWith(".jar"));
-            if (jars != null) {
-                for (final File jar : jars) {
-                    try (java.util.jar.JarFile file = new java.util.jar.JarFile(jar)) {
-                        if (file.getEntry("velocity-plugin.json") == null
-                                && (file.getEntry("bungee.yml") != null || file.getEntry("plugin.yml") != null)) {
-                            warnMissingLibraries(file, jar.getName());
-                            java.nio.file.Files.createSymbolicLink(only.resolve(jar.getName()), jar.toPath());
-                        }
+        final File[] jars = folder.listFiles((dir, name) -> name.endsWith(".jar"));
+        if (jars != null) {
+            for (final File jar : jars) {
+                try (java.util.jar.JarFile file = new java.util.jar.JarFile(jar)) {
+                    if (file.getEntry("bungee.yml") != null || file.getEntry("plugin.yml") != null) {
+                        warnMissingLibraries(file, jar.getName());
                     }
+                } catch (final java.io.IOException error) {
+                    Natives.log("could not read " + jar.getName() + ": " + error);
                 }
             }
-            only.toFile().deleteOnExit();
-            return only.toFile();
-        } catch (final java.io.IOException error) {
-            Natives.log("could not list the Bungee plugins: " + error);
-            return folder;
         }
+        return folder;
     }
 
     /** Name, version and main class of each loaded plugin. */

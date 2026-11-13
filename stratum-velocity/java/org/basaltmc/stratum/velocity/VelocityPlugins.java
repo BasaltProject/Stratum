@@ -215,7 +215,7 @@ final class VelocityPlugins implements PluginManager {
                 BasaltVelocity.class.getClassLoader());
         container.loader = loader;
         final Class<?> main = loader.loadClass(candidate.json.get("main").getAsString());
-        final Path data = candidate.jar.getParentFile().toPath().resolve(description.id);
+        final Path data = proxy.folder().toPath().resolve(description.id);
         containers.put(description.id, container);
         try {
             container.instance = VelocityInjector.create(proxy, this, container, data).getInstance(main);

@@ -45,11 +45,11 @@ public final class BasaltVelocity {
         return CHANNELS;
     }
 
-    /** Starts the proxy facade, loads the plugins in the folder and tells them the proxy initialized. */
-    public static void boot(String folder) {
+    /** Starts the proxy facade over the plugins folder, loads the jars staged for it and announces the start. */
+    public static void boot(String folder, String jars) {
         proxy = new BasaltProxy(new File(folder));
         proxy.sync();
-        proxy.loader().load(proxy.folder());
+        proxy.loader().load(new File(jars));
         proxy.getEventManager().fire(new ProxyInitializeEvent());
     }
 
