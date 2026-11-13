@@ -73,6 +73,7 @@ final class BasaltScheduler implements TaskScheduler {
                 if (once) {
                     tasks.remove(task.id);
                 }
+                BasaltBungee.refreshPermissionListeners();
             }
         };
     }

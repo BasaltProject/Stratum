@@ -86,8 +86,7 @@ final class VelocityPlayer implements Player {
     }
 
     Tristate nativePermission(String permission) {
-        final int value = Natives.permissionValue(name, permission);
-        return value == 1 ? Tristate.TRUE : value == 0 ? Tristate.FALSE : Tristate.UNDEFINED;
+        return BasaltVelocity.chainValue(name, permission);
     }
 
     void update(String server, long ping) {

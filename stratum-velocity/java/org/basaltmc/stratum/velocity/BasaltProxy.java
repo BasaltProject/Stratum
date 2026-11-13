@@ -30,6 +30,10 @@ final class BasaltProxy implements ProxyServer {
     private final Map<String, VelocityPlayer> players = new ConcurrentHashMap<>();
     private final Map<String, RegisteredServer> servers = new LinkedHashMap<>();
     private final VelocityConsole console = new VelocityConsole();
+
+    VelocityConsole console() {
+        return console;
+    }
     private final VelocityEvents events = new VelocityEvents();
     private final VelocityCommands commands = new VelocityCommands();
     private final VelocityScheduler scheduler = new VelocityScheduler();

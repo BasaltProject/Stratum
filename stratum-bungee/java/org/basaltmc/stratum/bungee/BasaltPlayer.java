@@ -441,6 +441,7 @@ final class BasaltPlayer implements ProxiedPlayer {
 
     @Override
     public boolean hasPermission(String permission) {
+        BasaltBungee.refreshPermissionListeners();
         return Natives.permission(name, permission);
     }
 

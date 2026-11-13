@@ -76,4 +76,7 @@ final class Natives {
 
     /** Puts this facade's provider in the proxy's permission chain or takes it out. */
     static native void permissionProvider(boolean active, boolean withRest);
+
+    /** Puts this facade's meta provider in the proxy's permission chain or takes it out. */
+    static native void permissionMeta(boolean active);
 }

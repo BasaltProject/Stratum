@@ -71,29 +71,56 @@ public final class BasaltBungee {
         proxy.getPluginManager().detectPlugins(bungeeJars(new File(jars)));
         proxy.getPluginManager().loadPlugins();
         proxy.getPluginManager().enablePlugins();
-        if (listens(net.md_5.bungee.api.event.PermissionCheckEvent.class)) {
-            Natives.permissionProvider(true, true);
-        }
+        refreshPermissionListeners();
     }
 
-    /** Whether any enabled plugin registered a handler for the event, read from the plugin manager's own records. */
-    private static boolean listens(Class<?> event) {
+    private static volatile Object listenerRecords;
+    private static volatile java.lang.reflect.Method listenerCount;
+    private static volatile int listenersSeen = -1;
+    private static boolean providing;
+
+    /** Puts the provider in the chain once a PermissionCheckEvent handler appears, and out when none is left. */
+    static void refreshPermissionListeners() {
         try {
-            final java.lang.reflect.Field field =
-                    net.md_5.bungee.api.plugin.PluginManager.class.getDeclaredField("listenersByPlugin");
-            field.setAccessible(true);
-            final Object multimap = field.get(proxy.getPluginManager());
-            final Object values = multimap.getClass().getMethod("values").invoke(multimap);
-            for (final Object listener : (java.util.Collection<?>) values) {
-                for (final java.lang.reflect.Method method : listener.getClass().getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(net.md_5.bungee.event.EventHandler.class)
-                            && method.getParameterCount() == 1 && method.getParameterTypes()[0].isAssignableFrom(event)) {
-                        return true;
-                    }
+            if (listenerRecords == null) {
+                synchronized (BasaltBungee.class) {
+                    final java.lang.reflect.Field field =
+                            net.md_5.bungee.api.plugin.PluginManager.class.getDeclaredField("listenersByPlugin");
+                    field.setAccessible(true);
+                    final Object records = field.get(proxy.getPluginManager());
+                    listenerCount = records.getClass().getMethod("size");
+                    listenerCount.setAccessible(true);
+                    listenerRecords = records;
+                }
+            }
+            final int count = (Integer) listenerCount.invoke(listenerRecords);
+            if (count == listenersSeen) {
+                return;
+            }
+            synchronized (BasaltBungee.class) {
+                listenersSeen = count;
+                final boolean wanted = listens(net.md_5.bungee.api.event.PermissionCheckEvent.class);
+                if (wanted != providing) {
+                    providing = wanted;
+                    Natives.permissionProvider(wanted, true);
                 }
             }
         } catch (final ReflectiveOperationException | RuntimeException error) {
             Natives.log("could not look for permission listeners: " + error);
+        }
+    }
+
+    /** Whether any enabled plugin registered a handler for the event, read from the plugin manager's own records. */
+    private static boolean listens(Class<?> event) throws ReflectiveOperationException {
+        final java.lang.reflect.Method values = listenerRecords.getClass().getMethod("values");
+        values.setAccessible(true);
+        for (final Object listener : (java.util.Collection<?>) values.invoke(listenerRecords)) {
+            for (final java.lang.reflect.Method method : listener.getClass().getDeclaredMethods()) {
+                if (method.isAnnotationPresent(net.md_5.bungee.event.EventHandler.class)
+                        && method.getParameterCount() == 1 && method.getParameterTypes()[0].isAssignableFrom(event)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -169,7 +196,9 @@ public final class BasaltBungee {
     /** Runs a console line; true when it named a registered command. */
     public static boolean console(String line) {
         enter();
-        return proxy.getPluginManager().dispatchCommand(proxy.getConsole(), line);
+        final boolean ran = proxy.getPluginManager().dispatchCommand(proxy.getConsole(), line);
+        refreshPermissionListeners();
+        return ran;
     }
 
     /** Disables the plugins and stops the scheduler. */
@@ -234,6 +263,11 @@ public final class BasaltBungee {
                 sampled ? "=" + sample : "", response.getFaviconObject() == null ? "" : "=" + response.getFaviconObject().getEncoded()};
     }
 
+    /** A text option for a player (empty for the console) from the source given to PermissionMeta, or null. */
+    public static String providedMeta(String player, String key) {
+        return PermissionMeta.answer(player, key);
+    }
+
     /** kind is login, preconnect, kick, chat, command, ping; f is name, uuid, server, address, port, host, text. */
     static ServerInfo preConnect(BasaltPlayer player, ServerInfo target) {
         final ServerConnectEvent event = new ServerConnectEvent(player, target, ServerConnectEvent.Reason.PLUGIN);
@@ -242,6 +276,7 @@ public final class BasaltBungee {
     }
 
     public static String[] decide(String kind, String[] f) {
+        refreshPermissionListeners();
         enter();
         proxy.sync();
         switch (kind) {

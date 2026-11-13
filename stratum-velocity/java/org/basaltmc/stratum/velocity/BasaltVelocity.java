@@ -51,6 +51,7 @@ public final class BasaltVelocity {
         proxy.sync();
         proxy.loader().load(new File(jars));
         proxy.getEventManager().fire(new ProxyInitializeEvent());
+        setupConsolePermissions();
     }
 
     /** Name and version of each loaded plugin, tab separated. */
@@ -126,19 +127,56 @@ public final class BasaltVelocity {
         }
     }
 
-    /** The answer of the function a plugin set up for the player: -1 undefined or no such function, 0 or 1. */
-    public static int providedPermission(String player, String node, int rest) {
-        final Optional<com.velocitypowered.api.proxy.Player> found = proxy.getPlayer(player);
-        if (found.isEmpty() || !(found.get() instanceof VelocityPlayer velocity)) {
-            return -1;
+    private static final ThreadLocal<Boolean> ANSWERING = ThreadLocal.withInitial(() -> false);
+
+    /** The chain's answer; undefined while the chain is asking a plugin's function, which may wrap the default. */
+    static com.velocitypowered.api.permission.Tristate chainValue(String subject, String node) {
+        if (ANSWERING.get()) {
+            return com.velocitypowered.api.permission.Tristate.UNDEFINED;
         }
-        final com.velocitypowered.api.permission.PermissionFunction function = velocity.pluginPermissions();
+        final int value = Natives.permissionValue(subject, node);
+        return value == 1 ? com.velocitypowered.api.permission.Tristate.TRUE
+                : value == 0 ? com.velocitypowered.api.permission.Tristate.FALSE
+                : com.velocitypowered.api.permission.Tristate.UNDEFINED;
+    }
+
+    /** The answer of the function a plugin set up for a player, or the console when the name is empty; -1 for none. */
+    public static int providedPermission(String player, String node, int rest) {
+        com.velocitypowered.api.permission.PermissionFunction function = null;
+        if (player.isEmpty()) {
+            function = proxy.console().pluginPermissions();
+        } else {
+            final Optional<com.velocitypowered.api.proxy.Player> found = proxy.getPlayer(player);
+            if (found.isPresent() && found.get() instanceof VelocityPlayer velocity) {
+                function = velocity.pluginPermissions();
+            }
+        }
         if (function == null) {
             return -1;
         }
-        final com.velocitypowered.api.permission.Tristate value = function.getPermissionValue(node);
-        return value == com.velocitypowered.api.permission.Tristate.UNDEFINED ? -1
-                : value == com.velocitypowered.api.permission.Tristate.TRUE ? 1 : 0;
+        ANSWERING.set(true);
+        try {
+            final com.velocitypowered.api.permission.Tristate value = function.getPermissionValue(node);
+            return value == com.velocitypowered.api.permission.Tristate.UNDEFINED ? -1
+                    : value == com.velocitypowered.api.permission.Tristate.TRUE ? 1 : 0;
+        } finally {
+            ANSWERING.set(false);
+        }
+    }
+
+    private static void setupConsolePermissions() {
+        final VelocityConsole console = proxy.console();
+        final PermissionProvider natives = subject -> permission -> chainValue("", permission);
+        final PermissionProvider chosen = fire(new PermissionsSetupEvent(console, natives)).getProvider();
+        if (chosen != natives) {
+            console.permissions(chosen.createFunction(console));
+            providePermissions();
+        }
+    }
+
+    /** A text option for a player (empty for the console) from the source given to PermissionMeta, or null. */
+    public static String providedMeta(String player, String key) {
+        return PermissionMeta.answer(player, key);
     }
 
     /** kind is login, preconnect, kick, chat, command, ping; f is name, uuid, server, address, port, host, text. */
