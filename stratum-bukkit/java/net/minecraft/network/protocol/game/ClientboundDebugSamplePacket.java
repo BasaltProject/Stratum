@@ -1,0 +1,22 @@
+// Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
+package net.minecraft.network.protocol.game;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.PacketType;
+import net.minecraft.util.debugchart.RemoteDebugSampleType;
+public record ClientboundDebugSamplePacket(long[] sample, RemoteDebugSampleType debugSampleType) implements Packet<ClientGamePacketListener> {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundDebugSamplePacket> STREAM_CODEC = org.basaltmc.stratum.bukkit.net.GuardedCodecs.guard("ClientboundDebugSamplePacket", () -> StreamCodec.of((output, packet) -> {
+            output.writeLongArray(packet.sample());
+            output.writeEnum(packet.debugSampleType());
+        }, input -> new ClientboundDebugSamplePacket(input.readLongArray(), input.readEnum(RemoteDebugSampleType.class))));
+    private ClientboundDebugSamplePacket(FriendlyByteBuf input) {
+        this(input.readLongArray(), input.readEnum(RemoteDebugSampleType.class));
+    }
+    public PacketType<ClientboundDebugSamplePacket> type() {
+        return GamePacketTypes.CLIENTBOUND_DEBUG_SAMPLE;
+    }
+    public void handle(ClientGamePacketListener listener) {
+        listener.handleDebugSample(this);
+    }
+}

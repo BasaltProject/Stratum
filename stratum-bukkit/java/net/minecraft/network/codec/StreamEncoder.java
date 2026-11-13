@@ -1,0 +1,6 @@
+// Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
+package net.minecraft.network.codec;
+
+public interface StreamEncoder<O, T> {
+    void encode(O output, T value);
+}

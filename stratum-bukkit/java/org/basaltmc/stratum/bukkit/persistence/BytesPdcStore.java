@@ -1,0 +1,27 @@
+package org.basaltmc.stratum.bukkit.persistence;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import net.minecraft.nbt.CompoundTag;
+import org.basaltmc.stratum.bukkit.facade.NbtCodec;
+
+public final class BytesPdcStore implements PdcStore {
+    private final Supplier<byte[]> reader;
+    private final Consumer<byte[]> writer;
+
+    public BytesPdcStore(Supplier<byte[]> reader, Consumer<byte[]> writer) {
+        this.reader = reader;
+        this.writer = writer;
+    }
+
+    @Override
+    public CompoundTag load() {
+        CompoundTag found = NbtCodec.fromBytes(reader.get());
+        return found == null ? new CompoundTag() : found;
+    }
+
+    @Override
+    public void save(CompoundTag tag) {
+        writer.accept(NbtCodec.toBytes(tag));
+    }
+}

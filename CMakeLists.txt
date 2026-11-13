@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.28)
+
+if(NOT DEFINED STRATUM_PRODUCT OR NOT STRATUM_PRODUCT MATCHES "^(server|proxy)$")
+    message(FATAL_ERROR "Stratum is built by a product: set STRATUM_PRODUCT to server or proxy before add_subdirectory")
+endif()
+if(NOT DEFINED STRATUM_SHIM_SOURCE_DIR)
+    set(STRATUM_SHIM_SOURCE_DIR "${CMAKE_SOURCE_DIR}/shim")
+endif()
+
+include(cmake/StratumBukkit.cmake)
+
+if(STRATUM_PRODUCT STREQUAL "server")
+    stratum_probe_bukkit(STRATUM_BUKKIT_ACTIVE)
+    if(STRATUM_BUKKIT_ACTIVE)
+        add_subdirectory(stratum-bukkit)
+        stratum_bukkit_runtime()
+    endif()
+else()
+    add_subdirectory(stratum-bungee)
+    add_subdirectory(stratum-velocity)
+endif()

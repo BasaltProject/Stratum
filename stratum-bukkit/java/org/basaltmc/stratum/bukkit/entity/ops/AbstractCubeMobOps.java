@@ -1,0 +1,25 @@
+package org.basaltmc.stratum.bukkit.entity.ops;
+
+import org.basaltmc.stratum.bukkit.entity.Cored;
+import org.bukkit.entity.AbstractCubeMob;
+
+public interface AbstractCubeMobOps extends AbstractCubeMob, Cored {
+    default int getSize() {
+        return core().integer("cube_size");
+    }
+
+    default void setSize(int size) {
+        if (size < 1) {
+            throw new IllegalArgumentException("Size must be at least 1");
+        }
+        core().set("cube_size", size);
+    }
+
+    default boolean canWander() {
+        return core().flag("cube_wander");
+    }
+
+    default void setWander(boolean canWander) {
+        core().set("cube_wander", canWander);
+    }
+}
