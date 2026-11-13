@@ -481,6 +481,7 @@ public final class BasaltPluginManager extends PluginManagerBase {
         }
         permissions.put(key, permission);
         calculateDefault(permission);
+        org.basaltmc.stratum.bukkit.misc.PermissionBridge.declare(permission);
     }
 
     private void calculateDefault(Permission permission) {
@@ -513,11 +514,15 @@ public final class BasaltPluginManager extends PluginManagerBase {
         if (removed != null) {
             defaults.get(true).remove(removed);
             defaults.get(false).remove(removed);
+            org.basaltmc.stratum.bukkit.misc.PermissionBridge.undeclare(name);
         }
     }
 
     @Override
     public void clearPermissions() {
+        for (String name : permissions.keySet()) {
+            org.basaltmc.stratum.bukkit.misc.PermissionBridge.undeclare(name);
+        }
         permissions.clear();
         defaults.get(true).clear();
         defaults.get(false).clear();

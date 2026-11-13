@@ -174,8 +174,13 @@ final class EventBridge {
         ServerEvents.install();
         map("player.join", PlayerJoinEvent.class, f -> new PlayerJoinEvent(f.player(),
             Component.translatable("multiplayer.player.joined", Component.text(f.text("player_name")))),
-            (e, f) -> announce(((PlayerJoinEvent) e).joinMessage(),
-                Component.translatable("multiplayer.player.joined", Component.text(f.text("player_name"))), f));
+            (e, f) -> {
+                if (((PlayerJoinEvent) e).getPlayer() instanceof BasaltPlayer joined) {
+                    joined.inspectPermissible();
+                }
+                announce(((PlayerJoinEvent) e).joinMessage(),
+                    Component.translatable("multiplayer.player.joined", Component.text(f.text("player_name"))), f);
+            });
         map("player.quit", PlayerQuitEvent.class, f -> new PlayerQuitEvent(f.player(),
             Component.translatable("multiplayer.player.left", Component.text(f.text("player_name"))),
             PlayerQuitEvent.QuitReason.DISCONNECTED),

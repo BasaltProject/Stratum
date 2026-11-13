@@ -57,7 +57,21 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
         org.basaltmc.stratum.bukkit.misc.AdventureBars.hide(id, bar);
     }
 
+    public org.bukkit.permissions.Permissible currentPermissible() {
+        return perm;
+    }
+
+    private volatile boolean foreignPermissible;
+
+    public void inspectPermissible() {
+        if ((perm instanceof BasaltPermissible) == foreignPermissible) {
+            foreignPermissible = !foreignPermissible;
+            org.basaltmc.stratum.bukkit.misc.PermissionBridge.inspect(this);
+        }
+    }
+
     public void publishPermissions() {
+        inspectPermissible();
         if (perm instanceof BasaltPermissible own) {
             own.publish();
         }
@@ -317,21 +331,25 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public boolean isPermissionSet(String permission) {
+        inspectPermissible();
         return perm.isPermissionSet(permission);
     }
 
     @Override
     public boolean isPermissionSet(Permission permission) {
+        inspectPermissible();
         return perm.isPermissionSet(permission);
     }
 
     @Override
     public boolean hasPermission(String permission) {
+        inspectPermissible();
         return perm.hasPermission(permission);
     }
 
     @Override
     public boolean hasPermission(Permission permission) {
+        inspectPermissible();
         return perm.hasPermission(permission);
     }
 
@@ -362,6 +380,7 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public void recalculatePermissions() {
+        inspectPermissible();
         perm.recalculatePermissions();
     }
 

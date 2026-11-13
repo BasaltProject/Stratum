@@ -15,6 +15,9 @@ public final class MiscNatives {
     public static native void setPlayerData(String uuid, byte[] nbt);
 
     public static native void playerPermissions(String uuid, String[] nodes, boolean[] values);
+    public static native void permissionProvider(boolean active);
+    public static native void permissionDeclare(String node, int defaultKind, String[] children, boolean[] childValues);
+    public static native void permissionUndeclare(String node);
 
     public static native String[] knownPlayer(String key, boolean byName);
     public static native double[] knownPlayerNumbers(String uuid);

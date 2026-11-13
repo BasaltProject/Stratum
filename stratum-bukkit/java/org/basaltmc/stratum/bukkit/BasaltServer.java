@@ -86,7 +86,10 @@ public class BasaltServer extends ServerTail {
     }
 
     synchronized void forget(UUID id) {
-        players.remove(id);
+        BasaltPlayer gone = players.remove(id);
+        if (gone != null) {
+            org.basaltmc.stratum.bukkit.misc.PermissionBridge.forget(gone);
+        }
     }
 
     synchronized BasaltPlayer playerByName(String name) {
