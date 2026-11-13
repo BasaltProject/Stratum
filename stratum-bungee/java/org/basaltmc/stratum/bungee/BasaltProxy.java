@@ -279,7 +279,7 @@ final class BasaltProxy extends ProxyServer {
 
     @Override
     public Collection<String> getDisabledCommands() {
-        return List.of();
+        return config.getDisabledCommands();
     }
 
     @Override

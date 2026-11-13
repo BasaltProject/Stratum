@@ -12,6 +12,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 
 final class BasaltConfig implements ProxyConfig, ConfigurationAdapter {
     private final String[] settings = Natives.config();
+    private final Collection<String> disabledCommands = new java.util.TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     private final List<String> route = settings[8].isEmpty() ? List.of() : List.of(settings[8].split(","));
     private final ListenerInfo listener = new ListenerInfo(new InetSocketAddress(settings[0], Integer.parseInt(settings[1])),
             "Basalt Proxy", Integer.parseInt(settings[6]), 60, route, false, forcedHosts(settings[9]), "DEFAULT", false,
@@ -70,7 +71,7 @@ final class BasaltConfig implements ProxyConfig, ConfigurationAdapter {
 
     @Override
     public Collection<String> getDisabledCommands() {
-        return List.of();
+        return disabledCommands;
     }
 
     @Override
