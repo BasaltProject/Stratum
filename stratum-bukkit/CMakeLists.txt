@@ -28,6 +28,7 @@ basalt_module(stratum-bukkit
         src/BukkitMiscMapsNatives.cpp
         src/BukkitNatives.cpp
         src/BukkitPackets.cpp
+        src/BukkitPermissionNatives.cpp
         src/BukkitPlayerNatives.cpp
         src/BukkitRestNatives.cpp
         src/BukkitWorldNatives.cpp

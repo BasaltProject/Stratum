@@ -176,6 +176,7 @@ std::expected<void, std::string> BukkitBridge::boot() {
     }
     if (jclass miscNatives = env->FindClass("org/basaltmc/stratum/bukkit/MiscNatives"); miscNatives != nullptr) {
         registerMiscNatives(env, miscNatives);
+        registerPermissionNatives(env, miscNatives);
     } else {
         env->ExceptionClear();
     }
