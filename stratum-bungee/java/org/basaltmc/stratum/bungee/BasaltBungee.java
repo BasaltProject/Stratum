@@ -71,6 +71,42 @@ public final class BasaltBungee {
         proxy.getPluginManager().detectPlugins(bungeeJars(new File(jars)));
         proxy.getPluginManager().loadPlugins();
         proxy.getPluginManager().enablePlugins();
+        if (listens(net.md_5.bungee.api.event.PermissionCheckEvent.class)) {
+            Natives.permissionProvider(true, true);
+        }
+    }
+
+    /** Whether any enabled plugin registered a handler for the event, read from the plugin manager's own records. */
+    private static boolean listens(Class<?> event) {
+        try {
+            final java.lang.reflect.Field field =
+                    net.md_5.bungee.api.plugin.PluginManager.class.getDeclaredField("listenersByPlugin");
+            field.setAccessible(true);
+            final Object multimap = field.get(proxy.getPluginManager());
+            final Object values = multimap.getClass().getMethod("values").invoke(multimap);
+            for (final Object listener : (java.util.Collection<?>) values) {
+                for (final java.lang.reflect.Method method : listener.getClass().getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(net.md_5.bungee.event.EventHandler.class)
+                            && method.getParameterCount() == 1 && method.getParameterTypes()[0].isAssignableFrom(event)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (final ReflectiveOperationException | RuntimeException error) {
+            Natives.log("could not look for permission listeners: " + error);
+        }
+        return false;
+    }
+
+    /** Fires PermissionCheckEvent with what the rest of the proxy's chain says (rest) as the default; -1 for no player. */
+    public static int providedPermission(String player, String node, int rest) {
+        final net.md_5.bungee.api.connection.ProxiedPlayer sender = proxy.getPlayer(player);
+        if (sender == null) {
+            return -1;
+        }
+        final net.md_5.bungee.api.event.PermissionCheckEvent event =
+                new net.md_5.bungee.api.event.PermissionCheckEvent(sender, node, rest == 1);
+        return proxy.getPluginManager().callEvent(event).hasPermission() ? 1 : 0;
     }
 
     /** The facade cannot resolve Maven coordinates itself, so a declared library must already be on the class path. */

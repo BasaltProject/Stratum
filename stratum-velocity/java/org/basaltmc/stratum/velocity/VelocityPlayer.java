@@ -80,11 +80,14 @@ final class VelocityPlayer implements Player {
         permissions = function;
     }
 
+    /** The function a permissions plugin set up for this player, or null. */
+    PermissionFunction pluginPermissions() {
+        return permissions;
+    }
+
     Tristate nativePermission(String permission) {
-        if (Natives.permission(name, permission)) {
-            return Tristate.TRUE;
-        }
-        return Natives.permissionOverride(name, permission) == 0 ? Tristate.FALSE : Tristate.UNDEFINED;
+        final int value = Natives.permissionValue(name, permission);
+        return value == 1 ? Tristate.TRUE : value == 0 ? Tristate.FALSE : Tristate.UNDEFINED;
     }
 
     void update(String server, long ping) {
@@ -487,8 +490,7 @@ final class VelocityPlayer implements Player {
 
     @Override
     public Tristate getPermissionValue(String permission) {
-        final PermissionFunction function = permissions;
-        return function != null ? function.getPermissionValue(permission) : nativePermission(permission);
+        return nativePermission(permission);
     }
 
     @Override

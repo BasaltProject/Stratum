@@ -117,6 +117,30 @@ public final class BasaltVelocity {
         return reason.map(Text::json).orElse("");
     }
 
+    private static volatile boolean providing;
+
+    private static void providePermissions() {
+        if (!providing) {
+            providing = true;
+            Natives.permissionProvider(true, false);
+        }
+    }
+
+    /** The answer of the function a plugin set up for the player: -1 undefined or no such function, 0 or 1. */
+    public static int providedPermission(String player, String node, int rest) {
+        final Optional<com.velocitypowered.api.proxy.Player> found = proxy.getPlayer(player);
+        if (found.isEmpty() || !(found.get() instanceof VelocityPlayer velocity)) {
+            return -1;
+        }
+        final com.velocitypowered.api.permission.PermissionFunction function = velocity.pluginPermissions();
+        if (function == null) {
+            return -1;
+        }
+        final com.velocitypowered.api.permission.Tristate value = function.getPermissionValue(node);
+        return value == com.velocitypowered.api.permission.Tristate.UNDEFINED ? -1
+                : value == com.velocitypowered.api.permission.Tristate.TRUE ? 1 : 0;
+    }
+
     /** kind is login, preconnect, kick, chat, command, ping; f is name, uuid, server, address, port, host, text. */
     static Optional<RegisteredServer> preConnect(VelocityPlayer player, RegisteredServer target) {
         final ServerPreConnectEvent event = fire(new ServerPreConnectEvent(player, target,
@@ -136,7 +160,11 @@ public final class BasaltVelocity {
                 }
                 final VelocityPlayer player = playerOf(f);
                 final PermissionProvider natives = subject -> player::nativePermission;
-                player.permissions(fire(new PermissionsSetupEvent(player, natives)).createFunction(player));
+                final PermissionProvider chosen = fire(new PermissionsSetupEvent(player, natives)).getProvider();
+                if (chosen != natives) {
+                    player.permissions(chosen.createFunction(player));
+                    providePermissions();
+                }
                 final LoginEvent login = fire(new LoginEvent(player));
                 return answerJson(!login.getResult().isAllowed(), reasonOf(login.getResult().getReasonComponent()), "");
             }

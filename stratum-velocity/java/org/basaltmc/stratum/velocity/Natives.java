@@ -19,7 +19,7 @@ final class Natives {
     /** Draws on a player's screen; kind and the other arguments are the native side's table. */
     static native boolean hud(String player, int kind, String first, String second, int x, int y, int z, float number, byte[] data);
 
-    /** Whether the proxy's own groups grant the player the node. */
+    /** Whether the proxy's permission chain grants the player the node. */
     static native boolean permission(String player, String node);
 
     /** Has the player say a line, or run it as a command when it starts with a slash. */
@@ -70,4 +70,10 @@ final class Natives {
 
     /** Removes a server added at run time; false for the ones of servers.toml. */
     static native boolean unregisterServer(String name);
+
+    /** What the proxy's permission chain answers for the player: -1 undefined, 0 denied, 1 granted. */
+    static native int permissionValue(String player, String node);
+
+    /** Puts this facade's provider in the proxy's permission chain or takes it out. */
+    static native void permissionProvider(boolean active, boolean withRest);
 }
