@@ -22,6 +22,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.SimpleServicesManager;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -35,6 +36,7 @@ public class BasaltServer extends ServerTail {
     private volatile boolean worldsReady;
     private final File root;
     private final BasaltPluginManager pluginManager;
+    private final SimplePluginManager pluginManagerFacade;
     private final BasaltScheduler scheduler = new BasaltScheduler();
     private final ServicesManager services = new SimpleServicesManager();
     private final BasaltMessenger messenger = new BasaltMessenger();
@@ -50,7 +52,8 @@ public class BasaltServer extends ServerTail {
         this.root = root;
         this.pluginManager = new BasaltPluginManager(this, pluginsFolder);
         this.commandMap = new BasaltCommandMap(this);
-        this.pluginManager.commandMap(commandMap);
+        this.pluginManagerFacade = new SimplePluginManager(this, commandMap);
+        this.pluginManager.attach(pluginManagerFacade, commandMap);
     }
 
     public static BasaltServer instance() {
@@ -161,7 +164,7 @@ public class BasaltServer extends ServerTail {
 
     @Override
     public PluginManager getPluginManager() {
-        return pluginManager;
+        return pluginManagerFacade;
     }
 
     @Override

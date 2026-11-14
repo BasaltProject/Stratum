@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +35,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.plugin.RegisteredListener;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.UnknownDependencyException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.PluginSwitch;
@@ -49,20 +49,18 @@ public final class BasaltPluginManager extends PluginManagerBase {
     private final List<Plugin> plugins = new ArrayList<>();
     private final Map<String, Plugin> byName = new HashMap<>();
     private final List<BasaltPluginClassLoader> loaders = new ArrayList<>();
-    private final Map<String, Permission> permissions = new LinkedHashMap<>();
-    private final Map<Boolean, Set<Permission>> defaults = new HashMap<>();
-    private final Map<String, Set<Permissible>> subscriptions = new HashMap<>();
-    private final Map<Boolean, Set<Permissible>> defaultSubscriptions = new HashMap<>();
+    /** Owns the permission maps, which permission plugins swap through reflection as on Paper. */
+    private SimplePluginManager shared;
 
     BasaltPluginManager(BasaltServer server, File folder) {
         this.server = server;
         this.folder = folder;
-        defaults.put(true, new HashSet<>());
-        defaults.put(false, new HashSet<>());
     }
 
-    void commandMap(org.bukkit.command.CommandMap map) {
+    void attach(SimplePluginManager facade, org.bukkit.command.CommandMap map) {
+        this.shared = facade;
         this.commandMap = map;
+        facade.paperPluginManager = this;
     }
 
     File folder() {
@@ -470,29 +468,29 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public Permission getPermission(String name) {
-        return permissions.get(name.toLowerCase(Locale.ROOT));
+        return shared.permissions.get(name.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void addPermission(Permission permission) {
         String key = permission.getName().toLowerCase(Locale.ROOT);
-        if (permissions.containsKey(key)) {
+        if (shared.permissions.containsKey(key)) {
             return;
         }
-        permissions.put(key, permission);
+        shared.permissions.put(key, permission);
         calculateDefault(permission);
         org.basaltmc.stratum.bukkit.misc.PermissionBridge.declare(permission);
     }
 
     private void calculateDefault(Permission permission) {
         PermissionDefault value = permission.getDefault();
-        defaults.get(true).remove(permission);
-        defaults.get(false).remove(permission);
+        shared.defaultPerms.get(true).remove(permission);
+        shared.defaultPerms.get(false).remove(permission);
         if (value == PermissionDefault.TRUE || value == PermissionDefault.OP) {
-            defaults.get(true).add(permission);
+            shared.defaultPerms.get(true).add(permission);
         }
         if (value == PermissionDefault.TRUE || value == PermissionDefault.NOT_OP) {
-            defaults.get(false).add(permission);
+            shared.defaultPerms.get(false).add(permission);
         }
     }
 
@@ -510,75 +508,92 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public void removePermission(String name) {
-        Permission removed = permissions.remove(name.toLowerCase(Locale.ROOT));
+        Permission removed = shared.permissions.remove(name.toLowerCase(Locale.ROOT));
         if (removed != null) {
-            defaults.get(true).remove(removed);
-            defaults.get(false).remove(removed);
+            shared.defaultPerms.get(true).remove(removed);
+            shared.defaultPerms.get(false).remove(removed);
             org.basaltmc.stratum.bukkit.misc.PermissionBridge.undeclare(name);
         }
     }
 
     @Override
     public void clearPermissions() {
-        for (String name : permissions.keySet()) {
+        for (String name : shared.permissions.keySet()) {
             org.basaltmc.stratum.bukkit.misc.PermissionBridge.undeclare(name);
         }
-        permissions.clear();
-        defaults.get(true).clear();
-        defaults.get(false).clear();
+        shared.permissions.clear();
+        shared.defaultPerms.get(true).clear();
+        shared.defaultPerms.get(false).clear();
     }
 
     @Override
     public Set<Permission> getDefaultPermissions(boolean op) {
-        return Set.copyOf(defaults.get(op));
+        return Set.copyOf(shared.defaultPerms.get(op));
     }
 
     @Override
     public void recalculatePermissionDefaults(Permission permission) {
-        if (permission != null && permissions.containsKey(permission.getName().toLowerCase(Locale.ROOT))) {
+        if (permission != null && shared.permissions.containsKey(permission.getName().toLowerCase(Locale.ROOT))) {
             calculateDefault(permission);
         }
     }
 
     @Override
     public Set<Permission> getPermissions() {
-        return Set.copyOf(permissions.values());
+        return Set.copyOf(shared.permissions.values());
     }
 
     @Override
     public void subscribeToPermission(String permission, Permissible permissible) {
-        subscriptions.computeIfAbsent(permission.toLowerCase(Locale.ROOT), k -> new HashSet<>()).add(permissible);
+        subscribe(shared.permSubs, permission.toLowerCase(Locale.ROOT), permissible);
     }
 
     @Override
     public void unsubscribeFromPermission(String permission, Permissible permissible) {
-        Set<Permissible> set = subscriptions.get(permission.toLowerCase(Locale.ROOT));
-        if (set != null) {
-            set.remove(permissible);
-        }
+        unsubscribe(shared.permSubs, permission.toLowerCase(Locale.ROOT), permissible);
     }
 
     @Override
     public Set<Permissible> getPermissionSubscriptions(String permission) {
-        return Set.copyOf(subscriptions.getOrDefault(permission.toLowerCase(Locale.ROOT), Set.of()));
+        return subscribers(shared.permSubs.get(permission.toLowerCase(Locale.ROOT)));
     }
 
     @Override
     public void subscribeToDefaultPerms(boolean op, Permissible permissible) {
-        defaultSubscriptions.computeIfAbsent(op, k -> new HashSet<>()).add(permissible);
+        subscribe(shared.defSubs, op, permissible);
     }
 
     @Override
     public void unsubscribeFromDefaultPerms(boolean op, Permissible permissible) {
-        Set<Permissible> set = defaultSubscriptions.get(op);
-        if (set != null) {
-            set.remove(permissible);
-        }
+        unsubscribe(shared.defSubs, op, permissible);
     }
 
     @Override
     public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
-        return Set.copyOf(defaultSubscriptions.getOrDefault(op, Set.of()));
+        return subscribers(shared.defSubs.get(op));
+    }
+
+    private static <K> void subscribe(Map<K, Map<Permissible, Boolean>> all, K key, Permissible permissible) {
+        Map<Permissible, Boolean> found = all.get(key);
+        if (found == null) {
+            found = new java.util.WeakHashMap<>();
+            all.put(key, found);
+        }
+        found.put(permissible, true);
+    }
+
+    private static <K> void unsubscribe(Map<K, Map<Permissible, Boolean>> all, K key, Permissible permissible) {
+        Map<Permissible, Boolean> found = all.get(key);
+        if (found != null) {
+            found.remove(permissible);
+            if (found.isEmpty()) {
+                all.remove(key);
+            }
+        }
+    }
+
+    private static Set<Permissible> subscribers(Map<Permissible, Boolean> found) {
+        return found == null ? Set.of() : Set.copyOf(found.keySet());
     }
 
     @Override
