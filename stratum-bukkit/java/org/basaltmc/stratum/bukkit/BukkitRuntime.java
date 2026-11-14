@@ -203,21 +203,45 @@ public final class BukkitRuntime {
     }
 
     private static boolean drainThreads() {
-        boolean clean = true;
         long deadline = System.nanoTime() + 5_000_000_000L;
         Thread self = Thread.currentThread();
+        java.util.List<Thread> pending = new java.util.ArrayList<>();
         for (Thread thread : Thread.getAllStackTraces().keySet()) {
             if (thread == self || thread.isDaemon() || !thread.isAlive() || thread.getThreadGroup() == null
                     || "main".equals(thread.getName())) {
                 continue;
             }
             thread.interrupt();
+            pending.add(thread);
+        }
+        // Threads still working get the full budget; ones idle after the interrupt only a short grace.
+        long grace = System.nanoTime() + 250_000_000L;
+        while (true) {
+            boolean working = false;
+            boolean alive = false;
+            for (Thread thread : pending) {
+                if (!thread.isAlive()) {
+                    continue;
+                }
+                alive = true;
+                Thread.State state = thread.getState();
+                if (state == Thread.State.RUNNABLE || state == Thread.State.BLOCKED) {
+                    working = true;
+                }
+            }
+            long now = System.nanoTime();
+            if (!alive || now >= deadline || (!working && now >= grace)) {
+                break;
+            }
             try {
-                thread.join(Math.max(1, (deadline - System.nanoTime()) / 1_000_000L));
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }
+        }
+        boolean clean = true;
+        for (Thread thread : pending) {
             if (thread.isAlive()) {
                 clean = false;
                 Natives.log(2, "Bukkit", "Thread " + thread.getName() + " is still running at shutdown");
