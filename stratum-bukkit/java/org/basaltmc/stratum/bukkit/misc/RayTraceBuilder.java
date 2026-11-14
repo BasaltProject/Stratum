@@ -19,7 +19,7 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
     private double maxDistance = -1.0;
     private FluidCollisionMode fluids = FluidCollisionMode.NEVER;
     private boolean ignorePassable;
-    private boolean outline;
+    private int shape = RayTracing.kCollider;
     private double raySize;
     private Predicate<? super Entity> entityFilter;
     private Predicate<? super Block> blockFilter;
@@ -51,11 +51,8 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
 
     @Override
     public PositionedRayTraceConfigurationBuilder blockCollisionMode(BlockCollisionMode blockCollisionMode) {
-        if (blockCollisionMode == BlockCollisionMode.VISUAL) {
-            throw org.basaltmc.stratum.bukkit.Unsupported.hit("RayTrace block collision mode " + blockCollisionMode
-                + ": visual shapes are not extracted");
-        }
-        this.outline = blockCollisionMode == BlockCollisionMode.OUTLINE;
+        this.shape = blockCollisionMode == BlockCollisionMode.OUTLINE ? RayTracing.kOutline
+            : blockCollisionMode == BlockCollisionMode.VISUAL ? RayTracing.kVisual : RayTracing.kCollider;
         return this;
     }
 
@@ -98,10 +95,10 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
         boolean entities = targets.contains(RayTraceTarget.ENTITY);
         if (blocks && entities) {
             return RayTracing.both(start.getWorld(), from, direction, maxDistance, fluids, ignorePassable, raySize,
-                entityFilter, blockFilter, outline);
+                entityFilter, blockFilter, shape);
         }
         return blocks ? RayTracing.blocks(start.getWorld(), from, direction, maxDistance, fluids, ignorePassable,
-            blockFilter, outline) : RayTracing.entities(start.getWorld(), from, direction, maxDistance, raySize,
+            blockFilter, shape) : RayTracing.entities(start.getWorld(), from, direction, maxDistance, raySize,
             entityFilter);
     }
 }

@@ -13,6 +13,10 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 public final class RayTracing {
+    public static final int kCollider = 0;
+    public static final int kOutline = 1;
+    public static final int kVisual = 2;
+
     private RayTracing() {}
 
     private static final class Entry {
@@ -64,16 +68,17 @@ public final class RayTracing {
 
     public static RayTraceResult block(Block block, Vector start, Vector direction, double maxDistance,
             FluidCollisionMode fluids, boolean ignorePassable) {
-        return block(block, start, direction, maxDistance, fluids, ignorePassable, false);
+        return block(block, start, direction, maxDistance, fluids, ignorePassable, kCollider);
     }
 
     public static RayTraceResult block(Block block, Vector start, Vector direction, double maxDistance,
-            FluidCollisionMode fluids, boolean ignorePassable, boolean outline) {
+            FluidCollisionMode fluids, boolean ignorePassable, int shape) {
         Vector dir = direction.clone().normalize();
         double[] origin = {start.getX(), start.getY(), start.getZ()};
         double[] step = {dir.getX(), dir.getY(), dir.getZ()};
         int state = WorldNatives.state(block.getWorld().getName(), block.getX(), block.getY(), block.getZ(), false);
-        double[] boxes = outline ? Shapes.outline(state, block.getX(), block.getZ()) : Shapes.boxes(state);
+        double[] boxes = shape == kOutline ? Shapes.outline(state, block.getX(), block.getZ())
+            : shape == kVisual ? Shapes.visual(state) : Shapes.boxes(state);
         Material type = block.getType();
         boolean fluid = type == Material.WATER || type == Material.LAVA;
         boolean full = fluid ? fluids == FluidCollisionMode.ALWAYS
@@ -103,11 +108,11 @@ public final class RayTracing {
 
     public static RayTraceResult blocks(World world, Vector start, Vector direction, double maxDistance,
             FluidCollisionMode fluids, boolean ignorePassable, Predicate<? super Block> canCollide) {
-        return blocks(world, start, direction, maxDistance, fluids, ignorePassable, canCollide, false);
+        return blocks(world, start, direction, maxDistance, fluids, ignorePassable, canCollide, kCollider);
     }
 
     public static RayTraceResult blocks(World world, Vector start, Vector direction, double maxDistance,
-            FluidCollisionMode fluids, boolean ignorePassable, Predicate<? super Block> canCollide, boolean outline) {
+            FluidCollisionMode fluids, boolean ignorePassable, Predicate<? super Block> canCollide, int shape) {
         if (direction.lengthSquared() == 0.0) {
             throw new IllegalArgumentException("Direction's magnitude (" + direction.length() + ") must be greater than 0");
         }
@@ -142,7 +147,7 @@ public final class RayTracing {
             }
             Block block = loaded ? world.getBlockAt(x, y, z) : null;
             if (block != null && (canCollide == null || canCollide.test(block))) {
-                RayTraceResult hit = block(block, start, dir, max, fluids, ignorePassable, outline);
+                RayTraceResult hit = block(block, start, dir, max, fluids, ignorePassable, shape);
                 if (hit != null) {
                     return hit;
                 }
@@ -199,14 +204,15 @@ public final class RayTracing {
     public static RayTraceResult both(World world, Vector start, Vector direction, double maxDistance,
             FluidCollisionMode fluids, boolean ignorePassable, double raySize, Predicate<? super Entity> filter,
             Predicate<? super Block> canCollide) {
-        return both(world, start, direction, maxDistance, fluids, ignorePassable, raySize, filter, canCollide, false);
+        return both(world, start, direction, maxDistance, fluids, ignorePassable, raySize, filter, canCollide,
+            kCollider);
     }
 
     public static RayTraceResult both(World world, Vector start, Vector direction, double maxDistance,
             FluidCollisionMode fluids, boolean ignorePassable, double raySize, Predicate<? super Entity> filter,
-            Predicate<? super Block> canCollide, boolean outline) {
+            Predicate<? super Block> canCollide, int shape) {
         RayTraceResult blockHit = blocks(world, start, direction, maxDistance, fluids, ignorePassable, canCollide,
-            outline);
+            shape);
         double reach = blockHit == null ? maxDistance : start.distance(blockHit.getHitPosition());
         RayTraceResult entityHit = entities(world, start, direction, reach, raySize, filter);
         if (entityHit == null) {

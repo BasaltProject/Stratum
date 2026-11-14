@@ -32,6 +32,11 @@ public final class Shapes {
         return boxes == null ? new double[0] : boxes;
     }
 
+    public static double[] visual(int state) {
+        double[] boxes = MiscNatives.visualBoxes(state);
+        return boxes == null ? new double[0] : boxes;
+    }
+
     public static VoxelShape shape(int state) {
         double[] boxes = boxes(state);
         List<BoundingBox> list = new ArrayList<>(boxes.length / 6);
