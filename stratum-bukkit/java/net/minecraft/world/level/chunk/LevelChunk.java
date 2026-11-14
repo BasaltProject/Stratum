@@ -57,6 +57,8 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource {
     public int locZ = 0;
     public boolean mustNotSave = false;
 
+    private static final int kScratchChunk = 1 << 24;
+
     private final ServerLevel level;
     private final java.util.Map<Integer, GameEventListenerRegistry> sectionListeners = new java.util.concurrent.ConcurrentHashMap<>();
     private UnsavedListener unsavedListener;
@@ -79,10 +81,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource {
     }
 
     public LevelChunk(ServerLevel level, int chunkX, int chunkZ) {
+        this(level, chunkX, chunkZ, level.getWorld().getName());
+    }
+
+    private LevelChunk(ServerLevel level, int chunkX, int chunkZ, String worldName) {
         super(new ChunkPos(chunkX, chunkZ), null, level, null, 0L,
             new LevelChunkSection[level.getSectionsCount()], null);
         this.level = level;
-        this.world = level.getWorld().getName();
+        this.world = worldName;
         this.handle = WorldNatives.worldHandle(world);
         this.minSection = level.getMinY() >> 4;
         this.locX = chunkX;
@@ -92,6 +98,37 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource {
         for (Heightmap.Types type : Heightmap.Types.values()) {
             heightmaps.put(type, new Heightmap(this, level, type));
         }
+    }
+
+    /** Runs the section edit and write-back path on a scratch chunk of a world no native side knows. */
+    public static void warmWriteBack(ServerLevel level, String scratchWorld) {
+        LevelChunk chunk = new LevelChunk(level, kScratchChunk, kScratchChunk, scratchWorld);
+        PalettedContainerFactory factory = level.palettedContainerFactory();
+        int[] ids = new int[4096];
+        for (int round = 0; round < 3; round++) {
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = (i >> 6) % (2 + round);
+            }
+            LevelChunkSection loaded = new LevelChunkSection(factory, ids.clone(), -1, null, new int[192], 0);
+            chunk.sections[0] = loaded;
+            LevelChunkSection edited = new LevelChunkSection(factory);
+            for (int i = 0; i < 40; i++) {
+                edited.setBlockState(i & 15, (i >> 4) & 15, i & 7,
+                    net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                edited.setBlockState(15 - (i & 15), i & 15, (i >> 2) & 15,
+                    net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+            }
+            chunk.sections[1] = edited;
+            chunk.sections[2] = new LevelChunkSection(factory, null, 1, null, new int[192], 2);
+            chunk.getBlockState(new BlockPos(1, chunk.minSection * 16 + 20, 1));
+            chunk.getBlockState(new BlockPos(1, chunk.minSection * 16 + 40, 1));
+            chunk.writeBack();
+            chunk.sections[0] = null;
+            chunk.sections[1] = null;
+            chunk.sections[2] = null;
+        }
+        WorldNatives.resendChunks(scratchWorld, new int[] {kScratchChunk, kScratchChunk});
+        level.getChunkSource().forgetUnsent(kScratchChunk, kScratchChunk);
     }
 
     private synchronized void refresh() {

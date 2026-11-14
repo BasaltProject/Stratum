@@ -103,6 +103,10 @@ public class ServerChunkCache extends ChunkSource {
         handed.add(chunk);
     }
 
+    public void forgetUnsent(int chunkX, int chunkZ) {
+        unsent.remove(ChunkPos.pack(chunkX, chunkZ));
+    }
+
     public void noteChanged(int chunkX, int chunkZ) {
         unsent.put(ChunkPos.pack(chunkX, chunkZ), MinecraftServer.currentTick);
     }
