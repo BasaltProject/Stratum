@@ -19,6 +19,7 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
     private double maxDistance = -1.0;
     private FluidCollisionMode fluids = FluidCollisionMode.NEVER;
     private boolean ignorePassable;
+    private boolean outline;
     private double raySize;
     private Predicate<? super Entity> entityFilter;
     private Predicate<? super Block> blockFilter;
@@ -50,10 +51,11 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
 
     @Override
     public PositionedRayTraceConfigurationBuilder blockCollisionMode(BlockCollisionMode blockCollisionMode) {
-        if (blockCollisionMode != BlockCollisionMode.COLLIDER) {
+        if (blockCollisionMode == BlockCollisionMode.VISUAL) {
             throw org.basaltmc.stratum.bukkit.Unsupported.hit("RayTrace block collision mode " + blockCollisionMode
-                + ": only COLLIDER shapes are available");
+                + ": visual shapes are not extracted");
         }
+        this.outline = blockCollisionMode == BlockCollisionMode.OUTLINE;
         return this;
     }
 
@@ -96,9 +98,10 @@ public final class RayTraceBuilder implements PositionedRayTraceConfigurationBui
         boolean entities = targets.contains(RayTraceTarget.ENTITY);
         if (blocks && entities) {
             return RayTracing.both(start.getWorld(), from, direction, maxDistance, fluids, ignorePassable, raySize,
-                entityFilter, blockFilter);
+                entityFilter, blockFilter, outline);
         }
         return blocks ? RayTracing.blocks(start.getWorld(), from, direction, maxDistance, fluids, ignorePassable,
-            blockFilter) : RayTracing.entities(start.getWorld(), from, direction, maxDistance, raySize, entityFilter);
+            blockFilter, outline) : RayTracing.entities(start.getWorld(), from, direction, maxDistance, raySize,
+            entityFilter);
     }
 }

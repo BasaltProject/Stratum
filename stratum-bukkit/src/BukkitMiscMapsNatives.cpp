@@ -234,6 +234,13 @@ jintArray JNICALL nativeShapeBoxes(JNIEnv* env, jclass, jint state) {
     return array;
 }
 
+jdoubleArray JNICALL nativeOutlineBoxes(JNIEnv* env, jclass, jint state, jint x, jint z) {
+    const std::vector<double> boxes = BukkitBridge::current().services().worlds().outlineBoxes(state, x, z);
+    jdoubleArray array = env->NewDoubleArray(static_cast<jsize>(boxes.size()));
+    env->SetDoubleArrayRegion(array, 0, static_cast<jsize>(boxes.size()), boxes.data());
+    return array;
+}
+
 jobjectArray JNICALL nativeDragonFight(JNIEnv* env, jclass, jstring world) {
     const auto found = worldOf(env, world);
     if (found == nullptr) {
@@ -348,6 +355,7 @@ void registerMiscNativesMaps(JNIEnv* env, jclass natives) {
         nativeMethod("locateBiome", "(Ljava/lang/String;[Ljava/lang/String;IIIII)[I",
                      reinterpret_cast<void*>(&nativeLocateBiome)),
         nativeMethod("shapeBoxes", "(I)[I", reinterpret_cast<void*>(&nativeShapeBoxes)),
+        nativeMethod("outlineBoxes", "(III)[D", reinterpret_cast<void*>(&nativeOutlineBoxes)),
         nativeMethod("dragonFight", "(Ljava/lang/String;)[Ljava/lang/String;",
                      reinterpret_cast<void*>(&nativeDragonFight)),
         nativeMethod("setDragonPreviouslyKilled", "(Ljava/lang/String;Z)V",

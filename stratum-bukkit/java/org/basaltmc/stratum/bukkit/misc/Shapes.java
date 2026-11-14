@@ -26,6 +26,12 @@ public final class Shapes {
         });
     }
 
+    /** Six numbers per box in blocks, relative to the block and already moved by the offset of a plant. */
+    public static double[] outline(int state, int x, int z) {
+        double[] boxes = MiscNatives.outlineBoxes(state, x, z);
+        return boxes == null ? new double[0] : boxes;
+    }
+
     public static VoxelShape shape(int state) {
         double[] boxes = boxes(state);
         List<BoundingBox> list = new ArrayList<>(boxes.length / 6);
