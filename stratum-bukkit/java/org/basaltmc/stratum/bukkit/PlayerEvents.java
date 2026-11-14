@@ -19,6 +19,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -221,11 +222,20 @@ final class PlayerEvents {
             return who == null || stack == null ? null
                 : new PickItem(who, stack);
         });
-        EventBridge.map("player.login", org.bukkit.event.player.AsyncPlayerPreLoginEvent.class, f -> {
+        EventBridge.mapStage("player.login", AsyncPlayerPreLoginEvent.class, f -> {
             return new PreLoginGate(f.text("player_name"), address(f), java.util.UUID.fromString(f.text("player_uuid")));
         }, (e, f) -> {
             AsyncPlayerPreLoginEvent pre = (AsyncPlayerPreLoginEvent) e;
             if (pre.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+                f.put("message", PlainTextComponentSerializer.plainText().serialize(pre.kickMessage()));
+            }
+        });
+        EventBridge.mapStage("player.login", PlayerPreLoginEvent.class, f -> {
+            return new LegacyPreLoginGate(f.text("player_name"), address(f),
+                java.util.UUID.fromString(f.text("player_uuid")), Component.text(f.text("message")));
+        }, (e, f) -> {
+            PlayerPreLoginEvent pre = (PlayerPreLoginEvent) e;
+            if (pre.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
                 f.put("message", PlainTextComponentSerializer.plainText().serialize(pre.kickMessage()));
             }
         });
@@ -490,6 +500,34 @@ final class PlayerEvents {
         @Override
         public String getEventName() {
             return AsyncPlayerPreLoginEvent.class.getSimpleName();
+        }
+    }
+
+    static final class LegacyPreLoginGate extends PlayerPreLoginEvent implements Cancellable {
+        private final Component refusal;
+
+        LegacyPreLoginGate(String name, InetAddress address, java.util.UUID id, Component refusal) {
+            super(name, address, id);
+            this.refusal = refusal;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return getResult() != Result.ALLOWED;
+        }
+
+        @Override
+        public void setCancelled(boolean cancel) {
+            if (cancel && getResult() == Result.ALLOWED) {
+                disallow(Result.KICK_OTHER, refusal);
+            } else if (!cancel) {
+                allow();
+            }
+        }
+
+        @Override
+        public String getEventName() {
+            return PlayerPreLoginEvent.class.getSimpleName();
         }
     }
 

@@ -114,15 +114,16 @@ final class EventBridge {
     }
 
     private record Mapping(String basalt, Class<? extends Event> produced, Function<Fields, Event> build,
-            BiConsumer<Event, Fields> writeBack, BiConsumer<Event, Fields> refresh) {}
+            BiConsumer<Event, Fields> writeBack, BiConsumer<Event, Fields> refresh, boolean stage) {}
 
     private static final List<Mapping> mappings = new java.util.ArrayList<>();
     private static final Map<String, List<Mapping>> byName = new HashMap<>();
     private static final Set<String> subscribed = new HashSet<>();
-    private static final Map<String, Event> inFlight = new HashMap<>();
+    private static final int kFiringsKept = 16;
+    private static final Map<String, Map<Long, Event>> inFlight = new HashMap<>();
     private static final Set<String> failed = new HashSet<>();
-    private static final Map<String, Long> generations = new HashMap<>();
     private static final Map<String, Map<String, Integer>> indexes = new HashMap<>();
+    private static final Map<String, Map<Long, Event>> refused = new HashMap<>();
 
     private EventBridge() {}
 
@@ -139,9 +140,23 @@ final class EventBridge {
 
     static void map(String basalt, Class<? extends Event> produced, Function<Fields, Event> build,
             BiConsumer<Event, Fields> writeBack, BiConsumer<Event, Fields> refresh) {
-        Mapping mapping = new Mapping(basalt, produced, build, writeBack, refresh);
+        add(new Mapping(basalt, produced, build, writeBack, refresh, false));
+    }
+
+    /** Maps an event that runs through every priority before the other mappings of the native event start. */
+    static void mapStage(String basalt, Class<? extends Event> produced, Function<Fields, Event> build,
+            BiConsumer<Event, Fields> writeBack) {
+        add(new Mapping(basalt, produced, build, writeBack, null, true));
+    }
+
+    private static void add(Mapping mapping) {
         mappings.add(mapping);
-        byName.computeIfAbsent(basalt, key -> new java.util.ArrayList<>()).add(mapping);
+        List<Mapping> named = byName.computeIfAbsent(mapping.basalt, key -> new java.util.ArrayList<>());
+        int at = named.size();
+        while (mapping.stage && at > 0 && !named.get(at - 1).stage) {
+            at--;
+        }
+        named.add(at, mapping);
     }
 
     static void mapAlways(String basalt, java.util.function.Consumer<Fields> effect) {
@@ -322,9 +337,9 @@ final class EventBridge {
             if (!registered.isAssignableFrom(mapping.produced)) {
                 continue;
             }
-            String key = mapping.basalt + "@" + priority.ordinal();
-            if (subscribed.add(key)) {
-                Natives.subscribe(mapping.basalt, priority.ordinal());
+            int at = mapping.stage ? EventPriority.LOWEST.ordinal() : priority.ordinal();
+            if (subscribed.add(mapping.basalt + "@" + at)) {
+                Natives.subscribe(mapping.basalt, at);
             }
         }
     }
@@ -346,35 +361,65 @@ final class EventBridge {
         boolean result = cancelled;
         for (Mapping mapping : found) {
             String key = name + "#" + mapping.produced.getName();
-            try {
-                Event event = inFlight.get(key);
-                if (event == null || generations.getOrDefault(key, -1L) != generation) {
-                    event = mapping.build.apply(fields);
-                    inFlight.put(key, event);
-                    generations.put(key, generation);
-                }
-                if (event == null) {
+            if (mapping.stage) {
+                if (firings(inFlight, key).containsKey(generation)) {
                     continue;
                 }
-                if (mapping.refresh != null) {
-                    mapping.refresh.accept(event, fields);
+                for (EventPriority each : EventPriority.values()) {
+                    result = dispatch(mapping, key, fields, generation, result, each);
                 }
-                if (event instanceof Cancellable cancellable) {
-                    cancellable.setCancelled(result);
+                firings(inFlight, key).putIfAbsent(generation, null);
+                if (result) {
+                    firings(refused, name).put(generation, null);
                 }
-                BasaltServer.instance().pluginManagerImpl().callAt(event, EventPriority.values()[priority]);
-                if (mapping.writeBack != null) {
-                    mapping.writeBack.accept(event, fields);
-                }
-                if (event instanceof Cancellable cancellable) {
-                    result = cancellable.isCancelled();
-                }
-            } catch (Throwable failure) {
-                inFlight.remove(key);
-                if (failed.add(key)) {
-                    BasaltServer.instance().getLogger().log(java.util.logging.Level.SEVERE,
-                        "Could not build " + mapping.produced.getSimpleName() + " from " + name, failure);
-                }
+            } else if (!firings(refused, name).containsKey(generation)) {
+                result = dispatch(mapping, key, fields, generation, result, EventPriority.values()[priority]);
+            }
+        }
+        return result;
+    }
+
+    /** Several firings of one event can interleave (logins arrive from many threads), so each keeps its own. */
+    private static Map<Long, Event> firings(Map<String, Map<Long, Event>> all, String key) {
+        return all.computeIfAbsent(key, unused -> new java.util.LinkedHashMap<>(kFiringsKept, 0.75f, false) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Long, Event> eldest) {
+                return size() > kFiringsKept;
+            }
+        });
+    }
+
+    private static boolean dispatch(Mapping mapping, String key, Fields fields, long generation, boolean cancelled,
+            EventPriority priority) {
+        boolean result = cancelled;
+        try {
+            Map<Long, Event> built = firings(inFlight, key);
+            Event event = built.get(generation);
+            if (event == null && !built.containsKey(generation)) {
+                event = mapping.build.apply(fields);
+                built.put(generation, event);
+            }
+            if (event == null) {
+                return result;
+            }
+            if (mapping.refresh != null) {
+                mapping.refresh.accept(event, fields);
+            }
+            if (event instanceof Cancellable cancellable) {
+                cancellable.setCancelled(result);
+            }
+            BasaltServer.instance().pluginManagerImpl().callAt(event, priority);
+            if (mapping.writeBack != null) {
+                mapping.writeBack.accept(event, fields);
+            }
+            if (event instanceof Cancellable cancellable) {
+                result = cancellable.isCancelled();
+            }
+        } catch (Throwable failure) {
+            firings(inFlight, key).remove(generation);
+            if (failed.add(key)) {
+                BasaltServer.instance().getLogger().log(java.util.logging.Level.SEVERE,
+                    "Could not build " + mapping.produced.getSimpleName() + " from " + mapping.basalt, failure);
             }
         }
         return result;

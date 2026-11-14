@@ -8,6 +8,7 @@
 #include <future>
 #include <memory>
 #include <thread>
+#include <unordered_map>
 
 namespace basalt::stratum::bukkit {
 namespace {
@@ -15,6 +16,24 @@ std::atomic<BukkitBridge*> gCurrent{nullptr};
 thread_local server::plugins::PluginCommandCall* gCurrentCall = nullptr;
 
 constexpr std::string_view kEventOwner = "bukkit";
+
+struct Firing {
+    std::int64_t generation = -1;
+    std::int64_t serial = 0;
+};
+
+std::atomic<std::int64_t> gFirings{0};
+
+// The bus counts generations per thread, so two threads can share one: Java needs a number unique per firing.
+[[nodiscard]] std::int64_t firingOf(const server::plugins::PluginEvent& fired) {
+    thread_local std::unordered_map<const server::plugins::PluginEvent*, Firing> seen;
+    Firing& known = seen[&fired];
+    if (known.generation != fired.generation()) {
+        known.generation = fired.generation();
+        known.serial = gFirings.fetch_add(1, std::memory_order_relaxed) + 1;
+    }
+    return known.serial;
+}
 
 struct Boxes {
     jclass booleanClass = nullptr;
@@ -498,7 +517,7 @@ bool BukkitBridge::subscribe(const std::string& event, std::int32_t priority) {
     eventHandles_.push_back(plugins_->events().add(
         *type, std::string{kEventOwner}, 0, level, monitor, true, {},
         [this, event, priority, monitor](server::plugins::PluginEvent& fired) {
-            Snapshot snapshot{.type = &fired.type(), .generation = fired.generation(), .cancelled = fired.cancelled()};
+            Snapshot snapshot{.type = &fired.type(), .generation = firingOf(fired), .cancelled = fired.cancelled()};
             for (std::size_t index = 0; index < fired.type().fields().size(); ++index) {
                 snapshot.values.push_back(fired.get(static_cast<std::int32_t>(index)));
             }
