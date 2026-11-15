@@ -232,8 +232,13 @@ public final class BasaltArgumentProvider implements VanillaArgumentProvider {
     public ArgumentType<BlockPositionResolver> blockPosition() {
         return arg(reader -> {
             String[] parts = threeParts(reader);
+            checkNotMixed(parts, reader);
             return (BlockPositionResolver) stack -> {
                 Location at = origin(stack);
+                if (isLocal(parts)) {
+                    double[] spot = localSpot(parts, at);
+                    return Position.block((int) Math.floor(spot[0]), (int) Math.floor(spot[1]), (int) Math.floor(spot[2]));
+                }
                 return Position.block(whole(parts[0], at.getX()), whole(parts[1], at.getY()), whole(parts[2], at.getZ()));
             };
         });
@@ -266,8 +271,13 @@ public final class BasaltArgumentProvider implements VanillaArgumentProvider {
     public ArgumentType<FinePositionResolver> finePosition(boolean centerIntegers) {
         return arg(reader -> {
             String[] parts = threeParts(reader);
+            checkNotMixed(parts, reader);
             return (FinePositionResolver) stack -> {
                 Location at = origin(stack);
+                if (isLocal(parts)) {
+                    double[] spot = localSpot(parts, at);
+                    return Position.fine(spot[0], spot[1], spot[2]);
+                }
                 return Position.fine(real(parts[0], at.getX(), centerIntegers), real(parts[1], at.getY(), false),
                     real(parts[2], at.getZ(), centerIntegers));
             };
@@ -309,6 +319,63 @@ public final class BasaltArgumentProvider implements VanillaArgumentProvider {
         String first = word(reader);
         space(reader);
         return new String[] {first, word(reader)};
+    }
+
+    private static final float[] kSin = new float[65536];
+
+    static {
+        for (int i = 0; i < kSin.length; i++) {
+            kSin[i] = (float) Math.sin(i * Math.PI * 2.0 / 65536.0);
+        }
+    }
+
+    // parity: `Mth.sin` and `Mth.cos`, the jar's lookup table.
+    private static float sin(float radians) {
+        return kSin[(int) (radians * 10430.378F) & 65535];
+    }
+
+    private static float cos(float radians) {
+        return kSin[(int) (radians * 10430.378F + 16384.0F) & 65535];
+    }
+
+    private static boolean isLocal(String[] parts) {
+        return parts[0].startsWith("^");
+    }
+
+    private static void checkNotMixed(String[] parts, StringReader reader) throws CommandSyntaxException {
+        boolean local = isLocal(parts);
+        for (String part : parts) {
+            if (part.startsWith("^") != local) {
+                throw new com.mojang.brigadier.exceptions.SimpleCommandExceptionType(new com.mojang.brigadier.LiteralMessage(
+                    "Cannot mix world & local coordinates (everything must either use ^ or not)")).createWithContext(reader);
+            }
+        }
+    }
+
+    // parity: `LocalCoordinates.getPosition`, measured from the source's feet.
+    private static double[] localSpot(String[] parts, Location at) {
+        double left = number(parts[0].substring(1));
+        double up = number(parts[1].substring(1));
+        double forward = number(parts[2].substring(1));
+        float pi = (float) Math.PI;
+        float yaw = at.getYaw();
+        float pitch = at.getPitch();
+        float cosY = cos((yaw + 90.0F) * (pi / 180.0F));
+        float sinY = sin((yaw + 90.0F) * (pi / 180.0F));
+        float cosX = cos(-pitch * (pi / 180.0F));
+        float sinX = sin(-pitch * (pi / 180.0F));
+        float cosUp = cos((-pitch + 90.0F) * (pi / 180.0F));
+        float sinUp = sin((-pitch + 90.0F) * (pi / 180.0F));
+        double[] ahead = {cosY * cosX, sinX, sinY * cosX};
+        double[] above = {cosY * cosUp, sinUp, sinY * cosUp};
+        double[] aside = {
+            -(ahead[1] * above[2] - ahead[2] * above[1]),
+            -(ahead[2] * above[0] - ahead[0] * above[2]),
+            -(ahead[0] * above[1] - ahead[1] * above[0])};
+        return new double[] {
+            at.getX() + ahead[0] * forward + above[0] * up + aside[0] * left,
+            at.getY() + ahead[1] * forward + above[1] * up + aside[1] * left,
+            at.getZ() + ahead[2] * forward + above[2] * up + aside[2] * left};
     }
 
     private static double number(String text) {
