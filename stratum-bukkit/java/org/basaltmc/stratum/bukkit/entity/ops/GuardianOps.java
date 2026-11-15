@@ -17,7 +17,7 @@ public interface GuardianOps extends Guardian, Cored {
     }
 
     default int getLaserDuration() {
-        return 80;
+        return core().keyName().equals("elder_guardian") ? 60 : 80;
     }
 
     default int getLaserTicks() {

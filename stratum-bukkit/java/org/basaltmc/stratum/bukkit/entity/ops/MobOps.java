@@ -65,7 +65,13 @@ public interface MobOps extends Mob, org.basaltmc.stratum.bukkit.entity.Cored {
     }
 
     default int getMaxHeadPitch() {
-        return 40;
+        return switch (core().keyName()) {
+            case "shulker", "guardian", "elder_guardian" -> 180;
+            case "slime", "magma_cube", "sulfur_cube" -> 0;
+            case "dolphin", "axolotl" -> 1;
+            case "wolf" -> this instanceof org.bukkit.entity.Sittable sitter && sitter.isSitting() ? 20 : 40;
+            default -> 40;
+        };
     }
 
     default boolean isAware() {
