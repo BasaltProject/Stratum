@@ -759,7 +759,7 @@ public class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> imple
         return org.bukkit.Bukkit.getWorlds().get(0).getWorldFolder().toPath().resolve(resource.id());
     }
     public boolean forceSynchronousWrites() {
-        return false;
+        return true;
     }
     private StructureTemplateManager templateManager;
     public StructureTemplateManager getStructureTemplateManager() {

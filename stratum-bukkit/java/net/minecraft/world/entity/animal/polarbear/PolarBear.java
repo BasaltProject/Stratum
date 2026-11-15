@@ -109,7 +109,7 @@ public class PolarBear extends Animal implements NeutralMob {
         return isStanding() ? 1.0F : 0.0F;
     }
     protected float getWaterSlowDown() {
-        return 0;
+        return 0.98F;
     }
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;

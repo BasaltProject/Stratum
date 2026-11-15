@@ -275,7 +275,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
         setGuaranteedDrop(slot);
     }
     protected boolean canShearEquipment(Player player) {
-        return false;
+        return !isVehicle();
     }
     protected boolean attemptToShearEquipment(Player player, InteractionHand hand, ItemStack heldItem) {
         return false;
@@ -305,7 +305,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
         return true;
     }
     public boolean requiresCustomPersistence() {
-        return false;
+        return isPassenger() || isLeashed();
     }
     public void checkDespawn() {
 

@@ -73,7 +73,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
         return null;
     }
     protected boolean canSpawnInLiquids() {
-        return false;
+        return true;
     }
     protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
         }

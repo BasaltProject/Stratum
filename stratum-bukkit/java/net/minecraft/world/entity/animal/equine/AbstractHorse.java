@@ -89,7 +89,7 @@ public abstract class AbstractHorse extends Animal implements PlayerRideableJump
 
     }
     public boolean supportQuadLeash() {
-        return false;
+        return true;
     }
     public Vec3[] getQuadLeashOffsets() {
         return net.minecraft.world.entity.Leashable.createQuadLeashOffsets(this, 0.04, 0.52, 0.23, 0.87);
@@ -146,7 +146,7 @@ public abstract class AbstractHorse extends Animal implements PlayerRideableJump
         return super.hurtServer(level, source, damage);
     }
     protected boolean canPerformRearing() {
-        return false;
+        return true;
     }
     protected SoundEvent getEatingSound() {
         return null;
@@ -355,7 +355,7 @@ public abstract class AbstractHorse extends Animal implements PlayerRideableJump
         return getAmbientSoundInterval();
     }
     public int getInventoryColumns() {
-        return 5;
+        return 0;
     }
     class MountPanicGoal extends PanicGoal {
         public MountPanicGoal(double speedModifier) {

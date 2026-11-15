@@ -55,10 +55,10 @@ public abstract class AbstractSkeleton extends Monster implements RangedAttackMo
         return;
     }
     protected int getHardAttackInterval() {
-        return 0;
+        return 20;
     }
     protected int getAttackInterval() {
-        return 0;
+        return 40;
     }
     public void performRangedAttack(LivingEntity target, float power) {
         if (live() instanceof com.destroystokyo.paper.entity.RangedEntity ranged && target.live() instanceof org.bukkit.entity.LivingEntity victim) { ranged.rangedAttack(victim, power); }

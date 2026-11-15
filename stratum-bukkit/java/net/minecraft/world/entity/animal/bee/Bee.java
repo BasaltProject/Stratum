@@ -197,7 +197,7 @@ public class Bee extends Animal implements NeutralMob {
         return !onGround();
     }
     protected boolean omnidirectionalAirMover() {
-        return false;
+        return true;
     }
     public void dropOffNectar() {
         if (live() instanceof org.bukkit.entity.Bee api) { api.setHasNectar(false); }

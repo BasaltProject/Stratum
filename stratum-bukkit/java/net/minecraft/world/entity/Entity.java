@@ -1006,7 +1006,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
     }
     public boolean fireImmune() {
-        return false;
+        return getType().fireImmune();
     }
     public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
         propagateFallToPassengers(fallDistance, damageModifier, damageSource);
@@ -1240,7 +1240,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return false;
     }
     public boolean canBePickedFromInside() {
-        return false;
+        return true;
     }
     public boolean isPushable() {
         return false;
@@ -1347,7 +1347,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return live != null && target != null && target.addPassenger(live);
     }
     public boolean showVehicleHealth() {
-        return false;
+        return this instanceof LivingEntity;
     }
     public boolean startRiding(Entity entityToRide, boolean force, boolean sendEventAndTriggers) {
         return live() != null && entityToRide.live() != null && entityToRide.live().addPassenger(live());
@@ -1483,7 +1483,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return isDescending();
     }
     public boolean isSuppressingBounce() {
-        return false;
+        return isShiftKeyDown();
     }
     public boolean isDiscrete() {
         return isShiftKeyDown();
@@ -1617,7 +1617,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return true;
     }
     public boolean projectileReceivesSideEffectsOnHit(boolean wasHurt) {
-        return false;
+        return true;
     }
     public void checkFallDistanceAccumulation() {
     }
@@ -1677,7 +1677,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return invulnerableTime > 0;
     }
     public boolean isInvulnerableToPiercingWeapon() {
-        return false;
+        return isInvulnerable();
     }
     public void setPermanentlyInvulnerable(boolean permanentlyInvulnerable) {
     }
@@ -1807,7 +1807,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         absSnapTo(getX() + dx, getY() + dy, getZ() + dz, getYRot(), getXRot());
     }
     public boolean shouldShowName() {
-        return false;
+        return isCustomNameVisible();
     }
     public void onSyncedDataUpdated(List<SynchedEntityData.DataValue<?>> updatedItems) {
         return;

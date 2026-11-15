@@ -35,10 +35,10 @@ public class Husk extends Zombie {
         return super.doHurtTarget(level, target);
     }
     protected boolean convertsInWater() {
-        return false;
+        return true;
     }
     protected int getConversionSound() {
-        return 0;
+        return 1041;
     }
     protected EntityType<? extends Zombie> convertsToWhenDrowning() {
         return net.minecraft.world.entity.EntityTypes.ZOMBIE;

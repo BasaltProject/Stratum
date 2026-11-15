@@ -54,7 +54,7 @@ public abstract class AbstractWindCharge extends AbstractHurtingProjectile imple
         return ItemStack.EMPTY;
     }
     protected float getInertia() {
-        return 0;
+        return 1.0F;
     }
     protected float getLiquidInertia() {
         return 0;

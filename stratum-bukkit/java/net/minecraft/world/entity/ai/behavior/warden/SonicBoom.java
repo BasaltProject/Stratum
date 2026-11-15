@@ -16,7 +16,7 @@ public class SonicBoom extends Behavior<Warden> {
         return false;
     }
     protected boolean canStillUse(ServerLevel level, Warden body, long timestamp) {
-        return false;
+        return true;
     }
     protected void start(ServerLevel level, Warden body, long timestamp) {
         

@@ -46,16 +46,16 @@ public abstract class AbstractHurtingProjectile extends Projectile {
         return false;
     }
     protected boolean shouldBurn() {
-        return false;
+        return true;
     }
     protected ParticleOptions getTrailParticle() {
         return net.minecraft.core.particles.ParticleTypes.SMOKE;
     }
     protected float getInertia() {
-        return 0;
+        return 0.95F;
     }
     protected float getLiquidInertia() {
-        return 0;
+        return 0.8F;
     }
     protected void addAdditionalSaveData(ValueOutput output) {
     }

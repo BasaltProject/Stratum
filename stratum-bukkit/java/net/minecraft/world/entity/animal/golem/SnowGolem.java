@@ -47,7 +47,7 @@ public class SnowGolem extends AbstractGolem implements RangedAttackMob, Shearab
         if (live() instanceof com.destroystokyo.paper.entity.RangedEntity ranged && target.live() instanceof org.bukkit.entity.LivingEntity victim) { ranged.rangedAttack(victim, power); }
     }
     public float rangedAttackUncertainty(Level level) {
-        return 10.0F;
+        return 12.0F;
     }
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         return net.minecraft.world.InteractionResult.PASS;

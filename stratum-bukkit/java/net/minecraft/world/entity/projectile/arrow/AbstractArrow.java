@@ -69,7 +69,7 @@ public abstract class AbstractArrow extends Projectile {
         this.inGroundFlag = inGround;
     }
     public boolean isPushedByFluid() {
-        return false;
+        return !isInGround();
     }
     protected void tickDespawn() {
         return;

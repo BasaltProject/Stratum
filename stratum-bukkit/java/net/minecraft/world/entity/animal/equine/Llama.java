@@ -166,7 +166,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
         if (live() instanceof com.destroystokyo.paper.entity.RangedEntity ranged && target.live() instanceof org.bukkit.entity.LivingEntity victim) { ranged.rangedAttack(victim, power); }
     }
     public float rangedAttackUncertainty(Level level) {
-        return 0.0F;
+        return 10.0F;
     }
     public Vec3 getLeashOffset() {
         return new Vec3(0.0, 0.75F * getEyeHeight(), getBbWidth() * 0.5F);

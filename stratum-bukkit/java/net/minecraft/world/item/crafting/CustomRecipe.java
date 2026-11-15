@@ -5,7 +5,7 @@ public abstract class CustomRecipe implements CraftingRecipe {
         return true;
     }
     public boolean showNotification() {
-        return true;
+        return false;
     }
     public String group() {
         return "";

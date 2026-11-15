@@ -118,7 +118,7 @@ public abstract class AbstractMinecart extends VehicleEntity {
     protected void comeOffTrack(ServerLevel level) {
         }
     protected float getAirDrag() {
-        return 0;
+        return 0.95F;
     }
     protected double makeStepAlongTrack(BlockPos pos, RailShape shape, double movementLeft) {
         return 0;

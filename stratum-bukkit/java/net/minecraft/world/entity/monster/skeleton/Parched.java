@@ -37,10 +37,10 @@ public class Parched extends AbstractSkeleton {
         return null;
     }
     protected int getHardAttackInterval() {
-        return 0;
+        return 50;
     }
     protected int getAttackInterval() {
-        return 0;
+        return 70;
     }
     public boolean canBeAffected(MobEffectInstance newEffect) {
         return super.canBeAffected(newEffect);

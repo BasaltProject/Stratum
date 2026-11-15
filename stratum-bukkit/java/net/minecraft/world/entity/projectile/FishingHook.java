@@ -35,7 +35,7 @@ public class FishingHook extends Projectile {
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
     protected boolean shouldBounceOnWorldBorder() {
-        return false;
+        return true;
     }
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
     }

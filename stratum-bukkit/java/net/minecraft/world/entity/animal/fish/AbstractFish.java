@@ -66,7 +66,7 @@ public abstract class AbstractFish extends WaterAnimal implements Bucketable {
         return null;
     }
     protected boolean canRandomSwim() {
-        return false;
+        return true;
     }
     protected abstract SoundEvent getFlopSound();
     protected SoundEvent getSwimSound() {

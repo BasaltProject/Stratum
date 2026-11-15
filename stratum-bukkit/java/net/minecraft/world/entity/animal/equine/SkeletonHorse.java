@@ -60,7 +60,7 @@ public class SkeletonHorse extends AbstractHorse {
     protected void readAdditionalSaveData(ValueInput input) {
     }
     protected float getWaterSlowDown() {
-        return 0;
+        return 0.96F;
     }
     public boolean isTrap() {
         return live() instanceof org.bukkit.entity.SkeletonHorse api ? (boolean) api.isTrap() : false;

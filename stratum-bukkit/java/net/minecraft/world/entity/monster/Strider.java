@@ -101,7 +101,7 @@ public class Strider extends Animal implements ItemSteerable {
     public void tick() {
     }
     protected boolean shouldPassengersInheritMalus() {
-        return false;
+        return true;
     }
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createAnimalAttributes()

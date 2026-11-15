@@ -147,7 +147,7 @@ public class EnderDragon extends Mob implements Enemy {
         super.recreateFromPacket(packet);
     }
     protected float sanitizeScale(float scale) {
-        return 0;
+        return 1.0F;
     }
     public MoveSimulationType getMoveSimulationType() {
         return super.getMoveSimulationType();

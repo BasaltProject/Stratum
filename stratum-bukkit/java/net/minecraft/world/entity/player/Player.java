@@ -276,7 +276,7 @@ public abstract class Player extends Avatar implements ContainerUser {
         return !getAbilities().invulnerable && super.canBeSeenAsEnemy();
     }
     public boolean canHarmPlayer(Player target) {
-        return true;
+        return doTeamsAllowDamage(target);
     }
     protected void hurtArmor(DamageSource damageSource, float damage) {
         return;
@@ -374,7 +374,7 @@ public abstract class Player extends Avatar implements ContainerUser {
         super.remove(reason);
     }
     public boolean isClientAuthoritative() {
-        return false;
+        return true;
     }
     protected boolean isLocalClientAuthoritative() {
         return false;
@@ -610,7 +610,7 @@ public abstract class Player extends Avatar implements ContainerUser {
         return enderChestInventory;
     }
     protected boolean doesEmitEquipEvent(EquipmentSlot slot) {
-        return true;
+        return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
     }
     public boolean addItem(ItemStack itemStack) {
         if (bukkit() == null) {
@@ -742,10 +742,10 @@ public abstract class Player extends Avatar implements ContainerUser {
         return true;
     }
     public boolean isScoping() {
-        return false;
+        return isUsingItem() && getUseItem().is(net.minecraft.world.item.Items.SPYGLASS);
     }
     public boolean shouldBeSaved() {
-        return true;
+        return false;
     }
     public Optional<GlobalPos> getLastDeathLocation() {
         return Optional.empty();
@@ -760,7 +760,7 @@ public abstract class Player extends Avatar implements ContainerUser {
         super.animateHurt(yaw);
     }
     public boolean isMobilityRestricted() {
-        return false;
+        return hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
     }
     public boolean canSprint() {
         return true;

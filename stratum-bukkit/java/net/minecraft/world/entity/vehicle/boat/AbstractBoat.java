@@ -49,7 +49,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
         return entity.canBeCollidedWith(vehicle) && !vehicle.isPassengerOfSameVehicle(entity);
     }
     public boolean canBeCollidedWith(Entity other) {
-        return false;
+        return true;
     }
     public boolean isPushable() {
         return true;
@@ -108,7 +108,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
         return new Vec3(0.0, getBbHeight() * 0.5, 0.0);
     }
     public boolean supportQuadLeash() {
-        return false;
+        return true;
     }
     public Vec3[] getQuadLeashOffsets() {
         return net.minecraft.world.entity.Leashable.createQuadLeashOffsets(this, 0.0, 0.64, 0.382, 0.88);
@@ -150,10 +150,10 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
         return super.getDefaultGravity();
     }
     protected float getAirDrag() {
-        return 0;
+        return 1.0F;
     }
     protected float getSinglePassengerXOffset() {
-        return 0;
+        return 0.0F;
     }
     public boolean hasEnoughSpaceFor(Entity entity) {
         return entity.getBbWidth() < getBbWidth();
@@ -190,7 +190,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
         return false;
     }
     protected int getMaxPassengers() {
-        return 0;
+        return 2;
     }
     public LivingEntity getControllingPassenger() {
         return getFirstPassenger() instanceof LivingEntity passenger ? passenger : null;

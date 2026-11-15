@@ -265,7 +265,7 @@ public class LivingEntity extends Entity implements Attackable, WaypointTransmit
         return living instanceof org.bukkit.entity.Ageable ageable && !ageable.isAdult();
     }
     public float getAgeScale() {
-        return 1.0F;
+        return isBaby() ? 0.5F : 1.0F;
     }
     public float getScale() {
         AttributeMap map = getAttributes();
@@ -985,7 +985,7 @@ public class LivingEntity extends Entity implements Attackable, WaypointTransmit
         super.push(entity);
     }
     public boolean shouldShowName() {
-        return false;
+        return isCustomNameVisible();
     }
     protected float getJumpPower() {
         return getJumpPower(1.0F);
@@ -1477,7 +1477,7 @@ public class LivingEntity extends Entity implements Attackable, WaypointTransmit
         return level().noCollision(this, moved) && !level().containsAnyLiquid(moved);
     }
     public boolean isAffectedByPotions() {
-        return true;
+        return !isDeadOrDying();
     }
     public boolean attackable() {
         return true;

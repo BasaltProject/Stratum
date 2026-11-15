@@ -58,10 +58,10 @@ public class Bogged extends AbstractSkeleton implements Shearable {
         return arrow;
     }
     protected int getHardAttackInterval() {
-        return 0;
+        return 50;
     }
     protected int getAttackInterval() {
-        return 0;
+        return 70;
     }
     public void shear(ServerLevel level, SoundSource soundSource, ItemStack tool) {
         if (live() instanceof io.papermc.paper.entity.Shearable api) {

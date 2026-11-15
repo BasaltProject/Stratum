@@ -24,7 +24,7 @@ public class Minecart extends AbstractMinecart {
         return new ItemStack(net.minecraft.world.item.Items.MINECART);
     }
     public boolean isRideable() {
-        return false;
+        return true;
     }
     public void tick() {
     }

@@ -119,7 +119,7 @@ public interface ProblemReporter {
         String description();
 
         default boolean isFatal() {
-            return true;
+            return false;
         }
     }
 

@@ -8,7 +8,7 @@ public interface ConfigurationTask {
     void start(Consumer<Packet<?>> connection);
 
     default boolean tick() {
-        return true;
+        return false;
     }
 
     Type type();

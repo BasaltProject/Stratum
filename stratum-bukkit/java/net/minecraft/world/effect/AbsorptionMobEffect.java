@@ -10,7 +10,7 @@ class AbsorptionMobEffect extends MobEffect {
         return true;
     }
     public boolean shouldApplyEffectTickThisTick(int tickCount, int amplification) {
-        return false;
+        return true;
     }
     public void onEffectStarted(LivingEntity mob, int amplifier) {
         mob.setAbsorptionAmount(Math.max(mob.getAbsorptionAmount(), 4 * (amplifier + 1)));

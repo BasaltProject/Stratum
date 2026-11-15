@@ -513,7 +513,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
     public abstract ClockManager clockManager();
     public abstract EnvironmentAttributeSystem environmentAttributes();
     public int getClientLeafTintColor(BlockPos pos) {
-        return 0xFFFFFF;
+        return 0;
     }
     public abstract PalettedContainerFactory palettedContainerFactory();
     public static enum ExplosionInteraction implements StringRepresentable {

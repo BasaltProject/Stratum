@@ -75,7 +75,7 @@ public class ThrownTrident extends AbstractArrow {
         }
     }
     protected float getWaterInertia() {
-        return 0;
+        return 0.99F;
     }
     public boolean shouldRender(double camX, double camY, double camZ) {
         return true;

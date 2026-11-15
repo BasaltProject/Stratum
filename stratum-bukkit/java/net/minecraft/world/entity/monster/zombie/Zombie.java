@@ -83,7 +83,7 @@ public class Zombie extends Monster {
     public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
     }
     protected boolean convertsInWater() {
-        return false;
+        return true;
     }
     public void tick() {
     }
@@ -97,7 +97,7 @@ public class Zombie extends Monster {
         return converted != null;
     }
     protected boolean isSunSensitive() {
-        return false;
+        return true;
     }
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         return super.hurtServer(level, source, damage);
@@ -118,7 +118,7 @@ public class Zombie extends Monster {
         return net.minecraft.sounds.SoundEvents.ZOMBIE_STEP;
     }
     protected int getConversionSound() {
-        return 0;
+        return 1040;
     }
     protected EntityType<? extends Zombie> convertsToWhenDrowning() {
         return net.minecraft.world.entity.EntityTypes.DROWNED;

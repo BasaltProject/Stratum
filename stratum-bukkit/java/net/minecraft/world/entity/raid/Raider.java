@@ -149,7 +149,7 @@ public abstract class Raider extends PatrollingMonster {
             
         }
         public boolean requiresUpdateEveryTick() {
-            return false;
+            return true;
         }
         public void tick() {
         }

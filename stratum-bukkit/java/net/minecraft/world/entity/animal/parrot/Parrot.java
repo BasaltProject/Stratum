@@ -221,10 +221,10 @@ public class Parrot extends ShoulderRidingEntity {
         return !onGround();
     }
     protected boolean omnidirectionalAirMover() {
-        return false;
+        return true;
     }
     protected boolean canFlyToOwner() {
-        return false;
+        return true;
     }
     public Vec3 getLeashOffset() {
         return new net.minecraft.world.phys.Vec3(0.0, 0.5F * getEyeHeight(), getBbWidth() * 0.4F);

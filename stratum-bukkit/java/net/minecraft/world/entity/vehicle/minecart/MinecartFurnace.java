@@ -19,7 +19,7 @@ public class MinecartFurnace extends AbstractMinecart {
         super(type, level);
     }
     public boolean isFurnace() {
-        return false;
+        return true;
     }
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
