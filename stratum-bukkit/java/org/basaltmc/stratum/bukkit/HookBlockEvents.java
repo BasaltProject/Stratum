@@ -76,6 +76,19 @@ final class HookBlockEvents {
                 : BasaltServer.instance().playerByName(f.text("player_name"));
             return new com.destroystokyo.paper.event.block.TNTPrimeEvent(f.block(), reason, who);
         });
+        EventBridge.map("block.tnt_prime", org.bukkit.event.block.TNTPrimeEvent.class, f -> {
+            org.bukkit.event.block.TNTPrimeEvent.PrimeCause cause = switch (f.text("reason")) {
+                case "explosion" -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.EXPLOSION;
+                case "fire" -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.FIRE;
+                case "projectile" -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.PROJECTILE;
+                case "redstone" -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.REDSTONE;
+                case "dispenser" -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.DISPENSER;
+                default -> org.bukkit.event.block.TNTPrimeEvent.PrimeCause.PLAYER;
+            };
+            org.bukkit.entity.Player who = f.text("player_name").isEmpty() ? null
+                : BasaltServer.instance().playerByName(f.text("player_name"));
+            return new org.bukkit.event.block.TNTPrimeEvent(f.block(), cause, who, null);
+        });
         EventBridge.map("block.moisture_change", org.bukkit.event.block.MoistureChangeEvent.class, f -> {
             Block block = f.block();
             BlockState state = block.getState();

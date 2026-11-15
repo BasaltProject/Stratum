@@ -86,6 +86,20 @@ final class HookPlayerEvents {
                     : new com.destroystokyo.paper.event.player.PlayerRecipeBookClickEvent(f.player(), key,
                         f.flag("make_all"));
             });
+        EventBridge.map("player.take_lectern_book", org.bukkit.event.player.PlayerTakeLecternBookEvent.class, f ->
+            f.player() != null && f.block().getState() instanceof org.bukkit.block.Lectern lectern
+                ? new org.bukkit.event.player.PlayerTakeLecternBookEvent(f.player(), lectern) : null);
+        EventBridge.map("player.lectern_page", io.papermc.paper.event.player.PlayerLecternPageChangeEvent.class, f -> {
+            if (f.player() == null || !(f.block().getState() instanceof org.bukkit.block.Lectern lectern)) {
+                return null;
+            }
+            int from = (int) f.whole("old_page");
+            int to = (int) f.whole("new_page");
+            return new io.papermc.paper.event.player.PlayerLecternPageChangeEvent(f.player(), lectern,
+                lectern.getInventory().getItem(0), to < from
+                    ? io.papermc.paper.event.player.PlayerLecternPageChangeEvent.PageChangeDirection.LEFT
+                    : io.papermc.paper.event.player.PlayerLecternPageChangeEvent.PageChangeDirection.RIGHT, from, to);
+        });
         EventBridge.map("command.unknown", org.bukkit.event.command.UnknownCommandEvent.class, f -> {
             return f.player() == null ? null : new org.bukkit.event.command.UnknownCommandEvent(
                 org.basaltmc.stratum.bukkit.brigadier.BasaltCommandSourceStack.of(f.player()), f.text("command"),
