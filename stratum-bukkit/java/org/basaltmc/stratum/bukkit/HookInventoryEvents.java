@@ -3,7 +3,23 @@ package org.basaltmc.stratum.bukkit;
 final class HookInventoryEvents {
     private HookInventoryEvents() {}
 
+    private static org.bukkit.inventory.Inventory holderAt(BasaltWorld world, long x, long y, long z) {
+        return world.getBlockAt((int) x, (int) y, (int) z).getState() instanceof org.bukkit.inventory.InventoryHolder holder
+            ? holder.getInventory() : null;
+    }
+
     static void install() {
+        EventBridge.map("inventory.move_item", org.bukkit.event.inventory.InventoryMoveItemEvent.class, f -> {
+            org.bukkit.Material material = org.bukkit.Material.matchMaterial(f.text("item"));
+            BasaltWorld world = f.world();
+            if (material == null || world == null) {
+                return null;
+            }
+            org.bukkit.inventory.Inventory from = holderAt(world, f.whole("from_x"), f.whole("from_y"), f.whole("from_z"));
+            org.bukkit.inventory.Inventory to = holderAt(world, f.whole("to_x"), f.whole("to_y"), f.whole("to_z"));
+            return from == null || to == null ? null : new org.bukkit.event.inventory.InventoryMoveItemEvent(from,
+                new org.bukkit.inventory.ItemStack(material, 1), to, f.text("initiator").equals("source"));
+        });
         EventBridge.map("inventory.trade", org.bukkit.event.inventory.TradeSelectEvent.class, f -> {
             org.bukkit.entity.Player who = f.player();
             org.basaltmc.stratum.bukkit.inv.BasaltInventoryView window = who == null ? null
