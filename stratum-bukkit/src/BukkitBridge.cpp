@@ -342,6 +342,23 @@ std::vector<std::string> BukkitBridge::sampledThreads() {
     return found;
 }
 
+void BukkitBridge::collectGarbage() {
+    JNIEnv* env = shim_->env();
+    if (env == nullptr || stopping()) {
+        return;
+    }
+    JniLocalFrame frame{env};
+    if (!frame) {
+        return;
+    }
+    jclass system = env->FindClass("java/lang/System");
+    jmethodID gc = system == nullptr ? nullptr : env->GetStaticMethodID(system, "gc", "()V");
+    if (gc != nullptr) {
+        env->CallStaticVoidMethod(system, gc);
+    }
+    env->ExceptionClear();
+}
+
 bool BukkitBridge::shutdown() {
     stopping_.store(true);
     JNIEnv* env = shim_->env();

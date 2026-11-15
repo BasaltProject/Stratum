@@ -40,6 +40,9 @@ public:
     /// The Java stacks sampled while the profiler ran, one JSON object per thread.
     [[nodiscard]] std::vector<std::string> sampledThreads();
 
+    /// Runs a full Java collection, which hands the nursery and the free spans back to the allocator.
+    void collectGarbage();
+
     [[nodiscard]] server::plugins::PluginHost& plugins() noexcept { return *plugins_; }
 
     [[nodiscard]] server::plugins::PluginServices& services() noexcept { return plugins_->services(); }

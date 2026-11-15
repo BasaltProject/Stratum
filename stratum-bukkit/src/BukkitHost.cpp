@@ -47,6 +47,8 @@ std::vector<BukkitHost::PluginState> BukkitHost::plugins() const { return bridge
 
 std::vector<std::string> BukkitHost::sampledThreads() const { return bridge_->sampledThreads(); }
 
+void BukkitHost::collectGarbage() const { bridge_->collectGarbage(); }
+
 void BukkitHost::stop() {
     if (stopped_ || bridge_ == nullptr) {
         return;

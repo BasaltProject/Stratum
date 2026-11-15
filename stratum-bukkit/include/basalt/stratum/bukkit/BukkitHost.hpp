@@ -52,6 +52,9 @@ public:
     /// What sampling Java stacks found while the profiler ran: one JSON object per thread, in the report's own shape.
     [[nodiscard]] std::vector<std::string> sampledThreads() const;
 
+    /// A full Java collection, for a moment when nobody is playing and its pause costs nothing.
+    void collectGarbage() const;
+
     void stop();
 
 private:
