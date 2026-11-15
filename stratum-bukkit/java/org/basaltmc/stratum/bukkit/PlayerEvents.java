@@ -196,6 +196,28 @@ final class PlayerEvents {
             return who == null || f.flag("entering") ? null
                 : new org.bukkit.event.player.PlayerBedLeaveEvent(who, f.block(), true);
         });
+        EventBridge.map("player.spawn_change", org.bukkit.event.player.PlayerSpawnChangeEvent.class, f -> {
+            Player who = f.player();
+            return who == null || f.world() == null ? null : new org.bukkit.event.player.PlayerSpawnChangeEvent(who,
+                f.location().add(0.5, 0.0, 0.5), true, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED);
+        });
+        EventBridge.map("player.harvest_block", org.bukkit.event.player.PlayerHarvestBlockEvent.class, f -> {
+            Player who = f.player();
+            org.bukkit.Material material = org.bukkit.Material.matchMaterial(f.text("item"));
+            if (who == null || material == null || f.world() == null) {
+                return null;
+            }
+            java.util.List<org.bukkit.inventory.ItemStack> items = new java.util.ArrayList<>();
+            items.add(new org.bukkit.inventory.ItemStack(material, (int) Math.max(1, f.whole("count"))));
+            return new org.bukkit.event.player.PlayerHarvestBlockEvent(who, f.block(),
+                org.bukkit.inventory.EquipmentSlot.HAND, items);
+        }, (e, f) -> {
+            long total = 0;
+            for (org.bukkit.inventory.ItemStack stack : ((org.bukkit.event.player.PlayerHarvestBlockEvent) e).getItemsHarvested()) {
+                total += stack == null ? 0 : stack.getAmount();
+            }
+            f.put("count", total);
+        });
         EventBridge.map("player.portal", org.bukkit.event.player.PlayerPortalEvent.class, f -> {
             Player who = f.player();
             if (who == null) {

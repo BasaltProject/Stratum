@@ -16,6 +16,27 @@ final class HookEntityEvents {
         return world == null ? null : world.entity((int) f.whole(field));
     }
 
+    private static io.papermc.paper.event.entity.EntityKnockbackEvent.Cause knockCause(EventBridge.Fields f) {
+        return f.text("cause").equals("entity_attack") ? io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.ENTITY_ATTACK
+            : io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.DAMAGE;
+    }
+
+    private static org.bukkit.util.Vector pushOf(EventBridge.Fields f) {
+        double length = Math.hypot(f.real("dir_x"), f.real("dir_z"));
+        double scale = length == 0.0 ? 0.0 : f.real("power") / length;
+        return new org.bukkit.util.Vector(-f.real("dir_x") * scale, 0.0, -f.real("dir_z") * scale);
+    }
+
+    private static void pushBack(org.bukkit.event.Event e, EventBridge.Fields f) {
+        org.bukkit.util.Vector push = ((io.papermc.paper.event.entity.EntityKnockbackEvent) e).getKnockback();
+        double length = Math.hypot(push.getX(), push.getZ());
+        f.put("power", length);
+        if (length > 0.0) {
+            f.put("dir_x", -push.getX());
+            f.put("dir_z", -push.getZ());
+        }
+    }
+
     static void install() {
         EventBridge.map("entity.move", io.papermc.paper.event.entity.EntityMoveEvent.class, f -> {
             BasaltWorld world = f.world();
@@ -189,6 +210,19 @@ final class HookEntityEvents {
                 f.put("to_z", to.getZ());
             }
         });
+        EventBridge.map("entity.knockback", io.papermc.paper.event.entity.EntityKnockbackEvent.class, f -> {
+            Entity who = f.entity();
+            return who == null || f.whole("source_id") >= 0 ? null
+                : new io.papermc.paper.event.entity.EntityKnockbackEvent(who, knockCause(f), pushOf(f));
+        }, HookEntityEvents::pushBack);
+        EventBridge.map("entity.knockback", com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent.class, f -> {
+            Entity who = f.entity();
+            Entity hitBy = f.whole("source_id") < 0 ? null
+                : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
+            return !(who instanceof org.bukkit.entity.LivingEntity living) || hitBy == null ? null
+                : new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(living, hitBy, knockCause(f),
+                    (float) f.real("power"), pushOf(f));
+        }, HookEntityEvents::pushBack);
         EventBridge.map("entity.drop_item", org.bukkit.event.entity.EntityDropItemEvent.class, f -> {
             Entity who = f.entity();
             return who == null || !(entityAt(f, "item_id") instanceof Item dropped) ? null

@@ -253,8 +253,10 @@ final class EntityEvents {
             f.put("ticks", (long) Math.max(0, Math.round(((EntityCombustEvent) e).getDuration() * 20.0f)));
         EventBridge.map("entity.combust", EntityCombustEvent.class, f -> {
             Entity burning = f.entity();
-            return burning == null || !f.text("source_kind").isEmpty() ? null
-                : new EntityCombustEvent(burning, f.whole("ticks") / 20.0f);
+            boolean named = f.text("source_kind").equals("block")
+                || f.text("source_kind").equals("entity")
+                    && BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id")) != null;
+            return burning == null || named ? null : new EntityCombustEvent(burning, f.whole("ticks") / 20.0f);
         }, burned);
         EventBridge.map("entity.combust", org.bukkit.event.entity.EntityCombustByBlockEvent.class, f -> {
             Entity burning = f.entity();
