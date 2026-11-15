@@ -42,6 +42,91 @@ public class CrafterBlockEntity extends RandomizableContainerBlockEntity {
         return false;
     }
 
+    public void setSlotState(int slotId, boolean enabled) {
+        if (!slotCanBeDisabled(slotId)) {
+            return;
+        }
+        java.util.List<Integer> disabled = new java.util.ArrayList<>();
+        for (int i = 0; i < CONTAINER_SIZE; i++) {
+            if (i == slotId ? !enabled : isSlotDisabled(i)) {
+                disabled.add(i);
+            }
+        }
+        CompoundTag tag = nbt();
+        tag.putIntArray("disabled_slots", disabled.stream().mapToInt(Integer::intValue).toArray());
+        load(tag);
+    }
+
+    private boolean slotCanBeDisabled(int slotId) {
+        return slotId > -1 && slotId < CONTAINER_SIZE && getItem(slotId).isEmpty();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack itemStack) {
+        if (isSlotDisabled(slot)) {
+            return false;
+        }
+        ItemStack present = getItem(slot);
+        int size = present.getCount();
+        if (size >= present.getMaxStackSize()) {
+            return false;
+        }
+        if (present.isEmpty()) {
+            return true;
+        }
+        for (int i = slot + 1; i < CONTAINER_SIZE; i++) {
+            if (!isSlotDisabled(i)) {
+                ItemStack other = getItem(i);
+                if (other.isEmpty() || other.getCount() < size && ItemStack.isSameItemSameComponents(other, present)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack itemStack) {
+        if (isSlotDisabled(slot)) {
+            setSlotState(slot, true);
+        }
+        super.setItem(slot, itemStack);
+    }
+
+    public int getWidth() {
+        return CONTAINER_WIDTH;
+    }
+
+    public int getHeight() {
+        return CONTAINER_HEIGHT;
+    }
+
+    public void setTriggered(boolean value) {
+        CompoundTag tag = nbt();
+        tag.putInt("triggered", value ? 1 : 0);
+        load(tag);
+    }
+
+    public boolean isTriggered() {
+        return nbt().getIntOr("triggered", 0) == 1;
+    }
+
+    public void setCraftingTicksRemaining(int maxCraftingTicks) {
+        CompoundTag tag = nbt();
+        tag.putInt("crafting_ticks_remaining", maxCraftingTicks);
+        load(tag);
+    }
+
+    public int getRedstoneSignal() {
+        int count = 0;
+        for (int i = 0; i < getContainerSize(); i++) {
+            if (!getItem(i).isEmpty() || isSlotDisabled(i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     @Override
     public int getContainerSize() {
         return 9;

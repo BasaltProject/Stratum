@@ -84,6 +84,10 @@ public class ItemEntity extends Entity implements TraceableEntity {
         return item == null ? ItemStack.EMPTY : org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(item.getItemStack());
     }
     public void setItem(ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            discard();
+            return;
+        }
         if (live() instanceof org.bukkit.entity.Item item) {
             item.setItemStack(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));
         }

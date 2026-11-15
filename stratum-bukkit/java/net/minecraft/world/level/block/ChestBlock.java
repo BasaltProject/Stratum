@@ -38,4 +38,25 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
         Direction facing = state.getValue(FACING);
         return state.getValue(TYPE) == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise();
     }
+
+    public static net.minecraft.world.Container getContainer(ChestBlock chest, BlockState state, net.minecraft.world.level.Level level,
+            BlockPos pos, boolean ignoreBeingBlocked) {
+        if (!(level.getBlockEntity(pos) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity own)) {
+            return null;
+        }
+        ChestType type = state.getValue(TYPE);
+        if (type == ChestType.SINGLE) {
+            return own;
+        }
+        BlockState neighbour = level.getBlockState(getConnectedBlockPos(pos, state));
+        if (!neighbour.is(state.getBlock()) || neighbour.getValue(TYPE) == ChestType.SINGLE || neighbour.getValue(TYPE) == type
+            || neighbour.getValue(FACING) != state.getValue(FACING)) {
+            return own;
+        }
+        if (level.getBlockEntity(getConnectedBlockPos(pos, state)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity other) {
+            return type == ChestType.RIGHT ? new net.minecraft.world.CompoundContainer(own, other)
+                : new net.minecraft.world.CompoundContainer(other, own);
+        }
+        return own;
+    }
 }

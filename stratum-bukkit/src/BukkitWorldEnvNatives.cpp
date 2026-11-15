@@ -136,6 +136,20 @@ jstring JNICALL nativeCreakingHeart(JNIEnv* env, jclass, jstring world, jstring 
     return answer.empty() ? nullptr : env->NewStringUTF(answer.c_str());
 }
 
+jint JNICALL nativeHive(JNIEnv* env, jclass, jstring world, jstring action, jint x, jint y, jint z, jint entityId,
+                        jstring player) {
+    const auto found = envWorldOf(env, world);
+    if (found == nullptr) {
+        return -1;
+    }
+    const std::string what = toStd(env, action);
+    const std::string who = player == nullptr ? std::string{} : toStd(env, player);
+    return jni::onServer<jint>(-1, [&] {
+        PluginWorldEnv* target = found->env();
+        return target == nullptr ? -1 : target->hive(what, x, y, z, entityId, who);
+    });
+}
+
 jdoubleArray JNICALL nativeBorder(JNIEnv* env, jclass, jstring world) {
     const auto found = envWorldOf(env, world);
     if (found == nullptr) {
@@ -374,6 +388,8 @@ void registerWorldEnvNatives(JNIEnv* env, jclass natives) {
         method("blockEvent", "(Ljava/lang/String;IIIII)V", reinterpret_cast<void*>(&nativeBlockEvent)),
         method("creakingHeart", "(Ljava/lang/String;Ljava/lang/String;III)Ljava/lang/String;",
                reinterpret_cast<void*>(&nativeCreakingHeart)),
+        method("hive", "(Ljava/lang/String;Ljava/lang/String;IIIILjava/lang/String;)I",
+               reinterpret_cast<void*>(&nativeHive)),
         method("sculk", "(Ljava/lang/String;Ljava/lang/String;IIIIIIILjava/lang/String;)Z",
                reinterpret_cast<void*>(&nativeSculk)),
         method("border", "(Ljava/lang/String;)[D", reinterpret_cast<void*>(&nativeBorder)),

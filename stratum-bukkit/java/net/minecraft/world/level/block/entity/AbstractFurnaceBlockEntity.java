@@ -114,6 +114,64 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit
         }
     };
 
+    private static final String kRecipesUsedKey = "RecipesUsed";
+
+    public void setRecipeUsed(net.minecraft.world.item.crafting.RecipeHolder<?> recipeUsed) {
+        if (recipeUsed == null) {
+            return;
+        }
+        CompoundTag tag = nbt();
+        CompoundTag used = tag.getCompoundOrEmpty(kRecipesUsedKey);
+        String key = recipeUsed.id().identifier().toString();
+        used.putInt(key, used.getIntOr(key, 0) + 1);
+        tag.put(kRecipesUsedKey, used);
+        load(tag);
+    }
+
+    public net.minecraft.world.item.crafting.RecipeHolder<?> getRecipeUsed() {
+        return null;
+    }
+
+    public void awardUsedRecipes(Player player, java.util.List<ItemStack> itemStacks) {
+    }
+
+    public void awardUsedRecipesAndPopExperience(net.minecraft.server.level.ServerPlayer player) {
+        java.util.List<net.minecraft.world.item.crafting.RecipeHolder<?>> recipes =
+            getRecipesToAwardAndPopExperience(player.level(), player.position());
+        player.awardRecipes(recipes);
+        for (net.minecraft.world.item.crafting.RecipeHolder<?> recipe : recipes) {
+            player.triggerRecipeCrafted(recipe, getItems());
+        }
+        CompoundTag tag = nbt();
+        tag.put(kRecipesUsedKey, new CompoundTag());
+        load(tag);
+    }
+
+    public java.util.List<net.minecraft.world.item.crafting.RecipeHolder<?>> getRecipesToAwardAndPopExperience(ServerLevel level,
+            net.minecraft.world.phys.Vec3 position) {
+        java.util.List<net.minecraft.world.item.crafting.RecipeHolder<?>> awarded = new java.util.ArrayList<>();
+        CompoundTag used = nbt().getCompoundOrEmpty(kRecipesUsedKey);
+        for (String key : used.keySet()) {
+            int amount = used.getIntOr(key, 0);
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> id = (net.minecraft.resources.ResourceKey) net.minecraft.resources.ResourceKey.create(
+                (net.minecraft.resources.ResourceKey) net.minecraft.core.registries.Registries.RECIPE, net.minecraft.resources.Identifier.parse(key));
+            level.recipeAccess().byKey(id).ifPresent(recipe -> {
+                awarded.add(recipe);
+                org.bukkit.inventory.Recipe cooking = org.basaltmc.stratum.bukkit.recipe.Recipes.get(org.bukkit.NamespacedKey.fromString(key));
+                float experience = cooking instanceof org.bukkit.inventory.CookingRecipe<?> each ? each.getExperience() : 0.0F;
+                float total = amount * experience;
+                int reward = net.minecraft.util.Mth.floor(total);
+                float fraction = net.minecraft.util.Mth.frac(total);
+                if (fraction != 0.0F && level.getRandom().nextFloat() < fraction) {
+                    reward++;
+                }
+                net.minecraft.world.entity.ExperienceOrb.award(level, position, reward);
+            });
+        }
+        return awarded;
+    }
+
     protected abstract AbstractContainerMenu createFurnaceMenu(int containerId, Inventory inventory);
 
     @Override

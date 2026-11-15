@@ -46,10 +46,56 @@ public class BeehiveBlockEntity extends BlockEntity {
     }
 
     public void emptyAllLivingFromHive(Player player, BeeReleaseStatus releaseStatus) {
-        org.bukkit.block.Beehive hive = bukkit(org.bukkit.block.Beehive.class);
-        if (hive != null) {
-            hive.releaseEntities();
+        emptyAllLivingFromHive(player, getBlockState(), releaseStatus);
+    }
+
+    public void emptyAllLivingFromHive(Player player, BlockState state, BeeReleaseStatus releaseReason) {
+        if (getLevel() instanceof ServerLevel server) {
+            BlockPos at = getBlockPos();
+            String action = releaseReason == BeeReleaseStatus.HONEY_DELIVERED ? "honey"
+                : releaseReason == BeeReleaseStatus.BEE_RELEASED ? "bee" : "emergency";
+            org.basaltmc.stratum.bukkit.WorldEnvNatives.hive(server.getWorld().getName(), action, at.getX(), at.getY(), at.getZ(), 0,
+                player == null ? null : player.getUUID().toString());
         }
+    }
+
+    public boolean isFireNearby() {
+        if (getLevel() == null) {
+            return false;
+        }
+        for (BlockPos near : BlockPos.betweenClosed(getBlockPos().getX() - 1, getBlockPos().getY() - 1, getBlockPos().getZ() - 1,
+            getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1)) {
+            if (getLevel().getBlockState(near).is(net.minecraft.world.level.block.Blocks.FIRE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addOccupant(Bee bee) {
+        if (getOccupantCount() >= MAX_OCCUPANTS || !(getLevel() instanceof ServerLevel server)) {
+            return;
+        }
+        bee.stopRiding();
+        bee.ejectPassengers();
+        bee.dropLeash();
+        BlockPos at = getBlockPos();
+        org.basaltmc.stratum.bukkit.WorldEnvNatives.hive(server.getWorld().getName(), "enter", at.getX(), at.getY(), at.getZ(),
+            bee.getId(), null);
+    }
+
+    public void storeBee(Occupant occupant) {
+        CompoundTag entry = new CompoundTag();
+        CompoundTag data = occupant.entityData().copyTagWithoutId();
+        data.putString("id", net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(occupant.entityData().type()).toString());
+        entry.put("entity_data", data);
+        entry.putInt("ticks_in_hive", occupant.ticksInHive());
+        entry.putInt("min_ticks_in_hive", occupant.minTicksInHive());
+        CompoundTag tag = nbt();
+        net.minecraft.nbt.ListTag bees = tag.getListOrEmpty("bees");
+        bees.add(entry);
+        tag.put("bees", bees);
+        load(tag);
     }
 
     public int getHoneyLevel() {
@@ -110,7 +156,7 @@ public class BeehiveBlockEntity extends BlockEntity {
             for (String ignored : kIgnoredBeeTags) {
                 tag.remove(ignored);
             }
-            return new Occupant(TypedEntityData.of(entity.getType(), tag), 0, kMinTicksInHive);
+            return new Occupant(TypedEntityData.of(entity.getType(), tag), 0, tag.getBooleanOr("HasNectar", false) ? 2400 : kMinTicksInHive);
         }
         public static Occupant create(int ticksInHive) {
             return new Occupant(TypedEntityData.<EntityType<?>>of(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getValue(net.minecraft.resources.Identifier.withDefaultNamespace("bee")), new CompoundTag()), ticksInHive, kMinTicksInHive);
@@ -128,6 +174,15 @@ public class BeehiveBlockEntity extends BlockEntity {
             entity.setNoGravity(true);
             if (entity instanceof net.minecraft.world.entity.animal.bee.Bee bee) {
                 bee.setHivePos(hivePos);
+                if (!bee.isAgeLocked()) {
+                    int age = bee.getAge();
+                    if (age < 0) {
+                        bee.setAge(Math.min(0, age + ticksInHive));
+                    } else if (age > 0) {
+                        bee.setAge(Math.max(0, age - ticksInHive));
+                    }
+                }
+                bee.setInLoveTime(Math.max(0, bee.getInLoveTime() - ticksInHive));
             }
             return entity;
         }

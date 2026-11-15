@@ -17,6 +17,7 @@ public final class WorldEnvNatives {
 
     /** The uuid of the new creaking, or "x,y,z" of the new clump; null when nothing happened. */
     public static native String creakingHeart(String world, String action, int x, int y, int z);
+    public static native int hive(String world, String action, int x, int y, int z, int entityId, String player);
 
     /** Title JSON, color, style, flags, progress, visible and the viewers' entity ids; null for a raid that ended. */
     public static native String[] raidBar(String world, int id);
