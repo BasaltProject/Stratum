@@ -51,6 +51,11 @@ final class PlayerEvents {
         }
     }
 
+    private static void writeBucketEntity(org.bukkit.event.Event e, EventBridge.Fields f) {
+        ItemStack filled = ((org.bukkit.event.player.PlayerBucketEntityEvent) e).getEntityBucket();
+        f.put("item", filled.getType().getKey().toString());
+    }
+
     static ItemStack stackOf(String id, long count) {
         Material material = id.isEmpty() ? null : Material.matchMaterial(id);
         return material == null || material.isAir() ? null : new ItemStack(material, (int) Math.max(1, count));
@@ -186,6 +191,26 @@ final class PlayerEvents {
                     block.getRelative(face.getOppositeFace()),
                 face, held.getType(), held, EquipmentSlot.HAND);
         });
+        EventBridge.map("player.bucket_entity", org.bukkit.event.player.PlayerBucketEntityEvent.class, f -> {
+            org.bukkit.entity.Entity mob = f.entity();
+            Player who = f.player();
+            ItemStack original = stackOf(f.text("original_item"), 1);
+            ItemStack filled = stackOf(f.text("item"), 1);
+            if (who == null || mob == null || original == null || filled == null
+                || mob instanceof org.bukkit.entity.Fish) {
+                return null;
+            }
+            return new org.bukkit.event.player.PlayerBucketEntityEvent(who, mob, original, filled,
+                hand(f.text("hand")));
+        }, PlayerEvents::writeBucketEntity);
+        EventBridge.map("player.bucket_entity", org.bukkit.event.player.PlayerBucketFishEvent.class, f -> {
+            Player who = f.player();
+            ItemStack original = stackOf(f.text("original_item"), 1);
+            ItemStack filled = stackOf(f.text("item"), 1);
+            return who != null && original != null && filled != null && f.entity() instanceof org.bukkit.entity.Fish fish
+                ? new org.bukkit.event.player.PlayerBucketFishEvent(who, fish, original, filled, hand(f.text("hand")))
+                : null;
+        }, PlayerEvents::writeBucketEntity);
         EventBridge.map("player.bed", org.bukkit.event.player.PlayerBedEnterEvent.class, f -> {
             Player who = f.player();
             return who == null || !f.flag("entering") ? null : new org.bukkit.event.player.PlayerBedEnterEvent(who,
