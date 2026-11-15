@@ -17,24 +17,25 @@ final class HookEntityEvents {
     }
 
     private static io.papermc.paper.event.entity.EntityKnockbackEvent.Cause knockCause(EventBridge.Fields f) {
-        return f.text("cause").equals("entity_attack") ? io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.ENTITY_ATTACK
-            : io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.DAMAGE;
+        return switch (f.text("cause")) {
+            case "entity_attack" -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.ENTITY_ATTACK;
+            case "explosion" -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.EXPLOSION;
+            case "shield_block" -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.SHIELD_BLOCK;
+            case "sweep_attack" -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.SWEEP_ATTACK;
+            case "push" -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.PUSH;
+            default -> io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.DAMAGE;
+        };
     }
 
     private static org.bukkit.util.Vector pushOf(EventBridge.Fields f) {
-        double length = Math.hypot(f.real("dir_x"), f.real("dir_z"));
-        double scale = length == 0.0 ? 0.0 : f.real("power") / length;
-        return new org.bukkit.util.Vector(-f.real("dir_x") * scale, 0.0, -f.real("dir_z") * scale);
+        return new org.bukkit.util.Vector(f.real("kx"), f.real("ky"), f.real("kz"));
     }
 
     private static void pushBack(org.bukkit.event.Event e, EventBridge.Fields f) {
         org.bukkit.util.Vector push = ((io.papermc.paper.event.entity.EntityKnockbackEvent) e).getKnockback();
-        double length = Math.hypot(push.getX(), push.getZ());
-        f.put("power", length);
-        if (length > 0.0) {
-            f.put("dir_x", -push.getX());
-            f.put("dir_z", -push.getZ());
-        }
+        f.put("kx", push.getX());
+        f.put("ky", push.getY());
+        f.put("kz", push.getZ());
     }
 
     static void install() {
@@ -215,9 +216,16 @@ final class HookEntityEvents {
             return who == null || f.whole("source_id") >= 0 ? null
                 : new io.papermc.paper.event.entity.EntityKnockbackEvent(who, knockCause(f), pushOf(f));
         }, HookEntityEvents::pushBack);
+        EventBridge.map("entity.knockback", io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent.class, f -> {
+            Entity who = f.entity();
+            Entity pusher = f.whole("source_id") < 0 || !f.text("cause").equals("push") ? null
+                : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
+            return who == null || pusher == null ? null
+                : new io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent(who, knockCause(f), pusher, pushOf(f));
+        }, HookEntityEvents::pushBack);
         EventBridge.map("entity.knockback", com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent.class, f -> {
             Entity who = f.entity();
-            Entity hitBy = f.whole("source_id") < 0 ? null
+            Entity hitBy = f.whole("source_id") < 0 || f.text("cause").equals("push") ? null
                 : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
             return !(who instanceof org.bukkit.entity.LivingEntity living) || hitBy == null ? null
                 : new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(living, hitBy, knockCause(f),

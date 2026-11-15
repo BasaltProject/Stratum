@@ -223,8 +223,22 @@ final class PlayerEvents {
         });
         EventBridge.map("player.spawn_change", org.bukkit.event.player.PlayerSpawnChangeEvent.class, f -> {
             Player who = f.player();
+            org.bukkit.event.player.PlayerSpawnChangeEvent.Cause cause = switch (f.text("cause")) {
+                case "command" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.COMMAND;
+                case "respawn_anchor" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.RESPAWN_ANCHOR;
+                case "plugin" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.PLUGIN;
+                default -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED;
+            };
             return who == null || f.world() == null ? null : new org.bukkit.event.player.PlayerSpawnChangeEvent(who,
-                f.location().add(0.5, 0.0, 0.5), true, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED);
+                f.location().add(0.5, 0.0, 0.5), cause == org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.COMMAND,
+                cause);
+        }, (e, f) -> {
+            org.bukkit.Location moved = ((org.bukkit.event.player.PlayerSpawnChangeEvent) e).getNewSpawn();
+            if (moved != null) {
+                f.put("x", (long) Math.floor(moved.getX()));
+                f.put("y", (long) Math.floor(moved.getY()));
+                f.put("z", (long) Math.floor(moved.getZ()));
+            }
         });
         EventBridge.map("player.harvest_block", org.bukkit.event.player.PlayerHarvestBlockEvent.class, f -> {
             Player who = f.player();
