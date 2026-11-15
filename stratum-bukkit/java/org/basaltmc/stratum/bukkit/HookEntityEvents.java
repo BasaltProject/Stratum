@@ -27,6 +27,10 @@ final class HookEntityEvents {
         };
     }
 
+    private static Entity knockSource(EventBridge.Fields f) {
+        return f.whole("source_id") < 0 ? null : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
+    }
+
     private static org.bukkit.util.Vector pushOf(EventBridge.Fields f) {
         return new org.bukkit.util.Vector(f.real("kx"), f.real("ky"), f.real("kz"));
     }
@@ -213,20 +217,18 @@ final class HookEntityEvents {
         });
         EventBridge.map("entity.knockback", io.papermc.paper.event.entity.EntityKnockbackEvent.class, f -> {
             Entity who = f.entity();
-            return who == null || f.whole("source_id") >= 0 ? null
+            return who == null || knockSource(f) != null ? null
                 : new io.papermc.paper.event.entity.EntityKnockbackEvent(who, knockCause(f), pushOf(f));
         }, HookEntityEvents::pushBack);
         EventBridge.map("entity.knockback", io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent.class, f -> {
             Entity who = f.entity();
-            Entity pusher = f.whole("source_id") < 0 || !f.text("cause").equals("push") ? null
-                : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
+            Entity pusher = f.text("cause").equals("push") ? knockSource(f) : null;
             return who == null || pusher == null ? null
                 : new io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent(who, knockCause(f), pusher, pushOf(f));
         }, HookEntityEvents::pushBack);
         EventBridge.map("entity.knockback", com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent.class, f -> {
             Entity who = f.entity();
-            Entity hitBy = f.whole("source_id") < 0 || f.text("cause").equals("push") ? null
-                : BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id"));
+            Entity hitBy = f.text("cause").equals("push") ? null : knockSource(f);
             return !(who instanceof org.bukkit.entity.LivingEntity living) || hitBy == null ? null
                 : new com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent(living, hitBy, knockCause(f),
                     (float) f.real("power"), pushOf(f));
