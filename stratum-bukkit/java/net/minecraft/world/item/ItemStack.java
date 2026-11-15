@@ -212,7 +212,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         this((Item) null, 0);
     }
     public boolean isItemEnabled(FeatureFlagSet enabledFeatures) {
-        return true;
+        return isEmpty() || getItem().isEnabled(enabledFeatures);
     }
     public ItemStack split(int amount) {
         int taken = Math.min(amount, getCount());
@@ -510,7 +510,8 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return;
     }
     public boolean hasFoil() {
-        return false;
+        Boolean glintOverride = get(DataComponents.ENCHANTMENT_GLINT_OVERRIDE);
+        return glintOverride != null ? glintOverride : getItem().isFoil(this);
     }
     public Rarity getRarity() {
         return Rarity.COMMON;

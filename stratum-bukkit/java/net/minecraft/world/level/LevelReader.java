@@ -185,7 +185,7 @@ public interface LevelReader extends BlockAndLightGetter, CollisionGetter, Signa
     }
     RegistryAccess registryAccess();
     default FeatureFlagSet enabledFeatures() {
-        return net.minecraft.world.flag.FeatureFlagSet.of();
+        return net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS;
     }
     default <T> HolderLookup<T> holderLookup(ResourceKey<? extends Registry<? extends T>> key) {
         return registryAccess().lookupOrThrow(key);

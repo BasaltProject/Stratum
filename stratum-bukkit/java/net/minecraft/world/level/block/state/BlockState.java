@@ -124,16 +124,21 @@ public class BlockState extends BlockBehaviour.BlockStateBase {
         return kReactions[(int) found[3]];
     }
 
+    private boolean trait(int index) {
+        double[] found = WorldNatives.blockInfo(stateId());
+        return found != null && found.length > index && found[index] != 0.0;
+    }
+
     public boolean isSignalSource() {
-        return false;
+        return trait(9);
     }
 
     public boolean ignitedByLava() {
-        return false;
+        return trait(8);
     }
 
     public boolean hasAnalogOutputSignal() {
-        return false;
+        return trait(10);
     }
 
     public net.minecraft.world.level.material.MapColor getMapColor(BlockGetter level, BlockPos pos) {

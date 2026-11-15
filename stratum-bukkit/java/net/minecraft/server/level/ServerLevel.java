@@ -304,7 +304,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
         return registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE).get(ResourceKey.create(Registries.DIMENSION_TYPE, Identifier.withDefaultNamespace(type))).orElseThrow();
     }
     public FeatureFlagSet enabledFeatures() {
-        return FeatureFlagSet.of();
+        return net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS;
     }
     private BiomeManager kBiomeManager;
     public BiomeManager getBiomeManager() {
@@ -617,7 +617,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
         return false;
     }
     public boolean canSleepThroughNights() {
-        return true;
+        return getGameRules().get(net.minecraft.world.level.gamerules.GameRules.PLAYERS_SLEEPING_PERCENTAGE) <= 100;
     }
     public void updateSleepingPlayerList() {
 
@@ -1100,10 +1100,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
         return world.getPVP();
     }
     public boolean isCommandBlockEnabled() {
-        return true;
+        return getGameRules().get(net.minecraft.world.level.gamerules.GameRules.COMMAND_BLOCKS_WORK);
     }
     public boolean isSpawnerBlockEnabled() {
-        return true;
+        return getGameRules().get(net.minecraft.world.level.gamerules.GameRules.SPAWNER_BLOCKS_WORK);
     }
     final class EntityCallbacks implements LevelCallback<Entity> {
         private EntityCallbacks() {

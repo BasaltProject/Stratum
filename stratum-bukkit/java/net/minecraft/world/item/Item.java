@@ -129,7 +129,7 @@ public class Item implements ItemLike, FeatureElement {
         return context.getItemInHand().useOn(context);
     }
     public float getDestroySpeed(ItemStack itemStack, BlockState state) {
-        return 1.0F;
+        return itemStack.getDestroySpeed(state);
     }
     public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity entity) {
         return itemStack;
@@ -165,7 +165,7 @@ public class Item implements ItemLike, FeatureElement {
         return false;
     }
     public boolean isCorrectToolForDrops(ItemStack itemStack, BlockState state) {
-        return false;
+        return itemStack.isCorrectToolForDrops(state);
     }
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player player, LivingEntity target, InteractionHand type) {
         return InteractionResult.PASS;
@@ -223,7 +223,7 @@ public class Item implements ItemLike, FeatureElement {
         return Component.translatable(getDescriptionId());
     }
     public boolean isFoil(ItemStack itemStack) {
-        return false;
+        return itemStack.isEnchanted();
     }
     protected static BlockHitResult getPlayerPOVHitResult(Level level, Player player, ClipContext.Fluid fluid) {
         net.minecraft.world.phys.Vec3 eye = player.getEyePosition();

@@ -328,7 +328,7 @@ public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCo
 
     @Override
     public FeatureFlagSet enabledFeatures() {
-        return FeatureFlagSet.of();
+        return net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS;
     }
 
     @Override
