@@ -53,4 +53,33 @@ public class LecternBlockEntity extends BlockEntity implements net.minecraft.wor
         return new net.minecraft.world.inventory.LecternMenu(containerId, new net.minecraft.world.SimpleContainer(1),
             new net.minecraft.world.inventory.SimpleContainerData(1));
     }
+
+    public void setBook(ItemStack book) {
+        setBook(book, null);
+    }
+
+    public void setBook(ItemStack book, Player resolutionContext) {
+        TileNbt.update(this, tag -> {
+            tag.remove("Book");
+            if (!book.isEmpty()) {
+                ItemStack.OPTIONAL_CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, book).result().ifPresent(encoded -> tag.put("Book", encoded));
+            }
+            tag.putInt("Page", 0);
+        });
+    }
+
+    private static int pageCount(ItemStack book) {
+        net.minecraft.world.item.component.WrittenBookContent written = book.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
+        if (written != null) {
+            return written.pages().size();
+        }
+        net.minecraft.world.item.component.WritableBookContent writable = book.get(net.minecraft.core.component.DataComponents.WRITABLE_BOOK_CONTENT);
+        return writable != null ? writable.pages().size() : 0;
+    }
+
+    public int getRedstoneSignal() {
+        int pages = pageCount(getBook());
+        float progress = pages > 1 ? (float) getPage() / ((float) pages - 1.0F) : 1.0F;
+        return net.minecraft.util.Mth.floor(progress * 14.0F) + (hasBook() ? 1 : 0);
+    }
 }

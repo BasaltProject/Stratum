@@ -1,12 +1,15 @@
 // Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
 package net.minecraft.world.level.block;
 
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WallHangingSignBlock extends SignBlock {
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     protected WallHangingSignBlock(int index) {
         super(index);
     }

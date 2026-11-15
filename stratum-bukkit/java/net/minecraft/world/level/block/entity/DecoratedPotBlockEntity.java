@@ -38,8 +38,37 @@ public class DecoratedPotBlockEntity extends BlockEntity {
         return ItemStack.OPTIONAL_CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, nbt().getCompoundOrEmpty("item")).result().orElse(ItemStack.EMPTY);
     }
 
+    public long wobbleStartedAtTick;
+    public WobbleStyle lastWobbleStyle;
+    public net.minecraft.core.Direction getDirection() {
+        return getBlockState().getValue(net.minecraft.world.level.block.DecoratedPotBlock.HORIZONTAL_FACING);
+    }
+    public PotDecorations getDecorations() {
+        net.minecraft.nbt.Tag stored = nbt().get("sherds");
+        return stored == null ? PotDecorations.EMPTY : PotDecorations.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, stored).result().orElse(PotDecorations.EMPTY);
+    }
+    public BlockEntity getContainerBlockEntity() {
+        return this;
+    }
+    public void wobble(WobbleStyle wobbleStyle) {
+        if (getLevel() != null && !getLevel().isClientSide()) {
+            getLevel().blockEvent(getBlockPos(), getBlockState().getBlock(), 1, wobbleStyle.ordinal());
+        }
+    }
+    @Override
+    public boolean triggerEvent(int event, int data) {
+        if (getLevel() != null && event == 1 && data >= 0 && data < WobbleStyle.values().length) {
+            wobbleStartedAtTick = getLevel().getGameTime();
+            lastWobbleStyle = WobbleStyle.values()[data];
+            return true;
+        }
+        return super.triggerEvent(event, data);
+    }
     public static enum WobbleStyle {
-        POSITIVE, NEGATIVE;
-        public final int duration = 0;
+        POSITIVE(7), NEGATIVE(10);
+        public final int duration;
+        private WobbleStyle(int duration) {
+            this.duration = duration;
+        }
     }
 }

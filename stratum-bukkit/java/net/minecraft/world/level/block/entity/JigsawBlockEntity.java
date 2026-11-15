@@ -35,8 +35,38 @@ public class JigsawBlockEntity extends BlockEntity {
         return net.minecraft.resources.Identifier.parse(nbt().getStringOr("target", "minecraft:empty"));
     }
 
-    public net.minecraft.resources.Identifier getPool() {
-        return net.minecraft.resources.Identifier.parse(nbt().getStringOr("pool", "minecraft:empty"));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool> getPool() {
+        return (net.minecraft.resources.ResourceKey) net.minecraft.resources.ResourceKey.create(
+            (net.minecraft.resources.ResourceKey) net.minecraft.core.registries.Registries.TEMPLATE_POOL,
+            net.minecraft.resources.Identifier.parse(nbt().getStringOr("pool", "minecraft:empty")));
+    }
+    public int getPlacementPriority() {
+        return nbt().getIntOr("placement_priority", 0);
+    }
+    public int getSelectionPriority() {
+        return nbt().getIntOr("selection_priority", 0);
+    }
+    public void setName(net.minecraft.resources.Identifier name) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putString("name", name.toString()));
+    }
+    public void setTarget(net.minecraft.resources.Identifier target) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putString("target", target.toString()));
+    }
+    public void setPool(net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool> pool) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putString("pool", pool.identifier().toString()));
+    }
+    public void setFinalState(String finalState) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putString("final_state", finalState));
+    }
+    public void setJoint(JointType joint) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putString("joint", joint.getSerializedName()));
+    }
+    public void setPlacementPriority(int placementPriority) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putInt("placement_priority", placementPriority));
+    }
+    public void setSelectionPriority(int selectionPriority) {
+        org.basaltmc.stratum.bukkit.facade.TileNbt.update(this, tag -> tag.putInt("selection_priority", selectionPriority));
     }
 
     public JointType getJoint() {

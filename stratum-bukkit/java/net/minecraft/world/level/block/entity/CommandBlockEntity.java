@@ -50,4 +50,38 @@ public class CommandBlockEntity extends BlockEntity {
     public static enum Mode {
         SEQUENCE, AUTO, REDSTONE;
     }
+
+    public void setPowered(boolean powered) {
+        TileNbt.update(this, tag -> tag.putBoolean("powered", powered));
+    }
+
+    public void setAutomatic(boolean auto) {
+        TileNbt.update(this, tag -> tag.putBoolean("auto", auto));
+    }
+
+    public boolean wasConditionMet() {
+        return isConditionMet();
+    }
+
+    public Mode getMode() {
+        String path = getBlockState().getBlock().blockKey().getPath();
+        return path.equals("repeating_command_block") ? Mode.AUTO : path.equals("chain_command_block") ? Mode.SEQUENCE : Mode.REDSTONE;
+    }
+
+    public boolean isConditional() {
+        BlockState state = getBlockState();
+        return state.getBlock() instanceof net.minecraft.world.level.block.CommandBlock && state.getValue(net.minecraft.world.level.block.CommandBlock.CONDITIONAL);
+    }
+
+    public boolean markConditionMet() {
+        boolean met = true;
+        if (isConditional()) {
+            BlockPos behind = getBlockPos().relative(getBlockState().getValue(net.minecraft.world.level.block.CommandBlock.FACING).getOpposite());
+            met = getLevel().getBlockState(behind).getBlock() instanceof net.minecraft.world.level.block.CommandBlock
+                && getLevel().getBlockEntity(behind) instanceof CommandBlockEntity other && other.getSuccessCount() > 0;
+        }
+        boolean result = met;
+        TileNbt.update(this, tag -> tag.putBoolean("conditionMet", result));
+        return result;
+    }
 }

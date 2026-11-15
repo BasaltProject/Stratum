@@ -1,6 +1,8 @@
 // Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
 package net.minecraft.world.level.block;
 
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 
 public class DaylightDetectorBlock extends BaseEntityBlock {
+    public static final IntegerProperty POWER = BlockStateProperties.POWER;
     protected DaylightDetectorBlock(int index) {
         super(index);
     }

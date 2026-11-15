@@ -1,5 +1,7 @@
 // Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
 package net.minecraft.world.level.block;
+
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,6 +20,8 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
+    public static final int EVENT_SET_OPEN_COUNT = 1;
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 

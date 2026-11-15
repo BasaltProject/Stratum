@@ -21,4 +21,10 @@ public class SkullBlockEntity extends BlockEntity {
         String sound = nbt().getStringOr("note_block_sound", "");
         return sound.isEmpty() ? null : net.minecraft.resources.Identifier.parse(sound);
     }
+
+    public net.minecraft.world.item.component.ResolvableProfile getOwnerProfile() {
+        net.minecraft.nbt.Tag stored = nbt().get("profile");
+        return stored == null ? null : net.minecraft.world.item.component.ResolvableProfile.CODEC
+            .parse(net.minecraft.nbt.NbtOps.INSTANCE, stored).result().orElse(null);
+    }
 }

@@ -111,4 +111,8 @@ public class SignBlockEntity extends BlockEntity {
         load(tag);
         return true;
     }
+
+    public net.minecraft.sounds.SoundEvent getSignInteractionFailedSoundEvent() {
+        return net.minecraft.sounds.SoundEvents.WAXED_SIGN_INTERACT_FAIL;
+    }
 }

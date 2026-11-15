@@ -29,4 +29,25 @@ public class JukeboxBlockEntity extends BlockEntity {
     public boolean isRecordPlaying() {
         return nbt().getBooleanOr("is_playing", false);
     }
+
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    public BlockEntity getContainerBlockEntity() {
+        return this;
+    }
+
+    public boolean canPlaceItem(int slot, ItemStack itemStack) {
+        return itemStack.has(net.minecraft.core.component.DataComponents.JUKEBOX_PLAYABLE) && getTheItem().isEmpty();
+    }
+
+    public boolean canTakeItem(net.minecraft.world.Container into, int slot, ItemStack itemStack) {
+        return into.hasAnyMatching(ItemStack::isEmpty);
+    }
+
+    public int getComparatorOutput() {
+        return net.minecraft.world.item.JukeboxSong.fromStack(getTheItem()).map(net.minecraft.core.Holder::value)
+            .map(net.minecraft.world.item.JukeboxSong::comparatorOutput).orElse(0);
+    }
 }

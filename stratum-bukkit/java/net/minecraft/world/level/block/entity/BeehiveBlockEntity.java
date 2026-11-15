@@ -131,4 +131,8 @@ public class BeehiveBlockEntity extends BlockEntity {
             return entity;
         }
     }
+
+    public static int getHoneyLevel(BlockState blockState) {
+        return blockState.getValue(net.minecraft.world.level.block.BeehiveBlock.HONEY_LEVEL);
+    }
 }

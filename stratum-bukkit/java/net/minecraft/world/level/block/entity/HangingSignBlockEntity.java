@@ -25,4 +25,9 @@ public class HangingSignBlockEntity extends SignBlockEntity {
     public int getMaxTextLineWidth() {
         return 60;
     }
+
+    @Override
+    public net.minecraft.sounds.SoundEvent getSignInteractionFailedSoundEvent() {
+        return net.minecraft.sounds.SoundEvents.WAXED_HANGING_SIGN_INTERACT_FAIL;
+    }
 }

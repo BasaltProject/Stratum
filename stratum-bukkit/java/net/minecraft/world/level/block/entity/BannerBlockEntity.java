@@ -48,4 +48,19 @@ public class BannerBlockEntity extends BlockEntity implements net.minecraft.worl
             : net.minecraft.core.component.DataComponents.BANNER_PATTERNS.codecOrThrow().parse(net.minecraft.nbt.NbtOps.INSTANCE, stored)
                 .result().orElse(net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY);
     }
+
+    public net.minecraft.world.item.DyeColor getBaseColor() {
+        return getBlockState().getBlock() instanceof net.minecraft.world.level.block.AbstractBannerBlock banner ? banner.getColor()
+            : net.minecraft.world.item.DyeColor.WHITE;
+    }
+
+    public net.minecraft.world.item.ItemStack getItem() {
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(getBlockState().getBlock());
+        stack.set(net.minecraft.core.component.DataComponents.BANNER_PATTERNS, getPatterns());
+        Component name = getCustomName();
+        if (name != null) {
+            stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, name);
+        }
+        return stack;
+    }
 }
