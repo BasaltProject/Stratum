@@ -1,6 +1,7 @@
 #include <basalt/stratum/bukkit/ShimHost.hpp>
 
 #include <array>
+#include <cstdlib>
 #include <atomic>
 
 #ifdef _WIN32
@@ -57,13 +58,18 @@ std::expected<std::unique_ptr<ShimHost>, std::string> ShimHost::create(const Shi
     const std::string classpath = "-Djava.class.path=" + joined(options.classpath);
     const std::string boot = "-Xbootclasspath:" + options.bootClasspath;
     const std::string bootstrap = "-Dshim.bootstrap=" + options.libjvm;
-    std::array<JavaVMOption, 3> vmOptions{};
+    const char* heapMb = std::getenv("BASALT_SHIM_HEAP");
+    const std::string heap = heapMb != nullptr ? std::string{"-Xmx"} + heapMb + "m" : std::string{};
+    std::array<JavaVMOption, 4> vmOptions{};
     vmOptions[0].optionString = const_cast<char*>(classpath.c_str());
     vmOptions[1].optionString = const_cast<char*>(boot.c_str());
     vmOptions[2].optionString = const_cast<char*>(bootstrap.c_str());
     JavaVMInitArgs args{};
     args.version = JNI_VERSION_1_8;
-    args.nOptions = static_cast<jint>(vmOptions.size());
+    if (!heap.empty()) {
+        vmOptions[3].optionString = const_cast<char*>(heap.c_str());
+    }
+    args.nOptions = static_cast<jint>(heap.empty() ? 3 : 4);
     args.options = vmOptions.data();
 
     JavaVM* vm = nullptr;
