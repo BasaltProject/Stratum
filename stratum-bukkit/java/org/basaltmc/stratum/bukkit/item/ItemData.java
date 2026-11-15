@@ -66,6 +66,18 @@ public final class ItemData {
         return Nbt.map(data.get("weapon"));
     }
 
+    public String rarity() {
+        return Nbt.string(data, "rarity", "common");
+    }
+
+    public int enchantable() {
+        return Nbt.integer(data, "enchantable", 0);
+    }
+
+    public String repairable() {
+        return Nbt.string(data, "repairable", null);
+    }
+
     public String craftingRemainder() {
         return Nbt.string(data, "crafting_remainder", null);
     }

@@ -12,6 +12,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.Enchantable;
+import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.Tool;
@@ -56,7 +66,86 @@ public final class ItemPrototypes {
             builder.set(DataComponents.FOOD, new FoodProperties(Nbt.integer(food, "nutrition", 0),
                 (float) Nbt.real(food, "saturation", 0.0), Nbt.flag(food, "can_always_eat", false)));
         }
+        builder.set(DataComponents.RARITY, rarity(data.rarity()));
+        builder.set(DataComponents.ATTRIBUTE_MODIFIERS, attributes(data.weapon(), data.armor()));
+        if (data.enchantable() > 0) {
+            builder.set(DataComponents.ENCHANTABLE, new Enchantable(data.enchantable()));
+        }
+        Repairable repairable = repairable(data.repairable());
+        if (repairable != null) {
+            builder.set(DataComponents.REPAIRABLE, repairable);
+        }
+        if (food != null) {
+            builder.set(DataComponents.CONSUMABLE, consumable(id, food));
+        }
         return builder.build();
+    }
+
+    private static Rarity rarity(String name) {
+        for (Rarity rarity : Rarity.values()) {
+            if (rarity.name().equalsIgnoreCase(name)) {
+                return rarity;
+            }
+        }
+        return Rarity.COMMON;
+    }
+
+    private static Repairable repairable(String target) {
+        if (target == null) {
+            return null;
+        }
+        if (target.startsWith("#")) {
+            return new Repairable(new HolderSet.Named<>(TagKey.create(Registries.ITEM, Identifier.parse(target.substring(1)))));
+        }
+        Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(target));
+        return new Repairable(HolderSet.direct(BuiltInRegistries.ITEM.wrapAsHolder(item)));
+    }
+
+    private static Consumable consumable(String id, Map<String, Object> food) {
+        boolean drink = id.endsWith("_bottle") || id.equals("minecraft:potion") || id.equals("minecraft:milk_bucket");
+        return Consumable.builder()
+            .consumeSeconds((float) Nbt.real(food, "consume_seconds", Consumable.DEFAULT_CONSUME_SECONDS))
+            .animation(drink ? ItemUseAnimation.DRINK : ItemUseAnimation.EAT)
+            .sound(drink ? SoundEvents.GENERIC_DRINK : SoundEvents.GENERIC_EAT)
+            .build();
+    }
+
+    private static ItemAttributeModifiers attributes(Map<String, Object> weapon, Map<String, Object> armor) {
+        ItemAttributeModifiers.Builder modifiers = ItemAttributeModifiers.builder();
+        if (weapon != null) {
+            modifiers.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
+                Nbt.real(weapon, "attack_damage", 0.0), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+            modifiers.add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID,
+                Nbt.real(weapon, "attack_speed", 0.0), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+        }
+        if (armor != null) {
+            String slot = Nbt.string(armor, "slot", "");
+            EquipmentSlotGroup group = switch (slot) {
+                case "head" -> EquipmentSlotGroup.HEAD;
+                case "chest" -> EquipmentSlotGroup.CHEST;
+                case "legs" -> EquipmentSlotGroup.LEGS;
+                case "feet" -> EquipmentSlotGroup.FEET;
+                case "body" -> EquipmentSlotGroup.BODY;
+                default -> null;
+            };
+            if (group != null) {
+                String type = switch (slot) {
+                    case "head" -> "helmet";
+                    case "chest" -> "chestplate";
+                    case "legs" -> "leggings";
+                    case "feet" -> "boots";
+                    default -> "body";
+                };
+                Identifier modifierId = Identifier.withDefaultNamespace("armor." + type);
+                modifiers.add(Attributes.ARMOR, new AttributeModifier(modifierId, Nbt.real(armor, "armor", 0.0), AttributeModifier.Operation.ADD_VALUE), group);
+                modifiers.add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(modifierId, Nbt.real(armor, "toughness", 0.0), AttributeModifier.Operation.ADD_VALUE), group);
+                double knockback = Nbt.real(armor, "knockback_resistance", 0.0);
+                if (knockback > 0.0) {
+                    modifiers.add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(modifierId, knockback, AttributeModifier.Operation.ADD_VALUE), group);
+                }
+            }
+        }
+        return modifiers.build();
     }
 
     private static Tool tool(Map<String, Object> data) {
