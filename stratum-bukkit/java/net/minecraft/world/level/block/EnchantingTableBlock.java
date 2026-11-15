@@ -16,6 +16,17 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 
 public class EnchantingTableBlock extends BaseEntityBlock {
+    public static final java.util.List<BlockPos> BOOKSHELF_OFFSETS = java.util.stream.IntStream.rangeClosed(-2, 2).boxed()
+        .flatMap(x -> java.util.stream.IntStream.rangeClosed(-2, 2).boxed().flatMap(z -> java.util.stream.IntStream.rangeClosed(0, 1)
+            .mapToObj(y -> new BlockPos(x, y, z))))
+        .filter(offset -> Math.abs(offset.getX()) == 2 || Math.abs(offset.getZ()) == 2).toList();
+
+    public static boolean isValidBookShelf(Level level, BlockPos pos, BlockPos offset) {
+        return level.getBlockState(pos.offset(offset)).is(net.minecraft.tags.BlockTags.ENCHANTMENT_POWER_PROVIDER)
+            && level.getBlockState(pos.offset(offset.getX() / 2, offset.getY(), offset.getZ() / 2))
+                .is(net.minecraft.tags.BlockTags.ENCHANTMENT_POWER_TRANSMITTER);
+    }
+
     protected EnchantingTableBlock(int index) {
         super(index);
     }

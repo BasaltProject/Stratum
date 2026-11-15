@@ -30,6 +30,62 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
         return pos.relative(state.getValue(TYPE) == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise());
     }
 
+    public static DoubleBlockCombiner.BlockType getBlockType(BlockState state) {
+        ChestType type = state.getValue(TYPE);
+        if (type == ChestType.SINGLE) {
+            return DoubleBlockCombiner.BlockType.SINGLE;
+        }
+        return type == ChestType.RIGHT ? DoubleBlockCombiner.BlockType.FIRST : DoubleBlockCombiner.BlockType.SECOND;
+    }
+
+    public boolean chestCanConnectTo(BlockState blockState) {
+        return blockState.is(this);
+    }
+
+    protected ChestType getChestType(net.minecraft.world.level.Level level, BlockPos pos, Direction facingDirection) {
+        if (facingDirection == candidatePartnerFacing(level, pos, facingDirection.getClockWise())) {
+            return ChestType.LEFT;
+        }
+        return facingDirection == candidatePartnerFacing(level, pos, facingDirection.getCounterClockWise()) ? ChestType.RIGHT : ChestType.SINGLE;
+    }
+
+    private Direction candidatePartnerFacing(net.minecraft.world.level.Level level, BlockPos pos, Direction neighbourDirection) {
+        BlockState state = level.getBlockState(pos.relative(neighbourDirection));
+        return chestCanConnectTo(state) && state.getValue(TYPE) == ChestType.SINGLE ? state.getValue(FACING) : null;
+    }
+
+    public net.minecraft.world.level.block.entity.BlockEntityType<? extends ChestBlockEntity> blockEntityType() {
+        return net.minecraft.world.level.block.entity.BlockEntityTypes.CHEST;
+    }
+
+    public DoubleBlockCombiner.NeighborCombineResult<? extends ChestBlockEntity> combine(BlockState state,
+            net.minecraft.world.level.Level level, BlockPos pos, boolean ignoreBeingBlocked) {
+        java.util.function.BiPredicate<net.minecraft.world.level.LevelAccessor, BlockPos> blocked =
+            ignoreBeingBlocked ? (accessor, blockPos) -> false : ChestBlock::isChestBlockedAt;
+        return DoubleBlockCombiner.combineWithNeigbour(blockEntityType(), ChestBlock::getBlockType,
+            ChestBlock::getConnectedDirection, FACING, state, level, pos, blocked);
+    }
+
+    public static boolean isChestBlockedAt(net.minecraft.world.level.LevelAccessor level, BlockPos pos) {
+        return isBlockedChestByBlock(level, pos) || isCatSittingOnChest(level, pos);
+    }
+
+    private static boolean isBlockedChestByBlock(net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        BlockPos above = pos.above();
+        return level.getBlockState(above).isRedstoneConductor(level, above);
+    }
+
+    private static boolean isCatSittingOnChest(net.minecraft.world.level.LevelAccessor level, BlockPos pos) {
+        net.minecraft.world.phys.AABB above = new net.minecraft.world.phys.AABB(pos.getX(), pos.getY() + 1, pos.getZ(),
+            pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1);
+        for (net.minecraft.world.entity.animal.feline.Cat cat : level.getEntitiesOfClass(net.minecraft.world.entity.animal.feline.Cat.class, above)) {
+            if (cat.isInSittingPose()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected ChestBlock(int index) {
         super(index);
     }
