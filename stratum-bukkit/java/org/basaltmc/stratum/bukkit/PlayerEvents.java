@@ -331,6 +331,37 @@ final class PlayerEvents {
                 new Location(world, f.real("from_x"), f.real("from_y"), f.real("from_z")),
                 new Location(world, f.real("x"), f.real("y"), f.real("z")));
         });
+        EventBridge.map("player.flower_pot", io.papermc.paper.event.player.PlayerFlowerPotManipulateEvent.class, f -> {
+            Player who = f.player();
+            Material material = Material.matchMaterial(f.text("item"));
+            return who == null || material == null ? null
+                : new io.papermc.paper.event.player.PlayerFlowerPotManipulateEvent(who, f.block(),
+                    new ItemStack(material, 1), f.flag("placing"));
+        });
+        EventBridge.map("player.lectern_insert", io.papermc.paper.event.player.PlayerInsertLecternBookEvent.class, f -> {
+            Player who = f.player();
+            ItemStack book = f.stack("item");
+            return who == null || book == null ? null
+                : new io.papermc.paper.event.player.PlayerInsertLecternBookEvent(who, f.block(), book);
+        });
+        EventBridge.map("player.item_mend", org.bukkit.event.player.PlayerItemMendEvent.class, f -> {
+            Player who = f.player();
+            if (who == null || !(BasaltServer.instance().entityById(f.world(), (int) f.whole("orb_id"))
+                instanceof org.bukkit.entity.ExperienceOrb orb)) {
+                return null;
+            }
+            EquipmentSlot slot = switch (f.text("slot")) {
+                case "off_hand" -> EquipmentSlot.OFF_HAND;
+                case "feet" -> EquipmentSlot.FEET;
+                case "legs" -> EquipmentSlot.LEGS;
+                case "chest" -> EquipmentSlot.CHEST;
+                case "head" -> EquipmentSlot.HEAD;
+                default -> EquipmentSlot.HAND;
+            };
+            org.bukkit.inventory.ItemStack item = who.getInventory().getItem(slot);
+            return item == null ? null : new org.bukkit.event.player.PlayerItemMendEvent(who, item, slot, orb,
+                (int) f.whole("repair"), (int) f.whole("consumed"));
+        }, (e, f) -> f.put("repair", (long) ((org.bukkit.event.player.PlayerItemMendEvent) e).getRepairAmount()));
         EventBridge.map("player.exp_change", org.bukkit.event.player.PlayerExpChangeEvent.class,
             f -> f.player() == null ? null : new org.bukkit.event.player.PlayerExpChangeEvent(f.player(),
                 (int) f.whole("amount")),

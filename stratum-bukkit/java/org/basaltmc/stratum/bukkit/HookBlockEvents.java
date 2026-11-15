@@ -41,6 +41,27 @@ final class HookBlockEvents {
     }
 
     static void install() {
+        EventBridge.map("block.brewing_fuel", org.bukkit.event.inventory.BrewingStandFuelEvent.class, f -> {
+            ItemStack fuel = f.stack("item");
+            return fuel == null ? null
+                : new org.bukkit.event.inventory.BrewingStandFuelEvent(f.block(), fuel, (int) f.whole("fuel_power"));
+        }, (e, f) -> {
+            org.bukkit.event.inventory.BrewingStandFuelEvent fuel = (org.bukkit.event.inventory.BrewingStandFuelEvent) e;
+            f.put("fuel_power", (long) fuel.getFuelPower());
+            f.put("consuming", fuel.isConsuming());
+        });
+        EventBridge.map("block.cauldron_level", org.bukkit.event.block.CauldronLevelChangeEvent.class, f -> {
+            Block block = f.block();
+            BlockState state = block.getState();
+            state.setBlockData(org.bukkit.Bukkit.createBlockData(f.text("new_block")));
+            org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason reason;
+            try {
+                reason = org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.valueOf(f.text("reason"));
+            } catch (IllegalArgumentException unknown) {
+                reason = org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.UNKNOWN;
+            }
+            return new org.bukkit.event.block.CauldronLevelChangeEvent(block, f.player(), reason, state);
+        });
         EventBridge.map("block.note_play", org.bukkit.event.block.NotePlayEvent.class,
             f -> new org.bukkit.event.block.NotePlayEvent(f.block(), instrument(f.text("instrument")),
                 new Note((int) f.whole("note"))));

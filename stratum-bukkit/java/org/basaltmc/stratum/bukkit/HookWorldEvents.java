@@ -4,6 +4,14 @@ final class HookWorldEvents {
     private HookWorldEvents() {}
 
     static void install() {
+        EventBridge.map("world.difficulty_change", io.papermc.paper.event.world.WorldDifficultyChangeEvent.class, f -> {
+            BasaltWorld world = f.world();
+            if (world == null) {
+                return null;
+            }
+            return new io.papermc.paper.event.world.WorldDifficultyChangeEvent(world, null,
+                org.bukkit.Difficulty.valueOf(f.text("difficulty").toUpperCase(java.util.Locale.ROOT)));
+        });
         EventBridge.map("world.border_bounds", io.papermc.paper.event.world.border.WorldBorderBoundsChangeEvent.class,
             f -> {
                 BasaltWorld world = f.world();
