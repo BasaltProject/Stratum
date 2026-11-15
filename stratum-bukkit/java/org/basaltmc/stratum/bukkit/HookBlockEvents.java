@@ -124,6 +124,45 @@ final class HookBlockEvents {
             return material == null ? null : new org.bukkit.event.block.BrewingStartEvent(f.block(),
                 new ItemStack(material, 1), (int) f.whole("total_time"));
         });
+        EventBridge.map("block.dispense_loot", org.bukkit.event.block.BlockDispenseLootEvent.class, f -> {
+            org.bukkit.NamespacedKey key = org.bukkit.NamespacedKey.fromString(f.text("loot_table"));
+            org.bukkit.loot.LootTable table = key == null ? null : org.bukkit.Bukkit.getLootTable(key);
+            List<ItemStack> loot = new ArrayList<>();
+            for (String line : f.text("loot").split("\n")) {
+                int bar = line.indexOf('|');
+                ItemStack stack = bar < 0 ? null : PlayerEvents.stackOf(line.substring(0, bar),
+                    Long.parseLong(line.substring(bar + 1)));
+                if (stack != null) {
+                    loot.add(stack);
+                }
+            }
+            return table == null ? null : new org.bukkit.event.block.BlockDispenseLootEvent(f.player(), f.block(), loot,
+                table);
+        }, (e, f) -> {
+            StringBuilder lines = new StringBuilder();
+            for (ItemStack stack : ((org.bukkit.event.block.BlockDispenseLootEvent) e).getDispensedLoot()) {
+                if (stack != null && !stack.getType().isAir()) {
+                    lines.append(lines.length() == 0 ? "" : "\n").append(stack.getType().getKey()).append('|')
+                        .append(stack.getAmount());
+                }
+            }
+            f.put("loot", lines.toString());
+        });
+        EventBridge.map("block.vault_display_item", org.bukkit.event.block.VaultDisplayItemEvent.class,
+            f -> new org.bukkit.event.block.VaultDisplayItemEvent(f.block(),
+                PlayerEvents.stackOf(f.text("item"), f.whole("count"))), (e, f) -> {
+                ItemStack shown = ((org.bukkit.event.block.VaultDisplayItemEvent) e).getDisplayItem();
+                boolean none = shown == null || shown.getType().isAir();
+                f.put("item", none ? "minecraft:air" : shown.getType().getKey().toString());
+                f.put("count", none ? 0L : (long) shown.getAmount());
+            });
+        EventBridge.map("block.vault_change_state", io.papermc.paper.event.block.VaultChangeStateEvent.class, f -> {
+            org.bukkit.block.data.type.Vault.State from = org.bukkit.block.data.type.Vault.State.valueOf(
+                f.text("from").toUpperCase(java.util.Locale.ROOT));
+            org.bukkit.block.data.type.Vault.State to = org.bukkit.block.data.type.Vault.State.valueOf(
+                f.text("to").toUpperCase(java.util.Locale.ROOT));
+            return new io.papermc.paper.event.block.VaultChangeStateEvent(f.block(), f.player(), from, to);
+        });
         EventBridge.map("block.brew", org.bukkit.event.inventory.BrewEvent.class, f -> {
             if (!(f.block().getState() instanceof org.bukkit.block.BrewingStand stand)) {
                 return null;

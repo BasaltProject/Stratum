@@ -104,6 +104,28 @@ public class VaultBlockEntity extends BlockEntity {
         return getRewardedPlayers().contains(player);
     }
 
+    public static final class Server {
+        private Server() {}
+
+        private static int call(ServerLevel level, String action, BlockPos pos, java.util.UUID player) {
+            return org.basaltmc.stratum.bukkit.WorldEnvNatives.vault(level.getWorld().getName(), action, pos.getX(), pos.getY(),
+                pos.getZ(), player == null ? "" : player.toString());
+        }
+
+        public static void tick(ServerLevel serverLevel, BlockPos pos, BlockState blockState, VaultConfig config, VaultServerData serverData, VaultSharedData sharedData) {
+            call(serverLevel, "tick", pos, null);
+        }
+
+        /** The native vault takes the key out of the player's main hand; stackToInsert is only the stack the caller saw. */
+        public static void tryInsertKey(ServerLevel serverLevel, BlockPos pos, BlockState blockState, VaultConfig config, VaultServerData serverData, VaultSharedData sharedData, net.minecraft.world.entity.player.Player player, ItemStack stackToInsert) {
+            call(serverLevel, "insert_key", pos, player.getUUID());
+        }
+
+        static void cycleDisplayItemFromLootTable(ServerLevel serverLevel, VaultState vaultState, VaultConfig config, VaultSharedData sharedData, BlockPos pos) {
+            call(serverLevel, "tick", pos, null);
+        }
+    }
+
     public boolean isOminous() {
         return getBlockState().getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.OMINOUS);
     }

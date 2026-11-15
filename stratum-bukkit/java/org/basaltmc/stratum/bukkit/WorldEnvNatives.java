@@ -17,6 +17,8 @@ public final class WorldEnvNatives {
 
     /** The uuid of the new creaking, or "x,y,z" of the new clump; null when nothing happened. */
     public static native String creakingHeart(String world, String action, int x, int y, int z);
+    /** "tick" runs the vault once and "insert_key" puts the player's held key in; 1 when it did something. */
+    public static native int vault(String world, String action, int x, int y, int z, String player);
     public static native int hive(String world, String action, int x, int y, int z, int entityId, String player);
 
     /** Title JSON, color, style, flags, progress, visible and the viewers' entity ids; null for a raid that ended. */
