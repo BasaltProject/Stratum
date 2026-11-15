@@ -440,12 +440,13 @@ public class BasaltServer extends ServerTail {
 
     @Override
     public boolean getAllowFlight() {
-        return false;
+        return Boolean.parseBoolean(WorldEnvNatives.setting("allow_flight"));
     }
 
     @Override
     public boolean isHardcore() {
-        return false;
+        List<World> loaded = getWorlds();
+        return !loaded.isEmpty() && loaded.get(0).isHardcore();
     }
 
     @Override
