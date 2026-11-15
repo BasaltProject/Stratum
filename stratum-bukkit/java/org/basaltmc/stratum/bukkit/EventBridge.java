@@ -207,7 +207,11 @@ final class EventBridge {
         map("player.chat", AsyncPlayerChatEvent.class,
             f -> new AsyncPlayerChatEvent(true, f.player(), f.text("message"), new HashSet<>(
                 BasaltServer.instance().getOnlinePlayers())),
-            (e, f) -> f.put("message", ((AsyncPlayerChatEvent) e).getMessage()),
+            (e, f) -> {
+                AsyncPlayerChatEvent chat = (AsyncPlayerChatEvent) e;
+                f.put("message", chat.getMessage());
+                ChatRouting.write(chat, f);
+            },
             (e, f) -> ((AsyncPlayerChatEvent) e).setMessage(f.text("message")));
         map("player.command", PlayerCommandPreprocessEvent.class,
             f -> new PlayerCommandPreprocessEvent(f.player(), "/" + f.text("command")),
