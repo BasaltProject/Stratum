@@ -108,7 +108,7 @@ public class Item implements ItemLike, FeatureElement {
         return net.minecraft.core.registries.BuiltInRegistries.ITEM.wrapAsHolder(this) instanceof Holder.Reference<Item> reference ? reference : null;
     }
     public DataComponentMap components() {
-        return new ItemStack(this).getComponents();
+        return org.basaltmc.stratum.bukkit.item.ItemPrototypes.of(this);
     }
     public int getDefaultMaxStackSize() {
         return customMaxStack > 0 ? customMaxStack : org.basaltmc.stratum.bukkit.item.ItemData.of(key.toString()).maxStackSize();
@@ -120,7 +120,8 @@ public class Item implements ItemLike, FeatureElement {
 
     }
     public boolean canDestroyBlock(ItemStack itemStack, BlockState state, Level level, BlockPos pos, LivingEntity user) {
-        return true;
+        net.minecraft.world.item.component.Tool tool = itemStack.get(net.minecraft.core.component.DataComponents.TOOL);
+        return tool == null || tool.canDestroyBlocksInCreative() || !(user instanceof Player player && player.getAbilities().instabuild);
     }
     public Item asItem() {
         return this;
@@ -162,7 +163,14 @@ public class Item implements ItemLike, FeatureElement {
 
     }
     public boolean mineBlock(ItemStack itemStack, Level level, BlockState state, BlockPos pos, LivingEntity owner) {
-        return false;
+        net.minecraft.world.item.component.Tool tool = itemStack.get(net.minecraft.core.component.DataComponents.TOOL);
+        if (tool == null) {
+            return false;
+        }
+        if (!level.isClientSide() && state.getDestroySpeed(level, pos) != 0.0F && tool.damagePerBlock() > 0) {
+            itemStack.hurtAndBreak(tool.damagePerBlock(), owner, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        }
+        return true;
     }
     public boolean isCorrectToolForDrops(ItemStack itemStack, BlockState state) {
         return itemStack.isCorrectToolForDrops(state);

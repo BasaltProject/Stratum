@@ -16,6 +16,7 @@ public final class ItemData {
 
     public static synchronized void invalidate() {
         cache.clear();
+        ItemPrototypes.invalidate();
     }
 
     public static synchronized ItemData of(String id) {

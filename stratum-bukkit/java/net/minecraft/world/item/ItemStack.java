@@ -91,7 +91,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
 
     @Override
     public <T> T get(DataComponentType<? extends T> type) {
-        return patch.get(DataComponentMap.EMPTY, type);
+        return patch.get(getPrototype(), type);
     }
 
     public Item getItem() {
@@ -183,13 +183,13 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return Optional.empty();
     }
     public DataComponentMap getComponents() {
-        return PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch);
+        return PatchedDataComponentMap.fromPatch(getPrototype(), patch);
     }
     public DataComponentMap getPrototype() {
-        return DataComponentMap.EMPTY;
+        return isEmpty() ? DataComponentMap.EMPTY : org.basaltmc.stratum.bukkit.item.ItemPrototypes.of(item);
     }
     public DataComponentMap immutableComponents() {
-        return DataComponentMap.EMPTY;
+        return PatchedDataComponentMap.fromPatch(getPrototype(), patch).toImmutableMap();
     }
     public boolean hasNonDefault(DataComponentType<?> type) {
         return patch.split().added().has(type);
@@ -321,13 +321,28 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return false;
     }
     public boolean hurtEnemy(LivingEntity mob, LivingEntity attacker) {
-        return false;
+        Item used = getItem();
+        used.hurtEnemy(this, mob, attacker);
+        if (!has(DataComponents.WEAPON)) {
+            return false;
+        }
+        if (attacker instanceof Player player) {
+            player.awardStat(net.minecraft.stats.Stats.ITEM_USED.get(used));
+        }
+        return true;
     }
     public void postHurtEnemy(LivingEntity mob, LivingEntity attacker) {
-        return;
+        getItem().postHurtEnemy(this, mob, attacker);
+        net.minecraft.world.item.component.Weapon weapon = get(DataComponents.WEAPON);
+        if (weapon != null) {
+            hurtAndBreak(weapon.itemDamagePerAttack(), attacker, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        }
     }
     public void mineBlock(Level level, BlockState state, BlockPos pos, Player owner) {
-        return;
+        Item used = getItem();
+        if (used.mineBlock(this, level, state, pos, owner)) {
+            owner.awardStat(net.minecraft.stats.Stats.ITEM_USED.get(used));
+        }
     }
     public boolean isCorrectToolForDrops(BlockState state) {
         double[] facts = org.basaltmc.stratum.bukkit.WorldEnvNatives.toolFacts(isEmpty() ? "" : getItem().itemKey().toString(), state.stateId());
@@ -445,7 +460,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return false;
     }
     public <T> T set(DataComponentType<T> type, T value) {
-        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch);
+        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(getPrototype(), patch);
         T previous = map.set(type, value);
         patch = map.asPatch();
         return previous;
@@ -469,7 +484,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return updated;
     }
     public <T> T remove(DataComponentType<? extends T> type) {
-        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch);
+        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(getPrototype(), patch);
         T previous = map.remove(type);
         patch = map.asPatch();
         return previous;
@@ -478,7 +493,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         applyComponents(patch);
     }
     public void applyComponents(DataComponentMap components) {
-        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch);
+        PatchedDataComponentMap map = PatchedDataComponentMap.fromPatch(getPrototype(), patch);
         map.setAll(components);
         patch = map.asPatch();
     }
@@ -592,7 +607,7 @@ public class ItemStack implements DataComponentHolder, ItemInstance {
         return false;
     }
     public boolean canDestroyBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        return true;
+        return getItem().canDestroyBlock(this, state, level, pos, player);
     }
     public DamageSource getDamageSource(LivingEntity attacker) {
         return null;
