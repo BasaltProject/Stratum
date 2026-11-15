@@ -486,7 +486,8 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return false;
     }
     public int getTeamColor() {
-        return 16777215;
+        Team team = getTeam();
+        return team != null && team.getColor().isPresent() ? team.getColor().get().rgb() : 16777215;
     }
     public boolean isSpectator() {
         return false;
@@ -643,16 +644,20 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         }
     }
     public void setPortalCooldown() {
-        return;
+        setPortalCooldown(getDimensionChangingDelay());
     }
     public void setPortalCooldown(int portalCooldown) {
-        return;
+        org.bukkit.entity.Entity live = live();
+        if (live != null) {
+            live.setPortalCooldown(portalCooldown);
+        }
     }
     public int getPortalCooldown() {
-        return 0;
+        org.bukkit.entity.Entity live = live();
+        return live == null ? 0 : live.getPortalCooldown();
     }
     public boolean isOnPortalCooldown() {
-        return false;
+        return getPortalCooldown() > 0;
     }
     protected void processPortalCooldown() {
     }
@@ -1060,7 +1065,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return fluid.is(type) && getEyeY() < eye.getY() + fluid.getHeight(level(), eye);
     }
     public boolean isInLava() {
-        return false;
+        return !firstTick && getFluidHeight(net.minecraft.tags.FluidTags.LAVA) > 0.0;
     }
     public void moveRelative(float speed, Vec3 input) {
         setDeltaMovement(getDeltaMovement().add(getInputVector(input, speed, getYRot())));
@@ -1361,8 +1366,12 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
             live.eject();
         }
     }
-    public boolean doTeamsAllowDamage(Entity other) {
-        return true;
+    public final boolean doTeamsAllowDamage(Entity other) {
+        Team team = getTeam();
+        if (team == null) {
+            return true;
+        }
+        return !team.isAlliedTo(other.getTeam()) || team.isAllowFriendlyFire();
     }
     public void removeVehicle() {
         stopRiding();
@@ -1535,14 +1544,14 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     public PlayerTeam getTeam() {
         return level().getScoreboard().getPlayersTeam(getScoreboardName());
     }
-    public boolean isAlliedTo(Entity other) {
-        return this == other;
+    public final boolean isAlliedTo(Entity other) {
+        return other != null && (this == other || considersEntityAsAlly(other) || other.considersEntityAsAlly(this));
     }
     protected boolean considersEntityAsAlly(Entity other) {
-        return false;
+        return isAlliedTo((Team) other.getTeam());
     }
     public boolean isAlliedTo(Team other) {
-        return false;
+        return getTeam() != null && getTeam().isAlliedTo(other);
     }
     public void setInvisible(boolean invisible) {
         setSharedFlag(5, invisible);
