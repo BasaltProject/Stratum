@@ -313,7 +313,7 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public Set<String> getListeningPluginChannels() {
-        return BasaltServer.instance().getMessenger().getIncomingChannels();
+        return BasaltServer.instance().messengerImpl().clientChannels(getUniqueId());
     }
 
     @Override

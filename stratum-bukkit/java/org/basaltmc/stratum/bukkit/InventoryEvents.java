@@ -99,6 +99,7 @@ final class InventoryEvents {
             lastClick.remove(id);
             anvilStates.remove(id);
             Windows.forget(id);
+            BasaltServer.instance().messengerImpl().forget(java.util.UUID.fromString(id));
         });
         EventBridge.mapAlways("inventory.changed", f -> {
             Player player = f.player();

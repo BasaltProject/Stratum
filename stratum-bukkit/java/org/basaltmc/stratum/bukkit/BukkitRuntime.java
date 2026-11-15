@@ -157,6 +157,7 @@ public final class BukkitRuntime {
                 VibrationDispatch.tick();
             }, 1L, 1L);
             EventBridge.ready();
+            server.messengerImpl().listenForClientChannels();
             Blocks.begin();
             try {
                 manager.loadPlugins(folder);
