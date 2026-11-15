@@ -292,6 +292,22 @@ jint JNICALL nativeSignal(JNIEnv* env, jclass, jstring world, jint x, jint y, ji
     });
 }
 
+jint JNICALL nativeOwnSignal(JNIEnv* env, jclass, jstring world, jint x, jint y, jint z, jint face) {
+    const auto found = envWorldOf(env, world);
+    return found == nullptr ? 0 : jni::onServer<jint>(0, [&] {
+        PluginWorldEnv* target = found->env();
+        return target == nullptr ? 0 : target->ownSignalFrom(x, y, z, face);
+    });
+}
+
+jint JNICALL nativeAnalogSignal(JNIEnv* env, jclass, jstring world, jint x, jint y, jint z, jint face) {
+    const auto found = envWorldOf(env, world);
+    return found == nullptr ? -1 : jni::onServer<jint>(-1, [&] {
+        PluginWorldEnv* target = found->env();
+        return target == nullptr ? -1 : target->analogSignal(x, y, z, face);
+    });
+}
+
 jboolean JNICALL nativeSurvives(JNIEnv* env, jclass, jstring world, jint x, jint y, jint z, jint state) {
     const auto found = envWorldOf(env, world);
     return found == nullptr || jni::onServer<bool>(true,
@@ -417,6 +433,8 @@ void registerWorldEnvNatives(JNIEnv* env, jclass natives) {
                reinterpret_cast<void*>(&nativeBreakBlock)),
         method("boneMeal", "(Ljava/lang/String;III)Z", reinterpret_cast<void*>(&nativeBoneMeal)),
         method("signal", "(Ljava/lang/String;IIIIZ)I", reinterpret_cast<void*>(&nativeSignal)),
+        method("ownSignal", "(Ljava/lang/String;IIII)I", reinterpret_cast<void*>(&nativeOwnSignal)),
+        method("analogSignal", "(Ljava/lang/String;IIII)I", reinterpret_cast<void*>(&nativeAnalogSignal)),
         method("survives", "(Ljava/lang/String;IIII)Z", reinterpret_cast<void*>(&nativeSurvives)),
         method("temperature", "(Ljava/lang/String;III)D", reinterpret_cast<void*>(&nativeTemperature)),
         method("breakSpeed", "(Ljava/lang/String;Ljava/lang/String;III)D", reinterpret_cast<void*>(&nativeBreakSpeed)),

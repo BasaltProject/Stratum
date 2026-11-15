@@ -190,8 +190,8 @@ public class BlockState extends BlockBehaviour.BlockStateBase {
 
     public int getSignal(BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
         String world = worldOf(level);
-        return world == null ? 0 : org.basaltmc.stratum.bukkit.WorldEnvNatives.signal(world, pos.getX(), pos.getY(), pos.getZ(),
-            direction.ordinal(), false);
+        return world == null ? 0 : org.basaltmc.stratum.bukkit.WorldEnvNatives.ownSignal(world, pos.getX(), pos.getY(), pos.getZ(),
+            direction.ordinal());
     }
 
     public int getDirectSignal(BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
@@ -401,7 +401,9 @@ public class BlockState extends BlockBehaviour.BlockStateBase {
     @Override
     public int getAnalogOutputSignal(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos,
             net.minecraft.core.Direction direction) {
-        return 0;
+        String world = worldOf(level);
+        return world == null ? 0 : Math.max(0, org.basaltmc.stratum.bukkit.WorldEnvNatives.analogSignal(world, pos.getX(),
+            pos.getY(), pos.getZ(), direction.ordinal()));
     }
 
     @Override

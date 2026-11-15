@@ -53,6 +53,10 @@ public final class WorldEnvNatives {
 
     public static native int signal(String world, int x, int y, int z, int face, boolean direct);
 
+    public static native int ownSignal(String world, int x, int y, int z, int face);
+
+    public static native int analogSignal(String world, int x, int y, int z, int face);
+
     public static native boolean survives(String world, int x, int y, int z, int state);
 
     public static native double temperature(String world, int x, int y, int z);

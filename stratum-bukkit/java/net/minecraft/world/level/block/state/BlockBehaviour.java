@@ -402,7 +402,7 @@ public abstract class BlockBehaviour implements FeatureElement {
         return state.getShadeBrightness(level, pos);
     }
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
-        return 0;
+        return state.getAnalogOutputSignal(level, pos, direction);
     }
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return state.getShape(level, pos, context);
@@ -446,13 +446,13 @@ public abstract class BlockBehaviour implements FeatureElement {
 
     }
     protected boolean isSignalSource(BlockState state) {
-        return false;
+        return state.isSignalSource();
     }
     protected boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return false;
     }
     protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return 0;
+        return state.getSignal(level, pos, direction);
     }
     protected int ownSignal(BlockState state, BlockGetter level, BlockPos pos) {
         return 0;
