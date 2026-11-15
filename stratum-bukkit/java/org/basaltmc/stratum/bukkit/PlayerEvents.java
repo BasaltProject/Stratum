@@ -227,6 +227,7 @@ final class PlayerEvents {
                 case "command" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.COMMAND;
                 case "respawn_anchor" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.RESPAWN_ANCHOR;
                 case "plugin" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.PLUGIN;
+                case "reset" -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.RESET;
                 default -> org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED;
             };
             return who == null || f.world() == null ? null : new org.bukkit.event.player.PlayerSpawnChangeEvent(who,
