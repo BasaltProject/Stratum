@@ -1,7 +1,19 @@
 // Independent reimplementation, not Mojang code. See stratum-bukkit/NOTICE.md
 package net.minecraft.world.entity.player;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import java.util.Map;
+import java.util.function.Predicate;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.ItemStackWithSlot;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.Container;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.ItemStack;
@@ -13,9 +25,17 @@ public class Inventory implements Container, Nameable {
     public static final int INVENTORY_SIZE = 36;
     public static final int SELECTION_SIZE = 9;
     public static final int SLOT_OFFHAND = 40;
+    public static final int SLOT_BODY_ARMOR = 41;
+    public static final int SLOT_SADDLE = 42;
     public static final int NOT_FOUND_INDEX = -1;
+    public static final Int2ObjectMap<EquipmentSlot> EQUIPMENT_SLOT_MAPPING = new Int2ObjectArrayMap<>(Map.of(
+        EquipmentSlot.FEET.getIndex(36), EquipmentSlot.FEET, EquipmentSlot.LEGS.getIndex(36), EquipmentSlot.LEGS,
+        EquipmentSlot.CHEST.getIndex(36), EquipmentSlot.CHEST, EquipmentSlot.HEAD.getIndex(36), EquipmentSlot.HEAD,
+        SLOT_OFFHAND, EquipmentSlot.OFFHAND, SLOT_BODY_ARMOR, EquipmentSlot.BODY, SLOT_SADDLE, EquipmentSlot.SADDLE));
     public final Player player;
     private final org.bukkit.inventory.PlayerInventory backing;
+    private final ItemStack[] unmapped = {ItemStack.EMPTY, ItemStack.EMPTY};
+    private int timesChanged;
 
     public Inventory(Player player, org.bukkit.inventory.PlayerInventory backing) {
         this.player = player;
@@ -27,35 +47,265 @@ public class Inventory implements Container, Nameable {
     }
 
     public void setSelectedSlot(int selected) {
+        if (!isHotbarSlot(selected)) {
+            throw new IllegalArgumentException("Invalid selected slot");
+        }
         backing.setHeldItemSlot(selected);
+    }
+
+    public ItemStack setSelectedItem(ItemStack itemStack) {
+        ItemStack previous = getSelectedItem();
+        setItem(getSelectedSlot(), itemStack);
+        return previous;
+    }
+
+    public static int getSelectionSize() {
+        return SELECTION_SIZE;
+    }
+
+    public static boolean isHotbarSlot(int slot) {
+        return slot >= 0 && slot < SELECTION_SIZE;
     }
 
     public ItemStack getSelectedItem() {
         return getItem(getSelectedSlot());
     }
 
-    public boolean add(ItemStack stack) {
-        for (int slot = 0; slot < INVENTORY_SIZE && !stack.isEmpty(); slot++) {
-            ItemStack current = getItem(slot);
-            if (!current.isEmpty() && ItemStack.isSameItemSameComponents(current, stack) && current.getCount() < current.getMaxStackSize()) {
-                int moved = Math.min(stack.getCount(), current.getMaxStackSize() - current.getCount());
-                current.grow(moved);
-                stack.shrink(moved);
-                setItem(slot, current);
+    public boolean add(ItemStack itemStack) {
+        return add(-1, itemStack);
+    }
+
+    public boolean add(int slot, ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            return false;
+        }
+        if (itemStack.isDamaged()) {
+            if (slot == -1) {
+                slot = getFreeSlot();
+            }
+            if (slot >= 0) {
+                ItemStack placed = itemStack.copyAndClear();
+                placed.setPopTime(POP_TIME_DURATION);
+                setItem(slot, placed);
+                return true;
+            }
+            if (player.hasInfiniteMaterials()) {
+                itemStack.setCount(0);
+                return true;
+            }
+            return false;
+        }
+        int lastSize;
+        do {
+            lastSize = itemStack.getCount();
+            itemStack.setCount(slot == -1 ? addResource(itemStack) : addResource(slot, itemStack));
+        } while (!itemStack.isEmpty() && itemStack.getCount() < lastSize);
+        if (itemStack.getCount() == lastSize && player.hasInfiniteMaterials()) {
+            itemStack.setCount(0);
+            return true;
+        }
+        return itemStack.getCount() < lastSize;
+    }
+
+    private int addResource(ItemStack itemStack) {
+        int slot = getSlotWithRemainingSpace(itemStack);
+        if (slot == NOT_FOUND_INDEX) {
+            slot = getFreeSlot();
+        }
+        return slot == NOT_FOUND_INDEX ? itemStack.getCount() : addResource(slot, itemStack);
+    }
+
+    private int addResource(int slot, ItemStack itemStack) {
+        int count = itemStack.getCount();
+        ItemStack inSlot = getItem(slot);
+        if (inSlot.isEmpty()) {
+            inSlot = itemStack.copyWithCount(0);
+        }
+        int toAdd = Math.min(count, getMaxStackSize(inSlot) - inSlot.getCount());
+        if (toAdd == 0) {
+            return count;
+        }
+        inSlot.grow(toAdd);
+        inSlot.setPopTime(POP_TIME_DURATION);
+        setItem(slot, inSlot);
+        return count - toAdd;
+    }
+
+    public void addAndPickItem(ItemStack itemStack) {
+        setSelectedSlot(getSuitableHotbarSlot());
+        ItemStack selected = getSelectedItem();
+        if (!selected.isEmpty()) {
+            int freeSlot = getFreeSlot();
+            if (freeSlot != NOT_FOUND_INDEX) {
+                setItem(freeSlot, selected);
             }
         }
-        for (int slot = 0; slot < INVENTORY_SIZE && !stack.isEmpty(); slot++) {
-            if (getItem(slot).isEmpty()) {
-                setItem(slot, stack.copy());
-                stack.setCount(0);
+        setItem(getSelectedSlot(), itemStack);
+    }
+
+    public void pickSlot(int slot) {
+        setSelectedSlot(getSuitableHotbarSlot());
+        ItemStack previous = getSelectedItem();
+        setItem(getSelectedSlot(), getItem(slot));
+        setItem(slot, previous);
+    }
+
+    public int findSlotMatchingItem(ItemStack itemStack) {
+        for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
+            ItemStack held = getItem(slot);
+            if (!held.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, held)) {
+                return slot;
             }
         }
-        return stack.isEmpty();
+        return NOT_FOUND_INDEX;
+    }
+
+    public int getSuitableHotbarSlot() {
+        for (int offset = 0; offset < SELECTION_SIZE; offset++) {
+            int index = (getSelectedSlot() + offset) % SELECTION_SIZE;
+            if (getItem(index).isEmpty()) {
+                return index;
+            }
+        }
+        for (int offset = 0; offset < SELECTION_SIZE; offset++) {
+            int index = (getSelectedSlot() + offset) % SELECTION_SIZE;
+            if (!getItem(index).isEnchanted()) {
+                return index;
+            }
+        }
+        return getSelectedSlot();
+    }
+
+    public int clearOrCountMatchingItems(Predicate<ItemStack> predicate, boolean countingOnly, int amountToRemove, Container craftSlots) {
+        int count = ContainerHelper.clearOrCountMatchingItems(this, predicate, amountToRemove, countingOnly);
+        count += ContainerHelper.clearOrCountMatchingItems(craftSlots, predicate, amountToRemove - count, countingOnly);
+        if (player.containerMenu == null) {
+            return count;
+        }
+        ItemStack carried = player.containerMenu.getCarried();
+        count += ContainerHelper.clearOrCountMatchingItems(carried, predicate, amountToRemove - count, countingOnly);
+        if (!countingOnly && carried.isEmpty()) {
+            player.containerMenu.setCarried(ItemStack.EMPTY);
+        }
+        return count;
+    }
+
+    public void tick() {
+        for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
+            ItemStack itemStack = getItem(slot);
+            if (!itemStack.isEmpty()) {
+                itemStack.inventoryTick(player.level(), player, slot == getSelectedSlot() ? EquipmentSlot.MAINHAND : null);
+            }
+        }
+    }
+
+    public ClientboundSetPlayerInventoryPacket createInventoryUpdatePacket(int slot) {
+        return new ClientboundSetPlayerInventoryPacket(slot, getItem(slot).copy());
+    }
+
+    public void removeItem(ItemStack itemStack) {
+        for (int slot = 0; slot < getContainerSize(); slot++) {
+            if (getItem(slot) == itemStack || ItemStack.matches(getItem(slot), itemStack)) {
+                setItem(slot, ItemStack.EMPTY);
+                return;
+            }
+        }
+    }
+
+    public void save(ValueOutput.TypedOutputList<ItemStackWithSlot> output) {
+        for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
+            ItemStack item = getItem(slot);
+            if (!item.isEmpty()) {
+                output.add(new ItemStackWithSlot(slot, item));
+            }
+        }
+    }
+
+    public void load(ValueInput.TypedInputList<ItemStackWithSlot> input) {
+        for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
+            setItem(slot, ItemStack.EMPTY);
+        }
+        for (ItemStackWithSlot item : input) {
+            if (item.isValidInContainer(INVENTORY_SIZE)) {
+                setItem(item.slot(), item.stack());
+            }
+        }
+    }
+
+    public void dropAll() {
+        for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
+            ItemStack itemStack = getItem(slot);
+            if (!itemStack.isEmpty()) {
+                ItemEntity drop = player.createItemStackToDrop(itemStack, true, false);
+                if (drop != null) {
+                    player.level().addFreshEntity(drop);
+                }
+                setItem(slot, ItemStack.EMPTY);
+            }
+        }
+        for (EquipmentSlot equipmentSlot : EQUIPMENT_SLOT_MAPPING.values()) {
+            int slot = equipmentSlotIndex(equipmentSlot);
+            ItemStack itemStack = getItem(slot);
+            if (!itemStack.isEmpty()) {
+                ItemEntity drop = player.createItemStackToDrop(itemStack, true, false);
+                if (drop != null) {
+                    player.level().addFreshEntity(drop);
+                }
+                setItem(slot, ItemStack.EMPTY);
+            }
+        }
+    }
+
+    private static int equipmentSlotIndex(EquipmentSlot equipmentSlot) {
+        for (Int2ObjectMap.Entry<EquipmentSlot> entry : EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet()) {
+            if (entry.getValue() == equipmentSlot) {
+                return entry.getIntKey();
+            }
+        }
+        return NOT_FOUND_INDEX;
+    }
+
+    public int getTimesChanged() {
+        return timesChanged;
+    }
+
+    public boolean contains(ItemStack searchStack) {
+        for (ItemStack itemStack : this) {
+            if (!itemStack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, searchStack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean contains(net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag) {
+        return contains(itemStack -> !itemStack.isEmpty() && itemStack.is(tag));
+    }
+
+    public boolean contains(Predicate<ItemStack> predicate) {
+        for (ItemStack itemStack : this) {
+            if (predicate.test(itemStack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void replaceWith(Inventory other) {
+        for (int slot = 0; slot < getContainerSize(); slot++) {
+            setItem(slot, other.getItem(slot));
+        }
+        setSelectedSlot(other.getSelectedSlot());
+    }
+
+    public ItemStack removeFromSelected(boolean all) {
+        ItemStack selected = getSelectedItem();
+        return selected.isEmpty() ? ItemStack.EMPTY : removeItem(getSelectedSlot(), all ? selected.getCount() : 1);
     }
 
     @Override
     public int getContainerSize() {
-        return 41;
+        return INVENTORY_SIZE + EQUIPMENT_SLOT_MAPPING.size();
     }
 
     @Override
@@ -70,6 +320,9 @@ public class Inventory implements Container, Nameable {
 
     @Override
     public ItemStack getItem(int slot) {
+        if (slot >= SLOT_BODY_ARMOR) {
+            return slot <= SLOT_SADDLE ? unmapped[slot - SLOT_BODY_ARMOR] : ItemStack.EMPTY;
+        }
         return CraftItemStack.asNMSCopy(backing.getItem(slot));
     }
 
@@ -87,17 +340,24 @@ public class Inventory implements Container, Nameable {
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
         ItemStack current = getItem(slot);
-        backing.setItem(slot, null);
+        setItem(slot, ItemStack.EMPTY);
         return current;
     }
 
     @Override
     public void setItem(int slot, ItemStack itemStack) {
+        if (slot >= SLOT_BODY_ARMOR) {
+            if (slot <= SLOT_SADDLE) {
+                unmapped[slot - SLOT_BODY_ARMOR] = itemStack;
+            }
+            return;
+        }
         backing.setItem(slot, itemStack.isEmpty() ? null : CraftItemStack.asCraftMirror(itemStack));
     }
 
     @Override
     public void setChanged() {
+        timesChanged++;
     }
 
     @Override
@@ -108,6 +368,8 @@ public class Inventory implements Container, Nameable {
     @Override
     public void clearContent() {
         backing.clear();
+        unmapped[0] = ItemStack.EMPTY;
+        unmapped[1] = ItemStack.EMPTY;
     }
 
     @Override

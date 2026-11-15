@@ -54,8 +54,8 @@ public class ContainerHelper {
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
             int taken = clearOrCountMatchingItems(stack, predicate, amountToRemove - found, countingOnly);
-            if (taken > 0 && !countingOnly && stack.isEmpty()) {
-                container.setItem(slot, ItemStack.EMPTY);
+            if (taken > 0 && !countingOnly) {
+                container.setItem(slot, stack.isEmpty() ? ItemStack.EMPTY : stack);
             }
             found += taken;
         }
