@@ -173,17 +173,17 @@ public abstract class ServerExtras extends MiscServer {
 
     @Override
     public boolean getGenerateStructures() {
-        return true;
+        return flag("generate_structures");
     }
 
     @Override
     public int getMaxWorldSize() {
-        return 29999984;
+        return number("max_world_size");
     }
 
     @Override
     public int getMaxChainedNeighborUpdates() {
-        return 1000000;
+        return number("max_chained_neighbor_updates");
     }
 
     @Override
