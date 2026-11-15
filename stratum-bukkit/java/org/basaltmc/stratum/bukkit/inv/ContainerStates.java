@@ -172,6 +172,33 @@ public final class ContainerStates {
             return inventory;
         }
 
+        private Inventory wholeInventory() {
+            Inventory single = inventory();
+            if (fixed != null || !(base.getBlockData() instanceof org.bukkit.block.data.type.Chest chest)
+                || chest.getType() == org.bukkit.block.data.type.Chest.Type.SINGLE) {
+                return single;
+            }
+            org.bukkit.block.BlockFace toward = chest.getType() == org.bukkit.block.data.type.Chest.Type.LEFT
+                ? clockwise(chest.getFacing()) : clockwise(chest.getFacing()).getOppositeFace();
+            org.bukkit.block.Block other = base.getBlock().getRelative(toward);
+            if (!(other.getState() instanceof org.bukkit.block.Chest neighbour)
+                || !(TypedInventories.unwrap(neighbour.getBlockInventory()) instanceof BlockInventory beside)) {
+                return single;
+            }
+            BlockInventory self = (BlockInventory) TypedInventories.unwrap(single);
+            return chest.getType() == org.bukkit.block.data.type.Chest.Type.LEFT
+                ? new DoubleBlockInventory(self, beside) : new DoubleBlockInventory(beside, self);
+        }
+
+        private static org.bukkit.block.BlockFace clockwise(org.bukkit.block.BlockFace face) {
+            return switch (face) {
+                case NORTH -> org.bukkit.block.BlockFace.EAST;
+                case EAST -> org.bukkit.block.BlockFace.SOUTH;
+                case SOUTH -> org.bukkit.block.BlockFace.WEST;
+                default -> org.bukkit.block.BlockFace.NORTH;
+            };
+        }
+
         private Map<String, Object> entity() {
             return detachedData != null ? detachedData : Nbt.readNamed(WorldNatives.blockEntityNbt(world, x, y, z));
         }
@@ -197,7 +224,12 @@ public final class ContainerStates {
                 }
             }
             switch (name) {
-                case "getInventory", "getBlockInventory", "getSnapshotInventory":
+                case "getInventory":
+                    if (args == null || args.length == 0) {
+                        return wholeInventory();
+                    }
+                    break;
+                case "getBlockInventory", "getSnapshotInventory":
                     if (args == null || args.length == 0) {
                         return inventory();
                     }
