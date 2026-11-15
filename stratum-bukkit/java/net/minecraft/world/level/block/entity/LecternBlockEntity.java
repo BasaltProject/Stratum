@@ -14,6 +14,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class LecternBlockEntity extends BlockEntity implements net.minecraft.world.Clearable, net.minecraft.world.MenuProvider {
+    public static final int DATA_PAGE = 0;
+    public static final int NUM_DATA = 1;
+    public static final int SLOT_BOOK = 0;
+    public static final int NUM_SLOTS = 1;
     public LecternBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("lectern"), worldPosition, blockState);
     }

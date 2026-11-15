@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class CreakingHeartBlockEntity extends BlockEntity {
+    public static final int CREAKING_ROAMING_RADIUS = 32;
     public CreakingHeartBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("creaking_heart"), worldPosition, blockState);
     }

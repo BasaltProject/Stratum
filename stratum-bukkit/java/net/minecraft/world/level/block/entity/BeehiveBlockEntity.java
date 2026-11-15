@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class BeehiveBlockEntity extends BlockEntity {
+    public static final int MIN_OCCUPATION_TICKS_NECTARLESS = 600;
     public BeehiveBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("beehive"), worldPosition, blockState);
     }

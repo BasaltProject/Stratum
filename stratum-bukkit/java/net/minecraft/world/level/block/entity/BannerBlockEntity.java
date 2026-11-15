@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class BannerBlockEntity extends BlockEntity implements net.minecraft.world.Nameable {
+    public static final int MAX_PATTERNS = 6;
     public BannerBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("banner"), worldPosition, blockState);
     }

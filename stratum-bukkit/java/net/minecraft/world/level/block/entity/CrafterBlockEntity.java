@@ -14,6 +14,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class CrafterBlockEntity extends RandomizableContainerBlockEntity {
+    public static final int CONTAINER_WIDTH = 3;
+    public static final int CONTAINER_HEIGHT = 3;
+    public static final int CONTAINER_SIZE = 9;
+    public static final int SLOT_DISABLED = 1;
+    public static final int SLOT_ENABLED = 0;
+    public static final int DATA_TRIGGERED = 9;
+    public static final int NUM_DATA = 10;
     public CrafterBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("crafter"), worldPosition, blockState);
     }

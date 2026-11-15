@@ -14,6 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements net.minecraft.world.WorldlyContainer {
+    public static final int DATA_TOTAL_BREW_TIME = 2;
+    public static final int DATA_TOTAL_FUEL_USES = 3;
+    public static final int BREWING_TIME_SECONDS = 20;
     public static final int FUEL_USES = 20;
     public static final int DATA_BREW_TIME = 0;
     public static final int DATA_FUEL_USES = 1;

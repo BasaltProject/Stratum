@@ -26,6 +26,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class DecoratedPotBlockEntity extends BlockEntity {
+    public static final String TAG_SHERDS = "sherds";
+    public static final String TAG_ITEM = "item";
+    public static final int EVENT_POT_WOBBLES = 1;
     public DecoratedPotBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("decorated_pot"), worldPosition, blockState);
     }

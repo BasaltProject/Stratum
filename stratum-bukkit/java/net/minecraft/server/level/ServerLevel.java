@@ -332,10 +332,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
         return getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).getBlockEntity(blockPos);
     }
     public BlockState getBlockState(BlockPos blockPos) {
+        org.basaltmc.stratum.bukkit.Blocks.flushAll();
         BlockState found = Block.stateById(WorldNatives.state(world.getName(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), true));
         return found == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : found;
     }
     public BlockState getBlockStateIfLoaded(BlockPos blockPos) {
+        org.basaltmc.stratum.bukkit.Blocks.flushAll();
         int id = WorldNatives.state(world.getName(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), false);
         return id < 0 ? null : Block.stateById(id);
     }

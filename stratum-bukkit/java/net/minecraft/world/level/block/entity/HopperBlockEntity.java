@@ -11,6 +11,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class HopperBlockEntity extends RandomizableContainerBlockEntity implements net.minecraft.world.level.block.entity.Hopper {
+    public static final int MOVE_ITEM_SPEED = 8;
+    public static final int HOPPER_CONTAINER_SIZE = 5;
     protected HopperBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
         super(type, worldPosition, blockState);
     }

@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+    public static final int CONTAINER_SIZE = 9;
     protected DispenserBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
         super(type, worldPosition, blockState);
     }

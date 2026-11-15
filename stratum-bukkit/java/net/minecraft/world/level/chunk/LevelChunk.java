@@ -246,6 +246,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource {
         if (onTickThread()) {
             flush();
         }
+        org.basaltmc.stratum.bukkit.Blocks.flushAll();
         BlockEntity view = viewAt(pos);
         if (view == null && creationType == EntityCreationType.IMMEDIATE
             && WorldNatives.createBlockEntity(world, pos.getX(), pos.getY(), pos.getZ(), new byte[0])) {
@@ -297,6 +298,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource {
                 return section.getBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15);
             }
         }
+        org.basaltmc.stratum.bukkit.Blocks.flushAll();
         int id = WorldNatives.state(world, pos.getX(), pos.getY(), pos.getZ(), false);
         return id < 0 ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()
             : net.minecraft.world.level.block.Block.stateById(id);

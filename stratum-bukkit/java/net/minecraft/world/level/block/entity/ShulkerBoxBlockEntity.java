@@ -11,6 +11,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements net.minecraft.world.WorldlyContainer {
+    public static final int COLUMNS = 9;
+    public static final int ROWS = 3;
+    public static final int CONTAINER_SIZE = 27;
+    public static final int EVENT_SET_OPEN_COUNT = 1;
+    public static final int OPENING_TICK_LENGTH = 10;
+    public static final float MAX_LID_HEIGHT = 0.5F;
+    public static final float MAX_LID_ROTATION = 270.0F;
     protected ShulkerBoxBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
         super(type, worldPosition, blockState);
     }
@@ -63,5 +70,26 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
     @Override
     public void stopOpen(net.minecraft.world.entity.ContainerUser user) {
         org.basaltmc.stratum.bukkit.facade.LidControl.set(this, false);
+    }
+
+    public AnimationStatus getAnimationStatus() {
+        return org.basaltmc.stratum.bukkit.facade.LidControl.openness(this) > 0.0F ? AnimationStatus.OPENED : AnimationStatus.CLOSED;
+    }
+
+    public float getProgress(float partialTicks) {
+        return org.basaltmc.stratum.bukkit.facade.LidControl.openness(this);
+    }
+
+    public boolean isClosed() {
+        return getAnimationStatus() == AnimationStatus.CLOSED;
+    }
+
+    public net.minecraft.world.item.DyeColor getColor() {
+        String path = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).getPath();
+        return path.endsWith("_shulker_box") ? net.minecraft.world.item.DyeColor.byName(path.substring(0, path.length() - 12), null) : null;
+    }
+
+    public static enum AnimationStatus {
+        CLOSED, OPENING, OPENED, CLOSING;
     }
 }

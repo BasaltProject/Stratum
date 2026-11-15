@@ -14,6 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
 public class JukeboxBlockEntity extends BlockEntity {
+    public static final String SONG_ITEM_TAG_ID = "RecordItem";
+    public static final String TICKS_SINCE_SONG_STARTED_TAG_ID = "ticks_since_song_started";
     public JukeboxBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("jukebox"), worldPosition, blockState);
     }
