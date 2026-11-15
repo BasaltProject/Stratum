@@ -12,6 +12,9 @@ import net.minecraft.world.entity.schedule.Activity;
 
 /** Adapter: the native brain of this species owns the activity, the memories and every behavior. */
 public class PiglinAi {
+    public static final int REPELLENT_DETECTION_RANGE_HORIZONTAL = 8;
+    public static final int REPELLENT_DETECTION_RANGE_VERTICAL = 4;
+    public static final int MAX_TIME_BETWEEN_HUNTS = 120;
     public static boolean isWearingSafeArmor(LivingEntity wearer) {
         for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlotGroup.ARMOR) {
             if (wearer.getItemBySlot(slot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HopperMenu extends AbstractContainerMenu {
+    public static final int CONTAINER_SIZE = 5;
     private final Container container;
 
     public HopperMenu(int containerId, Inventory inventory) {

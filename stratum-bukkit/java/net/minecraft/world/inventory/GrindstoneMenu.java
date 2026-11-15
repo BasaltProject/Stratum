@@ -9,6 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
 public class GrindstoneMenu extends AbstractContainerMenu {
+    public static final int MAX_NAME_LENGTH = 35;
+    public static final int INPUT_SLOT = 0;
+    public static final int ADDITIONAL_SLOT = 1;
+    public static final int RESULT_SLOT = 2;
     private final Container container;
     private final ContainerLevelAccess access;
     private final ContainerData data;
