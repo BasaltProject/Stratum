@@ -57,7 +57,90 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         this.settings = settings;
         this.properties = settings == null ? null : settings.getProperties();
     }
+    private static final String kTrue = "true";
+
+    private static boolean flag(String key, boolean fallback) {
+        String value = org.basaltmc.stratum.bukkit.WorldEnvNatives.setting(key);
+        return value == null ? fallback : value.equals(kTrue);
+    }
+
+    private static int number(String key, int fallback) {
+        String value = org.basaltmc.stratum.bukkit.WorldEnvNatives.setting(key);
+        try {
+            return value == null ? fallback : Integer.parseInt(value);
+        } catch (NumberFormatException malformed) {
+            return fallback;
+        }
+    }
+
+    private static void store(String key, Object value) {
+        org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting(key, String.valueOf(value));
+    }
+
     public void setAllowFlight(boolean allowed) {
+        store("allow_flight", allowed);
+    }
+
+    @Override
+    public boolean allowFlight() {
+        return flag("allow_flight", false);
+    }
+
+    @Override
+    public boolean repliesToStatus() {
+        return flag("status_replies", true);
+    }
+
+    @Override
+    public boolean hidesOnlinePlayers() {
+        return flag("hide_online_players", false);
+    }
+
+    @Override
+    public int playerIdleTimeout() {
+        return number("idle_timeout", 0);
+    }
+
+    @Override
+    public boolean enforceSecureProfile() {
+        return flag("enforce_secure_profile", false) && flag("online_mode", true);
+    }
+
+    @Override
+    public boolean acceptsTransfers() {
+        return flag("accept_transfers", false);
+    }
+
+    @Override
+    public boolean forceGameMode() {
+        return flag("force_game_mode", false);
+    }
+
+    @Override
+    public void setForceGameMode(boolean forceGameMode) {
+        store("force_game_mode", forceGameMode);
+        GameType forced = getForcedGameType();
+        if (forced != null) {
+            enforceGameTypeForPlayers(forced);
+        }
+    }
+
+    @Override
+    public GameType getForcedGameType() {
+        return forceGameMode() ? gameMode() : null;
+    }
+
+    @Override
+    public int getScaledTrackingDistance(int range) {
+        return entityBroadcastRangePercentage() * range / 100;
+    }
+
+    public int statusHeartbeatInterval() {
+        return number("status_heartbeat_interval", 0);
+    }
+
+    public boolean setStatusHeartbeatInterval(int statusHeartbeatInterval) {
+        return org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("status_heartbeat_interval", String.valueOf(statusHeartbeatInterval));
     }
     public DedicatedServerProperties getProperties() {
         DedicatedServerProperties current = properties;
@@ -94,11 +177,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         return org.bukkit.Bukkit.getServer().getViewDistance();
     }
     public void setViewDistance(int viewDistance) {
+        store("view_distance", viewDistance);
     }
     public int simulationDistance() {
         return org.bukkit.Bukkit.getServer().getSimulationDistance();
     }
     public void setSimulationDistance(int simulationDistance) {
+        store("simulation_distance", simulationDistance);
     }
     public void handleConsoleInput(String msg, CommandSourceStack source) {
     }
@@ -108,6 +193,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         return org.bukkit.Bukkit.getServer().getMaxPlayers();
     }
     public void setMaxPlayers(int maxPlayers) {
+        store("max_players", maxPlayers);
     }
     public String getServerIp() {
         return org.bukkit.Bukkit.getServer().getIp();
@@ -128,18 +214,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("spawn_protection", String.valueOf(spawnProtectionRadius));
     }
     public void setRepliesToStatus(boolean enable) {
+        store("status_replies", enable);
     }
     public void setHidesOnlinePlayers(boolean hide) {
         org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("hide_online_players", String.valueOf(hide));
     }
     public void setOperatorUserPermissions(LevelBasedPermissionSet permissions) {
         properties = getProperties().opPermissions.update(registryAccess(), permissions);
-    }
-    public int statusHeartbeatInterval() {
-        return 0;
-    }
-    public boolean setStatusHeartbeatInterval(int statusHeartbeatInterval) {
-        return false;
     }
     protected boolean convertOldUsers() {
         return true;
@@ -173,9 +254,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         return "";
     }
     public int entityBroadcastRangePercentage() {
-        return 100;
+        return number("entity_broadcast_range", 100);
     }
     public void setEntityBroadcastRangePercentage(int range) {
+        store("entity_broadcast_range", range);
     }
     public String getLevelIdName() {
         return "world";
@@ -187,6 +269,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("gamemode", gameMode.getName());
     }
     public void setAcceptsTransfers(boolean acceptTransfers) {
+        store("accept_transfers", acceptTransfers);
     }
     public void setPauseWhenEmptySeconds(int seconds) {
         org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("pause_when_empty_seconds", String.valueOf(seconds));
