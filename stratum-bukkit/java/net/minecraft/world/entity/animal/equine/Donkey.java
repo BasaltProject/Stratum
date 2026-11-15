@@ -15,13 +15,13 @@ public class Donkey extends AbstractChestedHorse {
         return net.minecraft.sounds.SoundEvents.byId("entity.donkey.ambient");
     }
     protected SoundEvent getAngrySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.DONKEY_ANGRY;
     }
     protected SoundEvent getDeathSound() {
         return net.minecraft.sounds.SoundEvents.byId("entity.donkey.death");
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.DONKEY_EAT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
         return net.minecraft.sounds.SoundEvents.byId("entity.donkey.hurt");

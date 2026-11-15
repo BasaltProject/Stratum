@@ -70,7 +70,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
         return net.minecraft.sounds.SoundEvents.DROWNED_STEP;
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.DROWNED_SWIM;
     }
     protected boolean canSpawnInLiquids() {
         return true;

@@ -14,13 +14,13 @@ public class Mule extends AbstractChestedHorse {
         return net.minecraft.sounds.SoundEvents.byId("entity.mule.ambient");
     }
     protected SoundEvent getAngrySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.MULE_ANGRY;
     }
     protected SoundEvent getDeathSound() {
         return net.minecraft.sounds.SoundEvents.byId("entity.mule.death");
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.MULE_EAT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
         return net.minecraft.sounds.SoundEvents.byId("entity.mule.hurt");
@@ -30,6 +30,6 @@ public class Mule extends AbstractChestedHorse {
     protected void playChestEquipsSound() {
         }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.MULE.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
 }

@@ -22,6 +22,6 @@ public class Cod extends AbstractSchoolingFish {
         return net.minecraft.sounds.SoundEvents.byId("entity.cod.hurt");
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.COD_FLOP;
     }
 }

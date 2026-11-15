@@ -25,16 +25,16 @@ public class Parched extends AbstractSkeleton {
         return net.minecraft.world.entity.Mob.createMobAttributes();
     }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARCHED_AMBIENT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARCHED_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARCHED_DEATH;
     }
     protected SoundEvent getStepSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARCHED_STEP;
     }
     protected int getHardAttackInterval() {
         return 50;

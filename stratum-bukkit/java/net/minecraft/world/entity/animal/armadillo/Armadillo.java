@@ -42,7 +42,7 @@ public class Armadillo extends Animal {
         super(type, level);
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.ARMADILLO.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createAnimalAttributes()

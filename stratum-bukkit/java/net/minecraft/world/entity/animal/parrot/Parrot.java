@@ -124,10 +124,10 @@ public class Parrot extends ShoulderRidingEntity {
         return SoundEvents.PARROT_AMBIENT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARROT_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PARROT_DEATH;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
     }

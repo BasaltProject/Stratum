@@ -50,13 +50,13 @@ public class PiglinBrute extends AbstractPiglin {
         return super.hurtServer(level, source, damage);
     }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PIGLIN_BRUTE_AMBIENT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PIGLIN_BRUTE_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PIGLIN_BRUTE_DEATH;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
     }

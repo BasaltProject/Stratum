@@ -55,7 +55,7 @@ public class ZombieNautilus extends AbstractNautilus {
     protected void playEatingSound() {
         }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_NAUTILUS_SWIM;
     }
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }

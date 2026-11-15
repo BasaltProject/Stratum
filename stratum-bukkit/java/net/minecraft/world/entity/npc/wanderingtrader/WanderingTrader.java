@@ -48,10 +48,10 @@ public class WanderingTrader extends AbstractVillager implements Consumable.Over
         return null;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.WANDERING_TRADER_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.WANDERING_TRADER_DEATH;
     }
     public SoundEvent getConsumeSound(ItemStack itemStack) {
         return null;
@@ -60,7 +60,7 @@ public class WanderingTrader extends AbstractVillager implements Consumable.Over
         return null;
     }
     public SoundEvent getNotifyTradeSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.WANDERING_TRADER_YES;
     }
     public void setDespawnDelay(int despawnDelay) {
         if (live() instanceof org.bukkit.entity.WanderingTrader api) { api.setDespawnDelay(despawnDelay); }

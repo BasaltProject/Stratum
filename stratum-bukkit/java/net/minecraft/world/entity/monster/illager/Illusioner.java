@@ -29,7 +29,7 @@ public class Illusioner extends SpellcasterIllager implements RangedAttackMob {
     public void aiStep() {
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ILLUSIONER_AMBIENT;
     }
     public Vec3[] getIllusionOffsets(float a) {
         return new Vec3[] {Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, Vec3.ZERO};

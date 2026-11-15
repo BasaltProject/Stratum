@@ -14,19 +14,19 @@ public class GlowItemFrame extends ItemFrame {
         super(level, pos, direction);
     }
     public SoundEvent getRemoveItemSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_ITEM_FRAME_REMOVE_ITEM;
     }
     public SoundEvent getBreakSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_ITEM_FRAME_BREAK;
     }
     public SoundEvent getPlaceSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_ITEM_FRAME_PLACE;
     }
     public SoundEvent getAddItemSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_ITEM_FRAME_ADD_ITEM;
     }
     public SoundEvent getRotateItemSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_ITEM_FRAME_ROTATE_ITEM;
     }
     protected ItemStack getFrameItemStack() {
         return new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLOW_ITEM_FRAME);

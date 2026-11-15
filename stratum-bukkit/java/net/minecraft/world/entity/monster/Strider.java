@@ -129,7 +129,7 @@ public class Strider extends Animal implements ItemSteerable {
         return super.getWalkTargetValue(pos, level);
     }
     public Strider getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (Strider) net.minecraft.world.entity.EntityTypes.STRIDER.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean isFood(ItemStack itemStack) {
         return live() instanceof org.bukkit.entity.Animals animals && animals.isBreedItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));

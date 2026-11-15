@@ -30,15 +30,15 @@ public class Skeleton extends AbstractSkeleton {
         return false;
     }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SKELETON_AMBIENT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SKELETON_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SKELETON_DEATH;
     }
     protected SoundEvent getStepSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SKELETON_STEP;
     }
 }

@@ -52,7 +52,7 @@ public class Pufferfish extends AbstractFish {
         return net.minecraft.sounds.SoundEvents.byId("entity.puffer_fish.hurt");
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PUFFER_FISH_FLOP;
     }
     public EntityDimensions getDefaultDimensions(Pose pose) {
         return net.minecraft.world.entity.EntityDimensions.scalable(getBbWidth(), getBbHeight());

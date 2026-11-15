@@ -25,19 +25,19 @@ public class GlowSquid extends Squid {
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.GLOW_SQUID.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     protected SoundEvent getSquirtSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_SQUID_SQUIRT;
     }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_SQUID_AMBIENT;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_SQUID_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GLOW_SQUID_DEATH;
     }
     protected void addAdditionalSaveData(ValueOutput output) {
     }

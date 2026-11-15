@@ -135,10 +135,10 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
         return net.minecraft.sounds.SoundEvents.byId("entity.hoglin.death");
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_SWIM;
     }
     protected SoundEvent getSwimSplashSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_SPLASH;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
         playSound(net.minecraft.sounds.SoundEvents.byId("entity.hoglin.step"), 0.15F, 1.0F);

@@ -76,7 +76,7 @@ public class SulfurCube extends AbstractCubeMob implements Bucketable, Shearable
         if (live() instanceof org.bukkit.entity.SulfurCube api) { api.setFromBucket(fromBucket); }
     }
     public SoundEvent getPickupSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BUCKET_FILL_SULFUR_CUBE;
     }
     public void saveToBucketTag(ItemStack bucket) {
         CustomData.update(DataComponents.BUCKET_ENTITY_DATA, bucket, tag -> {

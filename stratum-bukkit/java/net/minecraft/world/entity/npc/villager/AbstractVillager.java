@@ -138,7 +138,7 @@ public abstract class AbstractVillager extends AgeableMob implements Npc, Mercha
         }
     }
     public SoundEvent getNotifyTradeSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.VILLAGER_YES;
     }
     protected SoundEvent getTradeUpdatedSound(boolean validTrade) {
         return null;

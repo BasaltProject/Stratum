@@ -85,7 +85,7 @@ public class Ocelot extends Animal {
         return net.minecraft.world.entity.EntityDimensions.scalable(getBbWidth(), getBbHeight());
     }
     public Ocelot getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (Ocelot) net.minecraft.world.entity.EntityTypes.OCELOT.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean isFood(ItemStack itemStack) {
         return live() instanceof org.bukkit.entity.Animals animals && animals.isBreedItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));

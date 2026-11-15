@@ -109,7 +109,7 @@ public class HappyGhast extends Animal {
         return net.minecraft.world.entity.EntityDimensions.scalable(getBbWidth(), getBbHeight());
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.HAPPY_GHAST.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean canFallInLove() {
         return false;

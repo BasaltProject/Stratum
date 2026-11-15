@@ -39,7 +39,7 @@ public class Tadpole extends AbstractFish {
         @SuppressWarnings("unchecked") Brain<Tadpole> made = (Brain<Tadpole>) (Brain<?>) super.getBrain(); return made;
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.TADPOLE_FLOP;
     }
     protected void customServerAiStep(ServerLevel level) {
     }
@@ -63,10 +63,10 @@ public class Tadpole extends AbstractFish {
         return null;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.TADPOLE_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.TADPOLE_DEATH;
     }
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         return net.minecraft.world.InteractionResult.PASS;
@@ -97,7 +97,7 @@ public class Tadpole extends AbstractFish {
         return new ItemStack(Items.TADPOLE_BUCKET);
     }
     public SoundEvent getPickupSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BUCKET_FILL_TADPOLE;
     }
     public boolean shouldDropExperience() {
         return false;

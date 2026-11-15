@@ -37,7 +37,7 @@ public class CamelHusk extends Camel {
         return live() instanceof org.bukkit.entity.Animals animals && animals.isBreedItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));
     }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_AMBIENT;
     }
     public boolean canMate(Animal partner) {
         return partner != this && partner.getClass() == getClass() && live() instanceof org.bukkit.entity.Animals selfApi && selfApi.isLoveMode() && partner.live() instanceof org.bukkit.entity.Animals otherApi && otherApi.isLoveMode();
@@ -52,27 +52,27 @@ public class CamelHusk extends Camel {
         return false;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_DEATH;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_HURT;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
     }
     protected SoundEvent getDashingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_DASH;
     }
     protected SoundEvent getDashReadySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_DASH_READY;
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_EAT;
     }
     protected SoundEvent getStandUpSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_STAND;
     }
     protected SoundEvent getSitDownSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_HUSK_SIT;
     }
     protected Holder.Reference<SoundEvent> getSaddleSound() {
         return SoundEvents.CAMEL_HUSK_SADDLE;

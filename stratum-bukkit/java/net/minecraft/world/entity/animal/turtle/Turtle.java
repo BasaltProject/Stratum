@@ -101,7 +101,7 @@ public class Turtle extends Animal {
     protected void playSwimSound(float volume) {
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.TURTLE_SWIM;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
         return net.minecraft.sounds.SoundEvents.byId("entity.turtle.hurt");
@@ -124,7 +124,7 @@ public class Turtle extends Animal {
         return super.createNavigation(level);
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.TURTLE.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean isFood(ItemStack itemStack) {
         return live() instanceof org.bukkit.entity.Animals animals && animals.isBreedItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));

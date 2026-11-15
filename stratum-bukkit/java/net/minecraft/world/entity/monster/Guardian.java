@@ -84,7 +84,7 @@ public class Guardian extends Monster {
     public void aiStep() {
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.GUARDIAN_FLOP;
     }
     public float getTailAnimation(float a) {
         return 0.0F;

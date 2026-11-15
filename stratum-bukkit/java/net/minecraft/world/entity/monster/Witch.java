@@ -46,7 +46,7 @@ public class Witch extends Raider implements RangedAttackMob {
     public void aiStep() {
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.WITCH_CELEBRATE;
     }
     public void handleEntityEvent(byte id) {
     }

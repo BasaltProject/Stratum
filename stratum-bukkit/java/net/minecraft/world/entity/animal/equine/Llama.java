@@ -89,7 +89,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
         return false;
     }
     protected SoundEvent getAngrySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.LLAMA_ANGRY;
     }
     protected SoundEvent getAmbientSound() {
         return net.minecraft.sounds.SoundEvents.byId("entity.llama.ambient");
@@ -101,7 +101,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
         return net.minecraft.sounds.SoundEvents.byId("entity.llama.death");
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.LLAMA_EAT;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
         playSound(net.minecraft.sounds.SoundEvents.byId("entity.llama.step"), 0.15F, 1.0F);

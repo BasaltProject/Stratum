@@ -37,7 +37,7 @@ public class PolarBear extends Animal implements NeutralMob {
         super(type, level);
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.POLAR_BEAR.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean isFood(ItemStack itemStack) {
         return live() instanceof org.bukkit.entity.Animals animals && animals.isBreedItem(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack));

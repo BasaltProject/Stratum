@@ -42,7 +42,7 @@ public class Vindicator extends AbstractIllager {
     protected void readAdditionalSaveData(ValueInput input) {
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.VINDICATOR_CELEBRATE;
     }
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;

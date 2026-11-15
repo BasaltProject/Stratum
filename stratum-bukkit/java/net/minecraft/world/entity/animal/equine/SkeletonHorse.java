@@ -69,7 +69,7 @@ public class SkeletonHorse extends AbstractHorse {
         if (live() instanceof org.bukkit.entity.SkeletonHorse api) { api.setTrap(trap); }
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.SKELETON_HORSE.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         return net.minecraft.world.InteractionResult.PASS;

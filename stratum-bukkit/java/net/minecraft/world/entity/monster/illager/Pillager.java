@@ -106,7 +106,7 @@ public class Pillager extends AbstractIllager implements CrossbowAttackMob, Inve
         }
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.PILLAGER_CELEBRATE;
     }
     private boolean chargingCrossbow;
     private final SimpleContainer inventory = new SimpleContainer(5);

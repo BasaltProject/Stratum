@@ -63,14 +63,14 @@ public abstract class AbstractFish extends WaterAnimal implements Bucketable {
         net.minecraft.world.entity.Bucketable.loadDefaultDataFromBucketTag(this, tag);
     }
     public SoundEvent getPickupSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BUCKET_FILL_FISH;
     }
     protected boolean canRandomSwim() {
         return true;
     }
     protected abstract SoundEvent getFlopSound();
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.FISH_SWIM;
     }
     protected void playStepSound(BlockPos pos, BlockState blockState) {
     }

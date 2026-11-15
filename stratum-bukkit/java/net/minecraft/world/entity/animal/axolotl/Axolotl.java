@@ -159,7 +159,7 @@ public class Axolotl extends Animal implements Bucketable {
         return new ItemStack(net.minecraft.world.item.Items.AXOLOTL_BUCKET);
     }
     public SoundEvent getPickupSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BUCKET_FILL_AXOLOTL;
     }
     public static void onStopAttacking(ServerLevel level, Axolotl body, LivingEntity target) {
         if (target != null && target.isDeadOrDying()) {
@@ -179,10 +179,10 @@ public class Axolotl extends Animal implements Bucketable {
         return null;
     }
     protected SoundEvent getSwimSplashSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.AXOLOTL_SPLASH;
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.AXOLOTL_SWIM;
     }
     protected Brain<Axolotl> makeBrain(Brain.Packed packedBrain) {
         @SuppressWarnings("unchecked") Brain<Axolotl> made = (Brain<Axolotl>) (Brain<?>) super.makeBrain(packedBrain); return made;

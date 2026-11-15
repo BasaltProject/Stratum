@@ -32,16 +32,16 @@ public abstract class Monster extends PathfinderMob implements Enemy {
         return;
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_SWIM;
     }
     protected SoundEvent getSwimSplashSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_SPLASH;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.HOSTILE_DEATH;
     }
     public float getWalkTargetValue(BlockPos pos, LevelReader level) {
         return -level.getPathfindingCostFromLightLevels(pos);

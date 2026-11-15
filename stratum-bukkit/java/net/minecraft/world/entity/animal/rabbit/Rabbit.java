@@ -108,7 +108,7 @@ public class Rabbit extends Animal {
     protected void readAdditionalSaveData(ValueInput input) {
     }
     protected SoundEvent getJumpSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.RABBIT_JUMP;
     }
     protected SoundEvent getAmbientSound() {
         return net.minecraft.sounds.SoundEvents.byId("entity.rabbit.ambient");

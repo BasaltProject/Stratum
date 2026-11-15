@@ -124,10 +124,10 @@ public class Camel extends AbstractHorse {
         setDashing(true);
     }
     protected SoundEvent getDashingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_DASH;
     }
     protected SoundEvent getDashReadySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_DASH_READY;
     }
     public void handleStopJump() {
         setDashing(false);
@@ -172,10 +172,10 @@ public class Camel extends AbstractHorse {
         return partner != this && partner.getClass() == getClass() && live() instanceof org.bukkit.entity.Animals selfApi && selfApi.isLoveMode() && partner.live() instanceof org.bukkit.entity.Animals otherApi && otherApi.isLoveMode();
     }
     public Camel getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (Camel) net.minecraft.world.entity.EntityTypes.CAMEL.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_EAT;
     }
     protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
         }
@@ -214,10 +214,10 @@ public class Camel extends AbstractHorse {
         }
     }
     protected SoundEvent getStandUpSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_STAND;
     }
     protected SoundEvent getSitDownSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.CAMEL_SIT;
     }
     public void standUpInstantly() {
         lastPoseChangeTick = level().getGameTime() - 52L;

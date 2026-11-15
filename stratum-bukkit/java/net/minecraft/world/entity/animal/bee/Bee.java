@@ -186,7 +186,7 @@ public class Bee extends Animal implements NeutralMob {
         return live() instanceof org.bukkit.entity.Bee api ? (float) api.getSoundVolume() : 0;
     }
     public Bee getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (Bee) net.minecraft.world.entity.EntityTypes.BEE.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
         }

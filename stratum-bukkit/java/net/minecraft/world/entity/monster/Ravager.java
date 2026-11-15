@@ -33,7 +33,7 @@ public class Ravager extends Raider {
     protected void readAdditionalSaveData(ValueInput input) {
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.RAVAGER_CELEBRATE;
     }
     public int getMaxHeadYRot() {
         return super.getMaxHeadYRot();

@@ -24,7 +24,7 @@ public class ElderGuardian extends Guardian {
         return net.minecraft.sounds.SoundEvents.byId("entity.elder_guardian.death");
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ELDER_GUARDIAN_FLOP;
     }
     protected void customServerAiStep(ServerLevel level) {
     }

@@ -41,7 +41,7 @@ public class Dolphin extends AgeableWaterCreature {
         return groupData;
     }
     public Dolphin getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (Dolphin) net.minecraft.world.entity.EntityTypes.DOLPHIN.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     protected void handleAirSupply(int preTickAirSupply) {
         }
@@ -114,10 +114,10 @@ public class Dolphin extends AgeableWaterCreature {
         return net.minecraft.sounds.SoundEvents.byId("entity.dolphin.ambient");
     }
     protected SoundEvent getSwimSplashSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.DOLPHIN_SPLASH;
     }
     protected SoundEvent getSwimSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.DOLPHIN_SWIM;
     }
     protected boolean closeToNextPos() {
         BlockPos target = getNavigation().getTargetPos();

@@ -61,7 +61,7 @@ public class MagmaCube extends AbstractCubeMob implements Enemy {
         return null;
     }
     protected SoundEvent getJumpSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.MAGMA_CUBE_JUMP;
     }
     protected boolean canBeABaby() {
         return false;

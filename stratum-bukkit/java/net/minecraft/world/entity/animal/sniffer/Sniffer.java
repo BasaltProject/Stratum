@@ -108,7 +108,7 @@ public class Sniffer extends Animal {
         return super.getMaxHeadYRot();
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.SNIFFER.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean canMate(Animal partner) {
         return partner != this && partner.getClass() == getClass() && live() instanceof org.bukkit.entity.Animals selfApi && selfApi.isLoveMode() && partner.live() instanceof org.bukkit.entity.Animals otherApi && otherApi.isLoveMode();

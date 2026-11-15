@@ -57,7 +57,7 @@ public class Squid extends AgeableWaterCreature {
         return net.minecraft.sounds.SoundEvents.byId("entity.squid.death");
     }
     protected SoundEvent getSquirtSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SQUID_SQUIRT;
     }
     public boolean canBeLeashed() {
         return super.canBeLeashed();
@@ -69,7 +69,7 @@ public class Squid extends AgeableWaterCreature {
         return super.getMovementEmission();
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.SQUID.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     protected double getDefaultGravity() {
         return live() instanceof org.bukkit.entity.Squid api ? (double) api.getDefaultGravity() : 0;

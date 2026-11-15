@@ -71,10 +71,10 @@ public class ZombifiedPiglin extends Zombie implements NeutralMob {
         return null;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIFIED_PIGLIN_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIFIED_PIGLIN_DEATH;
     }
     public void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
         setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(random.nextInt(20) == 0 ? Items.GOLDEN_SPEAR : Items.GOLDEN_SWORD));

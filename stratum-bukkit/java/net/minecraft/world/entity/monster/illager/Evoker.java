@@ -23,7 +23,7 @@ public class Evoker extends SpellcasterIllager {
             .add(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH, 24.0);
     }
     public SoundEvent getCelebrateSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.EVOKER_CELEBRATE;
     }
     protected boolean considersEntityAsAlly(Entity other) {
         return false;

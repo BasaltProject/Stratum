@@ -96,7 +96,7 @@ public class TropicalFish extends AbstractSchoolingFish {
         return net.minecraft.sounds.SoundEvents.byId("entity.tropical_fish.hurt");
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.TROPICAL_FISH_FLOP;
     }
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;

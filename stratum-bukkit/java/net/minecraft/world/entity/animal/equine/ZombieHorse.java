@@ -41,22 +41,22 @@ public class ZombieHorse extends AbstractHorse {
     protected void randomizeAttributes(RandomSource random) {
         }
     protected SoundEvent getAmbientSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_HORSE_AMBIENT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_HORSE_DEATH;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_HORSE_HURT;
     }
     protected SoundEvent getAngrySound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_HORSE_ANGRY;
     }
     protected SoundEvent getEatingSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.ZOMBIE_HORSE_EAT;
     }
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return null;
+        return (net.minecraft.world.entity.AgeableMob) net.minecraft.world.entity.EntityTypes.ZOMBIE_HORSE.create(level, net.minecraft.world.entity.EntitySpawnReason.BREEDING);
     }
     public boolean canFallInLove() {
         return false;

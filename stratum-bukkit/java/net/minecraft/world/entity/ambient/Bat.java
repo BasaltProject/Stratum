@@ -39,10 +39,10 @@ public class Bat extends AmbientCreature {
         return null;
     }
     protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BAT_HURT;
     }
     protected SoundEvent getDeathSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.BAT_DEATH;
     }
     public boolean isPushable() {
         return false;

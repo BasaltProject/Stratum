@@ -41,7 +41,7 @@ public class Salmon extends AbstractSchoolingFish {
         return net.minecraft.sounds.SoundEvents.byId("entity.salmon.hurt");
     }
     protected SoundEvent getFlopSound() {
-        return null;
+        return net.minecraft.sounds.SoundEvents.SALMON_FLOP;
     }
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
