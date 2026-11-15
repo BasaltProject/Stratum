@@ -176,6 +176,29 @@ final class HookEntityEvents {
                     case "end" -> org.bukkit.PortalType.ENDER;
                     default -> org.bukkit.PortalType.CUSTOM;
                 }));
+        EventBridge.map("entity.portal", org.bukkit.event.entity.EntityPortalEvent.class, f -> {
+            Entity who = f.entity();
+            BasaltWorld target = BasaltServer.instance().world(f.text("to_world"));
+            return who == null || target == null ? null : new org.bukkit.event.entity.EntityPortalEvent(who,
+                f.location(), new Location(target, f.real("to_x"), f.real("to_y"), f.real("to_z")), 128);
+        }, (e, f) -> {
+            Location to = ((org.bukkit.event.entity.EntityPortalEvent) e).getTo();
+            if (to != null) {
+                f.put("to_x", to.getX());
+                f.put("to_y", to.getY());
+                f.put("to_z", to.getZ());
+            }
+        });
+        EventBridge.map("entity.drop_item", org.bukkit.event.entity.EntityDropItemEvent.class, f -> {
+            Entity who = f.entity();
+            return who == null || !(entityAt(f, "item_id") instanceof Item dropped) ? null
+                : new org.bukkit.event.entity.EntityDropItemEvent(who, dropped);
+        });
+        EventBridge.map("entity.interact", org.bukkit.event.entity.EntityInteractEvent.class, f -> {
+            Entity who = f.entity();
+            return who == null ? null : new org.bukkit.event.entity.EntityInteractEvent(who,
+                f.world().getBlockAt((int) f.whole("block_x"), (int) f.whole("block_y"), (int) f.whole("block_z")));
+        });
         EventBridge.map("entity.enter_block", org.bukkit.event.entity.EntityEnterBlockEvent.class, f -> {
             Entity who = f.entity();
             return who == null || f.world() == null ? null : new org.bukkit.event.entity.EntityEnterBlockEvent(who,

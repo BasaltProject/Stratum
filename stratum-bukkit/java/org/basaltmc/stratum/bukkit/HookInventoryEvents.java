@@ -20,6 +20,14 @@ final class HookInventoryEvents {
             return from == null || to == null ? null : new org.bukkit.event.inventory.InventoryMoveItemEvent(from,
                 new org.bukkit.inventory.ItemStack(material, 1), to, f.text("initiator").equals("source"));
         });
+        EventBridge.map("inventory.pickup_item", org.bukkit.event.inventory.InventoryPickupItemEvent.class, f -> {
+            BasaltWorld world = f.world();
+            org.bukkit.inventory.Inventory hopper = world == null ? null
+                : holderAt(world, f.whole("x"), f.whole("y"), f.whole("z"));
+            return hopper != null && BasaltServer.instance().entityById(world, (int) f.whole("item_id"))
+                instanceof org.bukkit.entity.Item item ? new org.bukkit.event.inventory.InventoryPickupItemEvent(hopper, item)
+                : null;
+        });
         EventBridge.map("inventory.trade", org.bukkit.event.inventory.TradeSelectEvent.class, f -> {
             org.bukkit.entity.Player who = f.player();
             org.basaltmc.stratum.bukkit.inv.BasaltInventoryView window = who == null ? null

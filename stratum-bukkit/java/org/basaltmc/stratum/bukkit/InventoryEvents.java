@@ -34,13 +34,23 @@ final class InventoryEvents {
         EventBridge.map("inventory.smelt", org.bukkit.event.inventory.FurnaceSmeltEvent.class, f -> {
             ItemStack source = Items.fromSnbt(f.text("source"));
             ItemStack output = Items.fromSnbt(f.text("output"));
-            if (source == null || output == null) {
+            if (source == null || output == null || f.text("cooker").equals("campfire")) {
                 return null;
             }
             org.bukkit.inventory.Recipe recipe = recipeOf(f.text("recipe"));
             return new org.bukkit.event.inventory.FurnaceSmeltEvent(f.block(), source, output,
                 recipe instanceof org.bukkit.inventory.CookingRecipe<?> cooking ? cooking : null);
         }, (e, f) -> f.put("output", Items.toSnbt(((org.bukkit.event.inventory.FurnaceSmeltEvent) e).getResult())));
+        EventBridge.map("inventory.smelt", org.bukkit.event.block.BlockCookEvent.class, f -> {
+            ItemStack source = Items.fromSnbt(f.text("source"));
+            ItemStack output = Items.fromSnbt(f.text("output"));
+            if (source == null || output == null || !f.text("cooker").equals("campfire")) {
+                return null;
+            }
+            org.bukkit.inventory.Recipe recipe = recipeOf(f.text("recipe"));
+            return new org.bukkit.event.block.BlockCookEvent(f.block(), source, output,
+                recipe instanceof org.bukkit.inventory.CookingRecipe<?> cooking ? cooking : null);
+        }, (e, f) -> f.put("output", Items.toSnbt(((org.bukkit.event.block.BlockCookEvent) e).getResult())));
         EventBridge.map("furnace.burn", org.bukkit.event.inventory.FurnaceBurnEvent.class, f -> {
             ItemStack fuel = Items.fromSnbt(f.text("fuel"));
             return fuel == null ? null : new org.bukkit.event.inventory.FurnaceBurnEvent(f.block(), fuel,

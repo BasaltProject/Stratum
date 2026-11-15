@@ -249,10 +249,26 @@ final class EntityEvents {
             Entity target = ((EntityTargetEvent) e).getTarget();
             f.put("target_id", (long) (target == null ? -1 : target.getEntityId()));
         });
+        java.util.function.BiConsumer<org.bukkit.event.Event, EventBridge.Fields> burned = (e, f) ->
+            f.put("ticks", (long) Math.max(0, Math.round(((EntityCombustEvent) e).getDuration() * 20.0f)));
         EventBridge.map("entity.combust", EntityCombustEvent.class, f -> {
             Entity burning = f.entity();
-            return burning == null ? null : new EntityCombustEvent(burning, f.whole("ticks") / 20.0f);
-        }, (e, f) -> f.put("ticks", (long) Math.max(0, Math.round(((EntityCombustEvent) e).getDuration() * 20.0f))));
+            return burning == null || !f.text("source_kind").isEmpty() ? null
+                : new EntityCombustEvent(burning, f.whole("ticks") / 20.0f);
+        }, burned);
+        EventBridge.map("entity.combust", org.bukkit.event.entity.EntityCombustByBlockEvent.class, f -> {
+            Entity burning = f.entity();
+            return burning == null || !f.text("source_kind").equals("block") ? null
+                : new org.bukkit.event.entity.EntityCombustByBlockEvent(f.world().getBlockAt((int) f.whole("source_x"),
+                    (int) f.whole("source_y"), (int) f.whole("source_z")), burning, f.whole("ticks") / 20.0f);
+        }, burned);
+        EventBridge.map("entity.combust", org.bukkit.event.entity.EntityCombustByEntityEvent.class, f -> {
+            Entity burning = f.entity();
+            Entity source = f.text("source_kind").equals("entity")
+                ? BasaltServer.instance().entityById(f.world(), (int) f.whole("source_id")) : null;
+            return burning == null || source == null ? null
+                : new org.bukkit.event.entity.EntityCombustByEntityEvent(source, burning, f.whole("ticks") / 20.0f);
+        }, burned);
         EventBridge.map("entity.potion_effect", EntityPotionEffectEvent.class, f -> {
             Entity affected = f.entity();
             if (!(affected instanceof LivingEntity living)) {
