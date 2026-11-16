@@ -28,8 +28,17 @@ public final class BasaltCommandMap extends SimpleCommandMap {
             }
         } else if (command instanceof org.basaltmc.stratum.bukkit.facade.BukkitCommandBridge.BrigadierBukkitCommand) {
             announce("minecraft", label, command);
+        } else if (registered && isPluginPrefix(fallbackPrefix)) {
+            announce(fallbackPrefix, label, command);
+            for (String alias : command.getAliases()) {
+                announce(fallbackPrefix, alias, command);
+            }
         }
         return registered;
+    }
+
+    private static boolean isPluginPrefix(String prefix) {
+        return prefix != null && !prefix.isEmpty() && BasaltServer.instance().pluginManagerImpl().getPlugin(prefix) != null;
     }
 
     private void announce(String owner, String label, Command command) {

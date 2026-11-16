@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.kyori.adventure.text.Component;
-import org.basaltmc.stratum.bukkit.gen.ItemMetaBase;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -22,7 +21,7 @@ import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataContainer;
 
-public abstract class MetaItemCore extends ItemMetaBase implements Damageable, Repairable,
+public abstract class MetaItemCore extends org.bukkit.craftbukkit.inventory.CraftMetaItem implements Damageable, Repairable,
         org.bukkit.inventory.meta.BlockDataMeta {
     static final String kCustomName = "minecraft:custom_name";
     static final String kItemName = "minecraft:item_name";

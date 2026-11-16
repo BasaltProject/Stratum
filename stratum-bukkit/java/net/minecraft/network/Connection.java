@@ -27,7 +27,7 @@ import org.slf4j.Marker;
 
 /** The per-client connection object whose single channel field plugins read to reach the netty pipeline. */
 public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-    private Channel channel;
+    public Channel channel;
     private PacketFlow receiving = PacketFlow.SERVERBOUND;
     private PacketListener packetListener;
     private DisconnectionDetails disconnectionDetails;
