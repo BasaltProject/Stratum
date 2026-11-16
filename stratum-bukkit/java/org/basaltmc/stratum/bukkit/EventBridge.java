@@ -185,6 +185,8 @@ final class EventBridge {
         VibrationDispatch.install();
         HookVehicleEvents.install();
         HookInventoryEvents.install();
+        LootEvents.install();
+        TradeEvents.install();
         WorldEvents.install();
         ServerEvents.install();
         map("player.join", PlayerJoinEvent.class, f -> new PlayerJoinEvent(f.player(),

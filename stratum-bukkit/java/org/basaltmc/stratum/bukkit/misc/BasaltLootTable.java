@@ -52,6 +52,14 @@ public final class BasaltLootTable implements LootTable {
     public void fillInventory(Inventory inventory, Random random, LootContext context) {
         Random rolled = random == null ? new Random() : random;
         List<ItemStack> items = new ArrayList<>(populateLoot(rolled, context));
+        org.bukkit.event.world.LootGenerateEvent generated = new org.bukkit.event.world.LootGenerateEvent(
+            context.getLocation().getWorld(), context.getLootedEntity(), inventory.getHolder(), this, context, items,
+            true);
+        org.bukkit.Bukkit.getPluginManager().callEvent(generated);
+        if (generated.isCancelled()) {
+            return;
+        }
+        items = new ArrayList<>(generated.getLoot());
         List<Integer> empty = new ArrayList<>();
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             ItemStack held = inventory.getItem(slot);
