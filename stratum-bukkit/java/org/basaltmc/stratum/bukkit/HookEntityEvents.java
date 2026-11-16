@@ -42,6 +42,18 @@ final class HookEntityEvents {
         f.put("kz", push.getZ());
     }
 
+    private static org.bukkit.event.entity.EntityTransformEvent.TransformReason inferredTransform(
+            org.bukkit.entity.EntityType type) {
+        return switch (type) {
+            case ZOMBIE_VILLAGER -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.INFECTION;
+            case DROWNED -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.DROWNED;
+            case ZOMBIFIED_PIGLIN -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.PIGLIN_ZOMBIFIED;
+            case STRAY -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.FROZEN;
+            case VILLAGER -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.CURED;
+            default -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.UNKNOWN;
+        };
+    }
+
     static void install() {
         EventBridge.map("entity.move", io.papermc.paper.event.entity.EntityMoveEvent.class, f -> {
             BasaltWorld world = f.world();
@@ -99,8 +111,14 @@ final class HookEntityEvents {
         EventBridge.map("entity.change_block", org.bukkit.event.entity.EntityChangeBlockEvent.class, f -> {
             Entity who = f.entity();
             Material to = Material.matchMaterial(f.text("to_block"));
-            return who == null || to == null ? null
+            return who == null || to == null || f.text("cause").equals("trail") ? null
                 : new org.bukkit.event.entity.EntityChangeBlockEvent(who, f.block(), to.createBlockData());
+        });
+        EventBridge.map("entity.change_block", org.bukkit.event.block.EntityBlockFormEvent.class, f -> {
+            Entity who = f.entity();
+            return who == null || !f.text("cause").equals("trail") ? null
+                : new org.bukkit.event.block.EntityBlockFormEvent(who, f.block(),
+                    BlockEvents.becoming(f.block(), f.text("to_block")));
         });
         EventBridge.map("entity.teleport", org.bukkit.event.entity.EntityTeleportEvent.class, f -> {
             Entity who = f.entity();
@@ -152,16 +170,55 @@ final class HookEntityEvents {
             }
             Entity made = org.basaltmc.stratum.bukkit.entity.EntityCore.template(f.world(), type, f.real("x"), f.real("y"),
                 f.real("z"), 0f, 0f);
-            org.bukkit.event.entity.EntityTransformEvent.TransformReason reason = switch (type) {
-                case ZOMBIE_VILLAGER -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.INFECTION;
-                case DROWNED -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.DROWNED;
-                case ZOMBIFIED_PIGLIN -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.PIGLIN_ZOMBIFIED;
-                case WITCH -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.LIGHTNING;
-                case STRAY -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.FROZEN;
-                case VILLAGER -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.CURED;
-                default -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.UNKNOWN;
+            org.bukkit.event.entity.EntityTransformEvent.TransformReason reason = switch (f.text("reason")) {
+                case "lightning" -> org.bukkit.event.entity.EntityTransformEvent.TransformReason.LIGHTNING;
+                default -> inferredTransform(type);
             };
             return new org.bukkit.event.entity.EntityTransformEvent(original, java.util.List.of(made), reason);
+        });
+        EventBridge.map("entity.sheep_regrow", org.bukkit.event.entity.SheepRegrowWoolEvent.class,
+            f -> f.entity() instanceof org.bukkit.entity.Sheep sheep
+                ? new org.bukkit.event.entity.SheepRegrowWoolEvent(sheep) : null);
+        EventBridge.map("entity.pig_zap", org.bukkit.event.entity.PigZapEvent.class, f -> {
+            Entity bolt = BasaltServer.instance().entityById(f.world(), (int) f.whole("bolt_id"));
+            if (!(f.entity() instanceof org.bukkit.entity.Pig pig) || !(bolt instanceof org.bukkit.entity.LightningStrike strike)
+                || !(org.basaltmc.stratum.bukkit.entity.EntityCore.template(f.world(),
+                    org.bukkit.entity.EntityType.ZOMBIFIED_PIGLIN, f.real("x"), f.real("y"), f.real("z"), 0f, 0f)
+                        instanceof org.bukkit.entity.PigZombie piglin)) {
+                return null;
+            }
+            return new org.bukkit.event.entity.PigZapEvent(pig, strike, piglin);
+        });
+        EventBridge.map("entity.creeper_power", org.bukkit.event.entity.CreeperPowerEvent.class, f -> {
+            Entity bolt = BasaltServer.instance().entityById(f.world(), (int) f.whole("bolt_id"));
+            return f.entity() instanceof org.bukkit.entity.Creeper creeper && bolt instanceof org.bukkit.entity.LightningStrike strike
+                ? new org.bukkit.event.entity.CreeperPowerEvent(creeper, strike,
+                    org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING) : null;
+        });
+        EventBridge.map("entity.remove", org.bukkit.event.entity.EntityRemoveEvent.class, f -> {
+            Entity gone = f.entity();
+            if (gone == null) {
+                return null;
+            }
+            org.bukkit.event.entity.EntityRemoveEvent.Cause cause;
+            try {
+                cause = org.bukkit.event.entity.EntityRemoveEvent.Cause.valueOf(f.text("cause").toUpperCase(java.util.Locale.ROOT));
+            } catch (IllegalArgumentException unknown) {
+                cause = org.bukkit.event.entity.EntityRemoveEvent.Cause.DESPAWN;
+            }
+            return new org.bukkit.event.entity.EntityRemoveEvent(gone, cause);
+        });
+        EventBridge.map("entity.place", org.bukkit.event.entity.EntityPlaceEvent.class, f -> {
+            org.bukkit.entity.EntityType type = org.basaltmc.stratum.bukkit.entity.EntityCore.typeOf(f.text("entity_type"));
+            if (type == org.bukkit.entity.EntityType.UNKNOWN || f.player() == null) {
+                return null;
+            }
+            Entity made = org.basaltmc.stratum.bukkit.entity.EntityCore.template(f.world(), type, f.real("x"), f.real("y"),
+                f.real("z"), 0f, 0f);
+            org.bukkit.block.Block clicked = f.world().getBlockAt((int) f.whole("block_x"), (int) f.whole("block_y"),
+                (int) f.whole("block_z"));
+            return new org.bukkit.event.entity.EntityPlaceEvent(made, f.player(), clicked,
+                PlayerEvents.face(f.text("face")), PlayerEvents.hand(f.text("hand")));
         });
         EventBridge.map("entity.split", org.bukkit.event.entity.SlimeSplitEvent.class,
             f -> f.entity() instanceof org.bukkit.entity.AbstractCubeMob cube

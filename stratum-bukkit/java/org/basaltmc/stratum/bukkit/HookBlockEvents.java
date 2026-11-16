@@ -41,6 +41,14 @@ final class HookBlockEvents {
     }
 
     static void install() {
+        EventBridge.map("block.pre_dispense", io.papermc.paper.event.block.BlockPreDispenseEvent.class, f -> {
+            ItemStack stack = PlayerEvents.stackOf(f.text("item"), 1);
+            return stack == null ? null
+                : new io.papermc.paper.event.block.BlockPreDispenseEvent(f.block(), stack, (int) f.whole("slot"));
+        });
+        EventBridge.map("block.failed_dispense", io.papermc.paper.event.block.BlockFailedDispenseEvent.class,
+            f -> new io.papermc.paper.event.block.BlockFailedDispenseEvent(f.block()),
+            (e, f) -> f.put("play_effect", ((io.papermc.paper.event.block.BlockFailedDispenseEvent) e).shouldPlayEffect()));
         EventBridge.map("block.brewing_fuel", org.bukkit.event.inventory.BrewingStandFuelEvent.class, f -> {
             ItemStack fuel = f.stack("item");
             return fuel == null ? null

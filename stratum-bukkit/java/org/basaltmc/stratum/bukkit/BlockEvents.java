@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 final class BlockEvents {
     private BlockEvents() {}
 
-    private static BlockState becoming(Block block, String blockId) {
+    static BlockState becoming(Block block, String blockId) {
         BlockState state = block.getState();
         Material to = Material.matchMaterial(blockId);
         if (to != null) {
