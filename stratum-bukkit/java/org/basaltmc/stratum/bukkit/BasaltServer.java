@@ -471,7 +471,7 @@ public class BasaltServer extends ServerTail {
 
     @Override
     public org.bukkit.help.HelpMap getHelpMap() {
-        return new BasaltHelpMap();
+        return new org.bukkit.craftbukkit.help.SimpleHelpMap();
     }
 
     @Override

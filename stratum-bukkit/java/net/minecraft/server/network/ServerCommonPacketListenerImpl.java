@@ -21,7 +21,7 @@ import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
 import net.minecraft.server.level.ClientInformation;
 
 public class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
-    protected final Connection connection;
+    public final Connection connection;
 
     public ServerCommonPacketListenerImpl(Connection connection) {
         this.server = MinecraftServer.getServer();

@@ -61,6 +61,17 @@ final class LegacyCalls {
         "org/bukkit/potion/PotionEffectType getByKey (" + kKey + ")Lorg/bukkit/potion/PotionEffectType;",
         new Target(kNames, "getByKey_PotionEffectType", "(" + kKey + ")Lorg/bukkit/potion/PotionEffectType;"));
 
+    private static final String kEnumMapOwner = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumMap";
+    private static final String kEnumSetOwner = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumSet";
+
+    private static final Map<String, Target> kGuavaEnum = Map.of(
+        "com/google/common/collect/Maps newEnumMap (Ljava/lang/Class;)L" + kEnumMapOwner + ";",
+        new Target(kEnumMapOwner, "newEnumMap", "(Ljava/lang/Class;)L" + kEnumMapOwner + ";"),
+        "com/google/common/collect/Maps newEnumMap (Ljava/util/Map;)L" + kEnumMapOwner + ";",
+        new Target(kEnumMapOwner, "newEnumMap", "(Ljava/util/Map;)L" + kEnumMapOwner + ";"),
+        "com/google/common/collect/Sets newEnumSet (Ljava/lang/Iterable;Ljava/lang/Class;)L" + kEnumSetOwner + ";",
+        new Target(kEnumSetOwner, "newEnumSet", "(Ljava/lang/Iterable;Ljava/lang/Class;)L" + kEnumSetOwner + ";"));
+
     private static final Map<String, Target> kEnumInstance = Map.of(
         "java/lang/Enum name ()" + kString, new Target(kLegacyEnums, "name", "(" + kObject + ")" + kString),
         "java/lang/Enum toString ()" + kString, new Target(kLegacyEnums, "toString", "(" + kObject + ")" + kString),
@@ -78,6 +89,9 @@ final class LegacyCalls {
         String key = owner + " " + name + " " + descriptor;
         if (plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
             Target found = kEnumStatic.get(key);
+            if (found == null) {
+                found = kGuavaEnum.get(key);
+            }
             if (found != null) {
                 return found;
             }

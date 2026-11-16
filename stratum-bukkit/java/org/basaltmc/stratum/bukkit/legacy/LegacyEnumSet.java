@@ -23,6 +23,14 @@ public final class LegacyEnumSet<E> extends AbstractSet<E> implements Serializab
         return new LegacyEnumSet<>(elementType);
     }
 
+    public static <E> LegacyEnumSet<E> newEnumSet(Iterable<E> iterable, Class<E> elementType) {
+        LegacyEnumSet<E> set = new LegacyEnumSet<>(elementType);
+        for (E element : iterable) {
+            set.add(element);
+        }
+        return set;
+    }
+
     public static <E> LegacyEnumSet<E> allOf(Class<E> elementType) {
         LegacyEnumSet<E> set = new LegacyEnumSet<>(elementType);
         set.elements.addAll(LegacyKeys.universe(elementType));

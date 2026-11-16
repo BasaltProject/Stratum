@@ -38,7 +38,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
-public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCommandSource<CommandSourceStack> {
+public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCommandSource<CommandSourceStack>,
+    io.papermc.paper.command.brigadier.CommandSourceStack {
     public static final SimpleCommandExceptionType ERROR_NOT_PLAYER =
         new SimpleCommandExceptionType(new LiteralMessage("A player is required to run this command here"));
     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY =
@@ -388,5 +389,50 @@ public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCo
                 }
             };
         }
+    }
+
+    @Override
+    public org.bukkit.Location getLocation() {
+        return new org.bukkit.Location(level == null ? null : level.getWorld(), position.x, position.y, position.z,
+            rotation.y, rotation.x);
+    }
+
+    @Override
+    public org.bukkit.command.CommandSender getSender() {
+        return entity instanceof org.bukkit.command.CommandSender sender ? sender
+            : entity != null && entity.getBukkitEntity() instanceof org.bukkit.command.CommandSender found ? found
+            : org.bukkit.Bukkit.getConsoleSender();
+    }
+
+    @Override
+    public org.bukkit.entity.Entity getExecutor() {
+        return entity == null ? null : entity.getBukkitEntity() instanceof org.bukkit.entity.Entity found ? found : null;
+    }
+
+    @Override
+    public org.bukkit.entity.Player getPlayerOrThrow() throws CommandSyntaxException {
+        if (getExecutor() instanceof org.bukkit.entity.Player player) {
+            return player;
+        }
+        throw ERROR_NOT_PLAYER.create();
+    }
+
+    @Override
+    public org.bukkit.entity.Entity getEntityOrThrow() throws CommandSyntaxException {
+        org.bukkit.entity.Entity found = getExecutor();
+        if (found == null) {
+            throw ERROR_NOT_ENTITY.create();
+        }
+        return found;
+    }
+
+    @Override
+    public io.papermc.paper.command.brigadier.CommandSourceStack withLocation(org.bukkit.Location location) {
+        return withPosition(new Vec3(location.getX(), location.getY(), location.getZ()));
+    }
+
+    @Override
+    public io.papermc.paper.command.brigadier.CommandSourceStack withExecutor(org.bukkit.entity.Entity executor) {
+        return executor instanceof org.bukkit.craftbukkit.entity.CraftEntity craft ? withEntity(craft.getHandle()) : this;
     }
 }

@@ -17,6 +17,11 @@ public final class CraftServer extends BasaltServer {
         this.commandMap = getCommandMap();
     }
 
+    @Override
+    public org.bukkit.command.CommandMap getCommandMap() {
+        return super.getCommandMap();
+    }
+
     public DedicatedServer getServer() {
         return console;
     }

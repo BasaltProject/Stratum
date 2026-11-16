@@ -19,6 +19,14 @@ public final class LegacyEnumMap<K, V> extends AbstractMap<K, V> implements Seri
         this.entries = new TreeMap<>(LegacyKeys.kOrder);
     }
 
+    public static <K, V> LegacyEnumMap<K, V> newEnumMap(Class<K> keyType) {
+        return new LegacyEnumMap<>(keyType);
+    }
+
+    public static <K, V> LegacyEnumMap<K, V> newEnumMap(Map<K, ? extends V> other) {
+        return new LegacyEnumMap<>(other);
+    }
+
     public LegacyEnumMap(LegacyEnumMap<K, ? extends V> other) {
         this(other.keyType);
         entries.putAll(other.entries);

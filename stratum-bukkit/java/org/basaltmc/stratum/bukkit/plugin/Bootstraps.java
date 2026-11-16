@@ -119,8 +119,32 @@ public final class Bootstraps {
                 return source;
             }
         };
-        bootstrap.bootstrap(context);
+        withoutServer(() -> bootstrap.bootstrap(context));
         org.basaltmc.stratum.bukkit.RegistryLifecycle.run(registry, meta.getName());
         return new Started(bootstrap, context, commands);
+    }
+
+    /** Paper runs a bootstrapper before the server exists, and plugins tell the two phases apart by Bukkit.getServer(). */
+    private static void withoutServer(Runnable body) {
+        java.lang.reflect.Field field;
+        Object held;
+        try {
+            field = org.bukkit.Bukkit.class.getDeclaredField("server");
+            field.setAccessible(true);
+            held = field.get(null);
+            field.set(null, null);
+        } catch (ReflectiveOperationException | RuntimeException failure) {
+            body.run();
+            return;
+        }
+        try {
+            body.run();
+        } finally {
+            try {
+                field.set(null, held);
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+                // The server stays hidden only if the field cannot be written back, which the first write ruled out.
+            }
+        }
     }
 }

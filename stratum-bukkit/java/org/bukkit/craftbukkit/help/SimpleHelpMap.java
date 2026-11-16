@@ -1,4 +1,4 @@
-package org.basaltmc.stratum.bukkit;
+package org.bukkit.craftbukkit.help;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +14,8 @@ import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.help.HelpTopicFactory;
 
-public final class BasaltHelpMap extends HelpMapBase {
-    private final Map<String, HelpTopic> topics = new ConcurrentHashMap<>();
+public final class SimpleHelpMap extends HelpMapBase {
+    private final Map<String, HelpTopic> helpTopics = new ConcurrentHashMap<>();
     private final Map<Class<?>, HelpTopicFactory<?>> factories = new ConcurrentHashMap<>();
 
     private static String key(String name) {
@@ -41,7 +41,7 @@ public final class BasaltHelpMap extends HelpMapBase {
         if (name == null) {
             return null;
         }
-        HelpTopic held = topics.get(key(name));
+        HelpTopic held = helpTopics.get(key(name));
         if (held != null) {
             return held;
         }
@@ -54,21 +54,21 @@ public final class BasaltHelpMap extends HelpMapBase {
 
     @Override
     public Collection<HelpTopic> getHelpTopics() {
-        Map<String, HelpTopic> all = new LinkedHashMap<>(topics);
+        Map<String, HelpTopic> all = new LinkedHashMap<>(helpTopics);
         for (Command command : new ArrayList<>(Bukkit.getCommandMap().getKnownCommands().values())) {
             all.computeIfAbsent("/" + key(command.getName()), ignored -> commandTopic(command));
         }
-        return List.copyOf(all.values());
+        return new ArrayList<>(all.values());
     }
 
     @Override
     public void addTopic(HelpTopic topic) {
-        topics.put(key(topic.getName()), topic);
+        helpTopics.put(key(topic.getName()), topic);
     }
 
     @Override
     public void clear() {
-        topics.clear();
+        helpTopics.clear();
     }
 
     @Override

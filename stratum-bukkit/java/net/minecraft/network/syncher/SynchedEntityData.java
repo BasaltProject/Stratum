@@ -34,6 +34,10 @@ public class SynchedEntityData {
         if (key.id() == 0 && key.serializer() == EntityDataSerializers.BYTE && owner != null)
             owner.sharedFlags((Byte) value);
     }
+    public void markDirty(EntityDataAccessor<?> key) {
+        if (values.containsKey(key.id()))
+            dirty.add(key.id());
+    }
     public boolean isDirty() {
         return !dirty.isEmpty();
     }
