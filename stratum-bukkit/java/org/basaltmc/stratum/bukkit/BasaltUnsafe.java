@@ -37,7 +37,7 @@ public final class BasaltUnsafe extends UnsafeValuesBase {
 
     @Override
     public org.bukkit.Material fromLegacy(org.bukkit.Material material) {
-        return material;
+        return modernOf(material, (byte) 0);
     }
 
     private static org.bukkit.block.data.BlockData blockOf(org.bukkit.Material material, byte data) {
@@ -173,7 +173,7 @@ public final class BasaltUnsafe extends UnsafeValuesBase {
 
     @Override
     public org.bukkit.Material toLegacy(org.bukkit.Material material) {
-        return material;
+        return org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.toLegacy(material);
     }
 
     private static final int kProtocol = 777;

@@ -43,7 +43,8 @@ public final class BasaltBlockState extends BlockStateBase {
 
     @Override
     public MaterialData getData() {
-        return new MaterialData(data.getMaterial());
+        Material legacy = org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.toLegacy(data.getMaterial());
+        return legacy.getNewData(getRawData());
     }
 
     @Override
@@ -149,11 +150,17 @@ public final class BasaltBlockState extends BlockStateBase {
 
     @Override
     public byte getRawData() {
-        return 0;
+        return org.basaltmc.stratum.bukkit.legacy.LegacyBlocks.dataOf(data);
     }
 
     @Override
-    public void setRawData(byte value) {}
+    public void setRawData(byte value) {
+        Material legacy = org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.getMaterial(
+            org.basaltmc.stratum.bukkit.legacy.LegacyBlocks.blockOf(data));
+        if (legacy != null) {
+            data = org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.blockData(legacy, value);
+        }
+    }
 
     @Override
     public boolean isPlaced() {

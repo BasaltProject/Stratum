@@ -249,3 +249,5 @@ class org/bukkit/block/data/type/PointedDripstone org/bukkit/block/data/type/Spe
 class org/bukkit/block/data/type/PointedDripstone$Thickness org/bukkit/block/data/type/Speleothem$Thickness
 class org/bukkit/entity/Cow org/bukkit/entity/AbstractCow before 1.21.5
 class org/bukkit/entity/Slime org/bukkit/entity/AbstractCubeMob before 26.2
+class java/util/EnumMap org/basaltmc/stratum/bukkit/legacy/LegacyEnumMap before 1.21.3
+class java/util/EnumSet org/basaltmc/stratum/bukkit/legacy/LegacyEnumSet before 1.21.3

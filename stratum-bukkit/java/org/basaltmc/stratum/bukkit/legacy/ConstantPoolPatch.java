@@ -18,6 +18,9 @@ final class ConstantPoolPatch {
     private static final int kMethodHandle = 15;
     private static final String kLegacyMysqlDriver = "com.mysql.jdbc.Driver";
     private static final String kModernMysqlDriver = "com.mysql.cj.jdbc.Driver";
+    private static final String kEnumType = "Ljava/lang/Enum;";
+    private static final String kLegacyEnumMap = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumMap";
+    private static final String kLegacyEnumSet = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumSet";
     private static final String kNames = "org/basaltmc/stratum/bukkit/legacy/LegacyNames";
 
     private static final Map<String, String> kRerouted = Map.ofEntries(
@@ -41,6 +44,8 @@ final class ConstantPoolPatch {
     private final Map<String, Integer> added = new HashMap<>();
     private boolean changed;
     private boolean formerClassCalls;
+    private int formerSuper = -1;
+    private int superObject;
 
     private ConstantPoolPatch(byte[] source) {
         this.source = source;
@@ -77,6 +82,7 @@ final class ConstantPoolPatch {
         ConstantPoolPatch patch = new ConstantPoolPatch(bytes);
         patch.renameClasses(LegacyRenames.classRenames(plugin));
         patch.patchMembers(plugin, becameInterface, modernMaterial, legacyMaterial);
+        patch.implementFormerSuper(becameInterface);
         return patch.changed || patch.formerClassCalls ? new Result(patch.write(), patch.formerClassCalls) : null;
     }
 
@@ -164,8 +170,12 @@ final class ConstantPoolPatch {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '/' || c == '$';
     }
 
+    private static boolean startsPackage(String text, int at) {
+        return text.startsWith("org/", at) || text.startsWith("java/", at);
+    }
+
     private static String replaceTokens(String text, Map<String, String> renames) {
-        if (renames.isEmpty() || !text.contains("org/")) {
+        if (renames.isEmpty() || !text.contains("org/") && !text.contains("java/")) {
             return text;
         }
         StringBuilder out = null;
@@ -179,7 +189,7 @@ final class ConstantPoolPatch {
             while (to < text.length() && isNameChar(text.charAt(to))) {
                 to++;
             }
-            int start = text.startsWith("org/", from) ? from : text.startsWith("org/", from + 1) ? from + 1 : -1;
+            int start = startsPackage(text, from) ? from : startsPackage(text, from + 1) ? from + 1 : -1;
             String replacement = start < 0 ? null : renames.get(text.substring(start, to));
             if (replacement != null) {
                 out = out == null ? new StringBuilder() : out;
@@ -231,14 +241,70 @@ final class ConstantPoolPatch {
         changed = true;
     }
 
-    private void patchMethod(int index, ApiVersion plugin, Predicate<String> becameInterface) {
-        String owner = className(ref(index, 0));
-        if (!owner.startsWith("org/bukkit/")) {
+    private void implementFormerSuper(Predicate<String> becameInterface) {
+        int superClass = u2(source, poolEnd + 4);
+        if (superClass == 0 || !className(superClass).startsWith("org/bukkit/")
+                || !becameInterface.test(className(superClass))) {
             return;
         }
+        int object = addClass("java/lang/Object");
+        for (int index = 1; index < entries.size(); index++) {
+            byte[] entry = entries.get(index);
+            if (entry != null && (entry[0] & 0xFF) == kMethodref && ref(index, 0) == superClass
+                    && utf8(ref(ref(index, 1), 0)).equals("<init>")) {
+                put2(entry, 1, object);
+            }
+        }
+        formerSuper = superClass;
+        superObject = object;
+        changed = true;
+    }
+
+    private void widenEnumCall(int index) {
+        int pair = ref(index, 1);
+        String desc = utf8(ref(pair, 1));
+        if (!desc.contains(kEnumType)) {
+            return;
+        }
+        String widened = desc.replace(kEnumType, "Ljava/lang/Object;");
+        int pairIndex = addPair(kNameAndType, ref(pair, 0) + " " + widened, ref(pair, 0), addUtf8(widened));
+        put2(entries.get(index), 3, pairIndex);
+        changed = true;
+    }
+
+    private void retarget(int index, LegacyCalls.Target target) {
+        int pairIndex = addPair(kNameAndType, target.name() + " " + target.descriptor(), addUtf8(target.name()),
+            addUtf8(target.descriptor()));
+        byte[] entry = entries.get(index);
+        entry[0] = kMethodref;
+        put2(entry, 1, addClass(target.owner()));
+        put2(entry, 3, pairIndex);
+        changed = true;
+    }
+
+    private void patchMethod(int index, ApiVersion plugin, Predicate<String> becameInterface) {
+        String owner = className(ref(index, 0));
         int pair = ref(index, 1);
         String name = utf8(ref(pair, 0));
         String desc = utf8(ref(pair, 1));
+        if (owner.equals(kLegacyEnumMap) || owner.equals(kLegacyEnumSet)) {
+            widenEnumCall(index);
+            return;
+        }
+        if (plugin.isOlderThan(ApiVersion.kFlattening)) {
+            LegacyCalls.Target replaced = LegacyCalls.staticCall(owner, name, desc);
+            if (replaced != null) {
+                retarget(index, replaced);
+                return;
+            }
+            if (LegacyCalls.instanceCall(owner, name, desc) != null) {
+                formerClassCalls = true;
+                return;
+            }
+        }
+        if (!owner.startsWith("org/bukkit/")) {
+            return;
+        }
         String helper = kRerouted.get(owner + " " + name);
         if (helper != null && desc.startsWith("(Ljava/lang/String;)L") && desc.length() > 21) {
             String dated = plugin.isOlderThan(new ApiVersion(1, 20, 5))
@@ -275,7 +341,7 @@ final class ConstantPoolPatch {
         for (byte[] entry : entries) {
             size += entry == null ? 0 : entry.length;
         }
-        byte[] out = new byte[size + source.length - poolEnd];
+        byte[] out = new byte[size + source.length - poolEnd + (formerSuper >= 0 ? 2 : 0)];
         System.arraycopy(source, 0, out, 0, 10);
         put2(out, 8, entries.size());
         int at = 10;
@@ -285,7 +351,17 @@ final class ConstantPoolPatch {
                 at += entry.length;
             }
         }
-        System.arraycopy(source, poolEnd, out, at, source.length - poolEnd);
+        if (formerSuper < 0) {
+            System.arraycopy(source, poolEnd, out, at, source.length - poolEnd);
+            return out;
+        }
+        int interfaces = u2(source, poolEnd + 6);
+        int restFrom = poolEnd + 8 + 2 * interfaces;
+        System.arraycopy(source, poolEnd, out, at, 8 + 2 * interfaces);
+        put2(out, at + 4, superObject);
+        put2(out, at + 6, interfaces + 1);
+        put2(out, at + 8 + 2 * interfaces, formerSuper);
+        System.arraycopy(source, restFrom, out, at + 10 + 2 * interfaces, source.length - restFrom);
         return out;
     }
 }

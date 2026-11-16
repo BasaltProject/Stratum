@@ -88,11 +88,16 @@ public class BasaltItemStack extends ItemStack {
 
     @Override
     public MaterialData getData() {
-        return new MaterialData(type);
+        Material legacy = org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.toLegacy(type);
+        return legacy.getNewData(org.basaltmc.stratum.bukkit.legacy.LegacyMaterials.legacyData(type));
     }
 
     @Override
-    public void setData(MaterialData data) {}
+    public void setData(MaterialData data) {
+        if (data != null) {
+            setType(org.bukkit.Bukkit.getUnsafe().fromLegacy(data));
+        }
+    }
 
     @Override
     public void setDurability(short durability) {

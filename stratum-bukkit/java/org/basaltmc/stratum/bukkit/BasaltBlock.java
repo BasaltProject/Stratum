@@ -95,7 +95,7 @@ public final class BasaltBlock extends BlockBase {
 
     @Override
     public byte getData() {
-        return 0;
+        return org.basaltmc.stratum.bukkit.legacy.LegacyBlocks.dataOf(getBlockData());
     }
 
     @Override
