@@ -2082,10 +2082,15 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         org.bukkit.entity.Entity live = live();
         return live != null ? (float) live.getHeight() : 1.8F;
     }
+    private EntityDimensions dimensions;
+    private float eyeHeight;
     public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
         return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this, serverEntity);
     }
     public EntityDimensions getDimensions(Pose pose) {
+        if (dimensions != null) {
+            return dimensions;
+        }
         return EntityDimensions.scalable(getBbWidth(), getBbHeight());
     }
     public EntityAttachments getAttachments() {

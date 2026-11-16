@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 
 public class ItemCooldowns {
     private final org.bukkit.entity.HumanEntity owner;
-    private final java.util.Map<Identifier, int[]> local = new java.util.HashMap<>();
+    private final java.util.Map<Identifier, CooldownInstance> cooldowns = new java.util.HashMap<>();
     private int tickCount;
 
     public ItemCooldowns() {
@@ -29,17 +29,17 @@ public class ItemCooldowns {
         if (owner != null) {
             return owner.hasCooldown(mirror(item)) ? 1.0F : 0.0F;
         }
-        int[] window = local.get(getCooldownGroup(item));
-        if (window == null || tickCount >= window[1]) {
+        CooldownInstance window = cooldowns.get(getCooldownGroup(item));
+        if (window == null || tickCount >= window.endTime) {
             return 0.0F;
         }
-        return Math.min((window[1] - (tickCount + a)) / (float) (window[1] - window[0]), 1.0F);
+        return Math.min((window.endTime - (tickCount + a)) / (float) (window.endTime - window.startTime), 1.0F);
     }
 
     public void tick() {
         tickCount++;
-        local.entrySet().removeIf(entry -> {
-            boolean ended = tickCount >= entry.getValue()[1];
+        cooldowns.entrySet().removeIf(entry -> {
+            boolean ended = tickCount >= entry.getValue().endTime;
             if (ended) {
                 onCooldownEnded(entry.getKey());
             }
@@ -64,14 +64,14 @@ public class ItemCooldowns {
             owner.setCooldown(net.kyori.adventure.key.Key.key(cooldownGroup.toString()), time);
             return;
         }
-        local.put(cooldownGroup, new int[] {tickCount, tickCount + time});
+        cooldowns.put(cooldownGroup, new CooldownInstance(tickCount, tickCount + time));
         onCooldownStarted(cooldownGroup, time);
     }
 
     public void removeCooldown(Identifier cooldownGroup) {
         if (owner != null) {
             owner.setCooldown(net.kyori.adventure.key.Key.key(cooldownGroup.toString()), 0);
-        } else if (local.remove(cooldownGroup) != null) {
+        } else if (cooldowns.remove(cooldownGroup) != null) {
             onCooldownEnded(cooldownGroup);
         }
     }

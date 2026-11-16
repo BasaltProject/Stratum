@@ -475,7 +475,9 @@ public class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> imple
     private PlayerList playerList;
     public synchronized PlayerList getPlayerList() {
         if (playerList == null) {
-            playerList = new PlayerList(this, null, null, null);
+            playerList = this instanceof net.minecraft.server.dedicated.DedicatedServer dedicated
+                ? new net.minecraft.server.dedicated.DedicatedPlayerList(dedicated, null, null)
+                : new PlayerList(this, null, null, null);
         }
         return playerList;
     }

@@ -92,6 +92,18 @@ public class ClientboundSetPlayerTeamPacket implements WirePacket, Packet<Client
         public int getOptions() {
             return options;
         }
+        public Parameters(Component displayName, Component playerPrefix, Component playerSuffix,
+                net.minecraft.world.scores.Team.Visibility nameTagVisibility,
+                net.minecraft.world.scores.Team.CollisionRule collisionRule,
+                Optional<net.minecraft.world.scores.TeamColor> color, byte options) {
+            this.displayName = displayName;
+            this.playerPrefix = playerPrefix;
+            this.playerSuffix = playerSuffix;
+            this.options = options;
+            this.visibility = nameTagVisibility.ordinal();
+            this.collision = collisionRule.ordinal();
+            this.color = color.map(net.minecraft.world.scores.TeamColor::id).orElse(-1);
+        }
         public Parameters(PlayerTeam team) {
             displayName = team.getDisplayName();
             playerPrefix = team.getPlayerPrefix();

@@ -24,6 +24,10 @@ import net.minecraft.world.level.storage.ValueInput;
 public abstract class AbstractSkeleton extends Monster implements RangedAttackMob {
     protected static final int INCREASED_HARD_ATTACK_INTERVAL = 50;
     protected static final int INCREASED_NORMAL_ATTACK_INTERVAL = 70;
+    private final net.minecraft.world.entity.ai.goal.RangedBowAttackGoal<AbstractSkeleton> bowGoal =
+        new net.minecraft.world.entity.ai.goal.RangedBowAttackGoal<>(this, 1.0, 20, 15.0F);
+    private final net.minecraft.world.entity.ai.goal.MeleeAttackGoal meleeGoal =
+        new net.minecraft.world.entity.ai.goal.MeleeAttackGoal(this, 1.2, false);
     protected AbstractSkeleton(EntityType<? extends AbstractSkeleton> type, Level level) {
         super(type, level);
     }

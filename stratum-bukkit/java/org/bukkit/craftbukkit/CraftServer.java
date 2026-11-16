@@ -22,6 +22,10 @@ public final class CraftServer extends BasaltServer {
         return super.getCommandMap();
     }
 
+    public net.minecraft.server.dedicated.DedicatedPlayerList getHandle() {
+        return (net.minecraft.server.dedicated.DedicatedPlayerList) console.getPlayerList();
+    }
+
     public DedicatedServer getServer() {
         return console;
     }
