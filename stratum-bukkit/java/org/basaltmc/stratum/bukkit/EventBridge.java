@@ -311,6 +311,11 @@ final class EventBridge {
                 : new org.bukkit.event.player.PlayerInteractEntityEvent(f.player(), target,
                     PlayerEvents.hand(f.text("hand")));
         });
+        map("player.interact_entity", io.papermc.paper.event.player.PrePlayerAttackEntityEvent.class, f -> {
+            org.bukkit.entity.Entity target = f.entity();
+            return target == null || f.player() == null || !f.text("action").equals("attack") ? null
+                : new io.papermc.paper.event.player.PrePlayerAttackEntityEvent(f.player(), target, true);
+        });
         map("world.chunk_load", org.bukkit.event.world.ChunkLoadEvent.class,
             f -> new org.bukkit.event.world.ChunkLoadEvent(
                 f.world().getChunkAt((int) f.whole("chunk_x"), (int) f.whole("chunk_z"), false), f.flag("generated")));

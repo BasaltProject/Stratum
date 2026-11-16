@@ -55,7 +55,7 @@ public abstract class ServerExtras extends MiscServer {
 
     @Override
     public boolean forcesDefaultGameMode() {
-        return false;
+        return flag("force_game_mode");
     }
 
     @Override
@@ -153,7 +153,7 @@ public abstract class ServerExtras extends MiscServer {
 
     @Override
     public boolean isAcceptingTransfers() {
-        return false;
+        return flag("accept_transfers");
     }
 
     @Override

@@ -241,6 +241,40 @@ final class PlayerEvents {
                 f.put("z", (long) Math.floor(moved.getZ()));
             }
         });
+        EventBridge.map("player.spawn_change", com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.class, f -> {
+            Player who = f.player();
+            com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause cause = switch (f.text("cause")) {
+                case "command" -> com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.COMMAND;
+                case "respawn_anchor" -> com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.RESPAWN_ANCHOR;
+                case "plugin" -> com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.PLUGIN;
+                case "reset" -> com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.UNKNOWN;
+                default -> com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.BED;
+            };
+            return who == null || f.world() == null ? null : new com.destroystokyo.paper.event.player.PlayerSetSpawnEvent(
+                who, cause, f.location().add(0.5, 0.0, 0.5), cause == com.destroystokyo.paper.event.player.PlayerSetSpawnEvent.Cause.COMMAND,
+                false, null);
+        }, (e, f) -> {
+            org.bukkit.Location moved = ((com.destroystokyo.paper.event.player.PlayerSetSpawnEvent) e).getLocation();
+            if (moved != null) {
+                f.put("x", (long) Math.floor(moved.getX()));
+                f.put("y", (long) Math.floor(moved.getY()));
+                f.put("z", (long) Math.floor(moved.getZ()));
+            }
+        });
+        EventBridge.map("player.item_cooldown", io.papermc.paper.event.player.PlayerItemCooldownEvent.class, f -> {
+            org.bukkit.NamespacedKey group = org.bukkit.NamespacedKey.fromString(f.text("group"));
+            Material type = Material.matchMaterial(f.text("item"));
+            return f.player() == null || group == null || type == null ? null
+                : new io.papermc.paper.event.player.PlayerItemCooldownEvent(f.player(), type, group,
+                    (int) f.whole("ticks"));
+        }, (e, f) -> f.put("ticks", (long) ((io.papermc.paper.event.player.PlayerItemCooldownEvent) e).getCooldown()));
+        EventBridge.map("player.shield_disable", io.papermc.paper.event.player.PlayerShieldDisableEvent.class, f -> {
+            Entity damager = BasaltServer.instance().entityById(f.world(), (int) f.whole("damager_id"));
+            return f.player() == null || damager == null ? null
+                : new io.papermc.paper.event.player.PlayerShieldDisableEvent(f.player(), damager,
+                    (int) f.whole("ticks"));
+        }, (e, f) -> f.put("ticks",
+            (long) ((io.papermc.paper.event.player.PlayerShieldDisableEvent) e).getCooldown()));
         EventBridge.map("player.harvest_block", org.bukkit.event.player.PlayerHarvestBlockEvent.class, f -> {
             Player who = f.player();
             org.bukkit.Material material = org.bukkit.Material.matchMaterial(f.text("item"));
@@ -278,11 +312,11 @@ final class PlayerEvents {
             return who == null || stack == null ? null
                 : new org.bukkit.event.player.PlayerItemDamageEvent(who, stack, (int) f.whole("damage"));
         });
-        EventBridge.map("player.pick_item", io.papermc.paper.event.player.PlayerPickItemEvent.class, f -> {
+        EventBridge.map("player.pick_item", io.papermc.paper.event.player.PlayerPickBlockEvent.class, f -> {
             Player who = f.player();
             ItemStack stack = stackOf(f.text("item"), 1);
             return who == null || stack == null ? null
-                : new PickItem(who, stack);
+                : new PickItem(who, f.block(), stack);
         });
         EventBridge.mapStage("player.login", AsyncPlayerPreLoginEvent.class, f -> {
             return new PreLoginGate(f.text("player_name"), address(f), java.util.UUID.fromString(f.text("player_uuid")));
@@ -462,6 +496,23 @@ final class PlayerEvents {
             }
             return new org.bukkit.event.player.PlayerShearEntityEvent(who, target, held, EquipmentSlot.HAND,
                 new java.util.ArrayList<>());
+        });
+        EventBridge.map("player.tab_complete", com.destroystokyo.paper.event.server.AsyncTabCompleteEvent.class, f -> {
+            Player who = f.player();
+            String joined = f.text("completions");
+            if (who == null) {
+                return null;
+            }
+            com.destroystokyo.paper.event.server.AsyncTabCompleteEvent async =
+                new com.destroystokyo.paper.event.server.AsyncTabCompleteEvent(who, f.text("buffer"),
+                    f.text("buffer").startsWith("/"), who.getLocation());
+            async.setCompletions(new java.util.ArrayList<>(
+                joined.isEmpty() ? java.util.List.of() : java.util.Arrays.asList(joined.split("\n"))));
+            return async;
+        }, (e, f) -> {
+            com.destroystokyo.paper.event.server.AsyncTabCompleteEvent async =
+                (com.destroystokyo.paper.event.server.AsyncTabCompleteEvent) e;
+            f.put("completions", async.isCancelled() ? "" : String.join("\n", async.getCompletions()));
         });
         EventBridge.map("player.tab_complete", org.bukkit.event.server.TabCompleteEvent.class, f -> {
             Player who = f.player();
@@ -678,14 +729,9 @@ final class PlayerEvents {
         }
     }
 
-    static final class PickItem extends io.papermc.paper.event.player.PlayerPickItemEvent {
-        PickItem(Player player, ItemStack stack) {
-            super(player, stack, false, player.getInventory().getHeldItemSlot(), -1);
-        }
-
-        @Override
-        public String getEventName() {
-            return io.papermc.paper.event.player.PlayerPickItemEvent.class.getSimpleName();
+    static final class PickItem extends io.papermc.paper.event.player.PlayerPickBlockEvent {
+        PickItem(Player player, org.bukkit.block.Block block, ItemStack stack) {
+            super(player, block, stack, false, player.getInventory().getHeldItemSlot(), -1);
         }
     }
 

@@ -143,7 +143,7 @@ public final class RegistryLifecycle {
 
             @Override
             public Tag getOrCreateTag(TagKey key) {
-                throw Unsupported.hit("RegistryComposeEvent#getOrCreateTag");
+                return tagOf(one, key);
             }
 
             @Override
@@ -178,7 +178,7 @@ public final class RegistryLifecycle {
 
                 @Override
                 public Tag getOrCreateTag(TagKey tag) {
-                    throw Unsupported.hit("RegistryEntryAddEvent#getOrCreateTag");
+                    return tagOf(one, tag);
                 }
 
                 @Override
@@ -193,5 +193,19 @@ public final class RegistryLifecycle {
                     + " in a registry handler; the server keeps its own data for them, so the changes do not apply");
             }
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Tag tagOf(Recorded<Object> one, TagKey key) {
+        BasaltRegistry<Keyed> registry = live(one.registry());
+        try {
+            Tag found = registry.getTag(key);
+            if (found != null) {
+                return found;
+            }
+        } catch (RuntimeException unknown) {
+            Natives.log(1, "Bukkit", "no tag " + key + " in " + name(one) + ": handing back an empty one");
+        }
+        return new BasaltRegistryTag(one.registry(), key, java.util.List.of());
     }
 }

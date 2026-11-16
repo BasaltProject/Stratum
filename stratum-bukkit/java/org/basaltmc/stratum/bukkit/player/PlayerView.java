@@ -85,11 +85,13 @@ public abstract class PlayerView extends PlayerState {
             return;
         }
         PlayerCalls.call(key(), "hide_entity", (long) entity.getEntityId());
+        org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.player.PlayerHideEntityEvent(this, entity));
     }
 
     @Override
     public void showEntity(Plugin plugin, Entity entity) {
         PlayerCalls.call(key(), "show_entity", (long) entity.getEntityId());
+        org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.player.PlayerShowEntityEvent(this, entity));
     }
 
     @Override

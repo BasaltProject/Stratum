@@ -230,6 +230,44 @@ final class EntityEvents {
             return made instanceof org.bukkit.entity.Projectile projectile
                 ? new org.bukkit.event.entity.ProjectileLaunchEvent(projectile) : null;
         });
+        EventBridge.map("entity.launch", com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent.class, f -> {
+            if (!(f.entity() instanceof org.bukkit.entity.Projectile projectile)
+                || !(projectile.getShooter() instanceof Player shooter)) {
+                return null;
+            }
+            return new com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent(shooter,
+                shooter.getInventory().getItemInMainHand().clone(), projectile);
+        });
+        EventBridge.map("entity.creeper_power", org.bukkit.event.entity.CreeperPowerEvent.class, f -> {
+            Entity bolt = BasaltServer.instance().entityById(f.world(), (int) f.whole("bolt_id"));
+            return f.entity() instanceof org.bukkit.entity.Creeper creeper
+                && bolt instanceof org.bukkit.entity.LightningStrike strike
+                ? new org.bukkit.event.entity.CreeperPowerEvent(creeper, strike,
+                    org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING) : null;
+        });
+        EventBridge.map("entity.sheep_regrow", org.bukkit.event.entity.SheepRegrowWoolEvent.class,
+            f -> f.entity() instanceof org.bukkit.entity.Sheep sheep
+                ? new org.bukkit.event.entity.SheepRegrowWoolEvent(sheep) : null);
+        EventBridge.map("block.bell_resonate", org.bukkit.event.block.BellResonateEvent.class, f -> {
+            java.util.List<org.bukkit.entity.LivingEntity> raiders = new java.util.ArrayList<>();
+            for (String id : f.text("entities").split(",")) {
+                if (!id.isEmpty() && BasaltServer.instance().entityById(f.world(), Integer.parseInt(id))
+                    instanceof org.bukkit.entity.LivingEntity living) {
+                    raiders.add(living);
+                }
+            }
+            return new org.bukkit.event.block.BellResonateEvent(f.block(), raiders);
+        }, (e, f) -> {
+            StringBuilder kept = new StringBuilder();
+            for (org.bukkit.entity.LivingEntity living : ((org.bukkit.event.block.BellResonateEvent) e)
+                .getResonatedEntities()) {
+                kept.append(kept.length() == 0 ? "" : ",").append(living.getEntityId());
+            }
+            f.put("entities", kept.toString());
+        });
+        EventBridge.map("block.bell_reveal_raider", io.papermc.paper.event.block.BellRevealRaiderEvent.class,
+            f -> f.entity() instanceof org.bukkit.entity.Raider raider
+                ? new io.papermc.paper.event.block.BellRevealRaiderEvent(f.block(), raider) : null);
         EventBridge.map("vehicle.damage", org.bukkit.event.vehicle.VehicleDamageEvent.class, f -> {
             Entity vehicle = f.entity();
             Entity attacker = f.whole("attacker_id") >= 0 ? BasaltServer.instance().entityById(f.world(),
