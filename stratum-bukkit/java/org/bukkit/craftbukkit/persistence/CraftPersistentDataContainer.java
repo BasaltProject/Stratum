@@ -88,6 +88,67 @@ public class CraftPersistentDataContainer extends PaperPersistentDataContainerVi
         putAll(other, true);
     }
 
+    public synchronized void put(String key, Tag tag) {
+        CompoundTag current = store.load();
+        current.put(key, tag);
+        store.save(current);
+    }
+
+    public synchronized void putAll(java.util.Map<String, Tag> map) {
+        CompoundTag current = store.load();
+        map.forEach(current::put);
+        store.save(current);
+    }
+
+    public java.util.Map<String, Tag> getRaw() {
+        return new RawView();
+    }
+
+    private final class RawView extends java.util.AbstractMap<String, Tag> {
+        @Override
+        public java.util.Set<Entry<String, Tag>> entrySet() {
+            java.util.Map<String, Tag> copy = new java.util.LinkedHashMap<>();
+            toTagCompound().entrySet().forEach(entry -> copy.put(entry.getKey(), entry.getValue()));
+            return copy.entrySet();
+        }
+
+        @Override
+        public Tag get(Object key) {
+            return key instanceof String name ? toTagCompound().get(name) : null;
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return key instanceof String name && toTagCompound().contains(name);
+        }
+
+        @Override
+        public Tag put(String key, Tag tag) {
+            synchronized (CraftPersistentDataContainer.this) {
+                Tag old = toTagCompound().get(key);
+                CraftPersistentDataContainer.this.put(key, tag);
+                return old;
+            }
+        }
+
+        @Override
+        public Tag remove(Object key) {
+            synchronized (CraftPersistentDataContainer.this) {
+                CompoundTag current = store.load();
+                Tag old = key instanceof String name ? current.remove(name) : null;
+                if (old != null) {
+                    store.save(current);
+                }
+                return old;
+            }
+        }
+
+        @Override
+        public void clear() {
+            CraftPersistentDataContainer.this.clear();
+        }
+    }
+
     public synchronized void clear() {
         store.save(new CompoundTag());
     }

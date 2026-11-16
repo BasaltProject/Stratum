@@ -346,7 +346,15 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
 
     public void loadTag(CompoundTag tag) {
         if (pending == null) {
-            throw Unsupported.hit("net.minecraft.world.entity.Entity.load");
+            CompoundTag merged = nbt();
+            if (merged == null || removed) {
+                return;
+            }
+            merged.merge(tag.copy());
+            if (!WorldNatives.loadEntityNbt(world(), id, NbtCodec.toBytes(merged))) {
+                throw Unsupported.hit("net.minecraft.world.entity.Entity.load");
+            }
+            return;
         }
         CompoundTag data = tag.copy();
         data.remove("id");
@@ -1274,8 +1282,12 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     protected boolean repositionEntityAfterLoad() {
         return true;
     }
-    protected String getEncodeId() {
-        return getType().toShortString();
+    public final String getEncodeId() {
+        return getEncodeId(false);
+    }
+    public final String getEncodeId(boolean includeNonSaveable) {
+        EntityType<?> type = getType();
+        return includeNonSaveable || type.canSerialize() ? EntityType.getKey(type).toString() : null;
     }
     protected void readAdditionalSaveData(ValueInput input) {
         return;

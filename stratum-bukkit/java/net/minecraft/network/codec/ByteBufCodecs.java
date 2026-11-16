@@ -48,7 +48,7 @@ public interface ByteBufCodecs {
     StreamCodec<ByteBuf, Double> DOUBLE = StreamCodec.of((buf, v) -> buf.writeDouble(v), ByteBuf::readDouble);
     StreamCodec<ByteBuf, byte[]> BYTE_ARRAY = byteArray(Integer.MAX_VALUE);
     StreamCodec<ByteBuf, long[]> LONG_ARRAY = StreamCodec.of(ByteBufCodecs::writeLongArray, ByteBufCodecs::readLongArray);
-    StreamCodec<ByteBuf, BitSet> BIT_SET = LONG_ARRAY.map(BitSet::valueOf, BitSet::toLongArray);
+    StreamCodec<ByteBuf, BitSet> BIT_SET = BYTE_ARRAY.map(BitSet::valueOf, BitSet::toByteArray);
     StreamCodec<ByteBuf, String> STRING_UTF8 = stringUtf8(32767);
     StreamCodec<ByteBuf, Tag> TAG = tagCodec(NbtAccounter::defaultQuota);
     StreamCodec<ByteBuf, Tag> TRUSTED_TAG = tagCodec(NbtAccounter::unlimitedHeap);

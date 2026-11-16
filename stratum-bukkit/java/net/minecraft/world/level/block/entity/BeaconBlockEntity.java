@@ -90,4 +90,7 @@ public class BeaconBlockEntity extends BlockEntity implements net.minecraft.worl
     public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
         return new net.minecraft.world.inventory.BeaconMenu(containerId, inventory, new net.minecraft.world.inventory.SimpleContainerData(3), net.minecraft.world.inventory.ContainerLevelAccess.create(getLevel(), getBlockPos()));
     }
+    public static void playSound(Level level, BlockPos pos, net.minecraft.sounds.SoundEvent event) {
+        level.playSound((net.minecraft.world.entity.Entity) null, pos, event, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+    }
 }

@@ -49,6 +49,7 @@ public final class WorldNatives {
     public static native boolean setBlockEntityNbt(String world, int x, int y, int z, byte[] nbt);
     public static native int[] blockEntityPositions(String world, int chunkX, int chunkZ);
     public static native byte[] entityNbt(String world, int id);
+    public static native boolean loadEntityNbt(String world, int id, byte[] nbt);
     public static native int spawnEntityNbt(String world, byte[] nbt, String cause);
     public static native boolean createBlockEntity(String world, int x, int y, int z, byte[] nbt);
     public static native boolean removeBlockEntity(String world, int x, int y, int z);

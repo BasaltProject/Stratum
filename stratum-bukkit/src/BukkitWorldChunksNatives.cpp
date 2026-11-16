@@ -108,6 +108,13 @@ jbyteArray JNICALL nativeEntityNbt(JNIEnv* env, jclass, jstring name, jint id) {
         env, guarded<std::optional<std::vector<std::uint8_t>>>(std::nullopt, [&] { return world->entityNbt(id); }));
 }
 
+jboolean JNICALL nativeLoadEntityNbt(JNIEnv* env, jclass, jstring name, jint id, jbyteArray nbt) {
+    const auto world = worldOf(env, name);
+    const std::vector<std::uint8_t> data = bytes(env, nbt);
+    return world != nullptr && guarded<bool>(false, [&] { return world->loadEntityNbt(id, data); }) ? JNI_TRUE
+                                                                                                    : JNI_FALSE;
+}
+
 jint JNICALL nativeSpawnEntityNbt(JNIEnv* env, jclass, jstring name, jbyteArray nbt, jstring cause) {
     const auto world = worldOf(env, name);
     const std::vector<std::uint8_t> data = bytes(env, nbt);
@@ -242,6 +249,7 @@ void registerWorldNativesChunks(JNIEnv* env, jclass natives) {
         nativeMethod("blockEntityPositions", "(Ljava/lang/String;II)[I",
                      reinterpret_cast<void*>(&nativeBlockEntityPositions)),
         nativeMethod("entityNbt", "(Ljava/lang/String;I)[B", reinterpret_cast<void*>(&nativeEntityNbt)),
+        nativeMethod("loadEntityNbt", "(Ljava/lang/String;I[B)Z", reinterpret_cast<void*>(&nativeLoadEntityNbt)),
         nativeMethod("spawnEntityNbt", "(Ljava/lang/String;[BLjava/lang/String;)I",
                      reinterpret_cast<void*>(&nativeSpawnEntityNbt)),
         nativeMethod("blockEntityTypes", "()[Ljava/lang/String;", reinterpret_cast<void*>(&nativeBlockEntityTypes)),

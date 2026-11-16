@@ -122,7 +122,7 @@ final class TypedPackets {
             byte[] baseline = encode(packet, phase);
             if (kDebug && !java.util.Arrays.equals(baseline, whole) && failed.add("m" + phase + (toServer ? "s" : "c") + id)) {
                 System.err.println("typed round trip differs for phase " + phase + " id " + id + " " + packet.getClass().getSimpleName()
-                    + " len " + whole.length + " vs " + baseline.length);
+                    + " len " + whole.length + " vs " + baseline.length + " first diff " + firstDifference(whole, baseline));
             }
             if (tracked.size() > kMaxTracked) {
                 tracked.clear();
@@ -138,6 +138,23 @@ final class TypedPackets {
         } finally {
             in.release();
         }
+    }
+
+    private static String firstDifference(byte[] a, byte[] b) {
+        int n = Math.min(a.length, b.length);
+        int i = 0;
+        while (i < n && a[i] == b[i]) {
+            i++;
+        }
+        StringBuilder out = new StringBuilder("@" + i + " [");
+        for (int k = Math.max(0, i - 4); k < Math.min(a.length, i + 12); k++) {
+            out.append(String.format("%02x", a[k]));
+        }
+        out.append("] vs [");
+        for (int k = Math.max(0, i - 4); k < Math.min(b.length, i + 12); k++) {
+            out.append(String.format("%02x", b[k]));
+        }
+        return out.append(']').toString();
     }
 
     /** The frame to send for a packet: the original bytes while no listener changed it, else its fresh encoding. */

@@ -104,10 +104,6 @@ public abstract class PaperPersistentDataContainerView implements PersistentData
         return read().copy();
     }
 
-    public CompoundTag getRaw() {
-        return read();
-    }
-
     public Tag getTag(String key) {
         return read().get(key);
     }
