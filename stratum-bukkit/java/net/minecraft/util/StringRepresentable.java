@@ -12,6 +12,9 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 public interface StringRepresentable {
     public default String getSerializedName() {
+        if (this instanceof Enum<?> value) {
+            return value.name().toLowerCase(java.util.Locale.ROOT);
+        }
         throw Unsupported.hit("net.minecraft.util.StringRepresentable.getSerializedName");
     }
     int PRE_BUILT_MAP_THRESHOLD = 16;

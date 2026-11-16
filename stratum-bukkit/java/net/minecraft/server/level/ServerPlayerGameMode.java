@@ -18,11 +18,7 @@ public class ServerPlayerGameMode {
 
     public ServerPlayerGameMode(ServerPlayer player) {
         this.player = player;
-        try {
-            this.level = player.level();
-        } catch (UnsupportedOperationException notBound) {
-            this.level = null;
-        }
+        this.level = player.levelOrNull();
     }
 
     public boolean changeGameModeForPlayer(GameType gameModeForPlayer) {

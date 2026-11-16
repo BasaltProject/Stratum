@@ -260,10 +260,10 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     }
 
     private String world() {
-        if (level == null) {
+        if (level() == null) {
             throw new IllegalStateException("Entity " + getClass().getSimpleName() + " is not attached to a level");
         }
-        return level.getWorld().getName();
+        return level().getWorld().getName();
     }
 
     public void absSnapTo(double x, double y, double z, float yRot, float xRot) {
@@ -300,7 +300,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         if (pending != null) {
             throw Unsupported.hit("net.minecraft.world.entity.Entity.getBukkitEntity");
         }
-        return (CraftEntity) EntityBridge.of(level.getWorld(), id);
+        return (CraftEntity) EntityBridge.of(level().getWorld(), id);
     }
 
     public Vec3 getPosition(float partialTickTime) {
@@ -1278,13 +1278,13 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return;
     }
     public ItemEntity spawnAtLocation(ServerLevel level, ItemLike resource) {
-        return spawnAtLocation(level, new ItemStack(resource));
+        return spawnAtLocation(level(), new ItemStack(resource));
     }
     public ItemEntity spawnAtLocation(ServerLevel level, ItemStack itemStack) {
-        return spawnAtLocation(level, itemStack, 0.0F);
+        return spawnAtLocation(level(), itemStack, 0.0F);
     }
     public ItemEntity spawnAtLocation(ServerLevel level, ItemStack itemStack, Vec3 offset) {
-        return spawnAtLocation(level, itemStack, (float) offset.y);
+        return spawnAtLocation(level(), itemStack, (float) offset.y);
     }
     public ItemEntity spawnAtLocation(ServerLevel level, ItemStack itemStack, float offset) {
         if (itemStack.isEmpty() || live() == null) {
@@ -1804,7 +1804,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         if (live() == null || level == null) {
             return false;
         }
-        return live().teleport(new org.bukkit.Location(level.getWorld(), x, y, z, newYRot, newXRot));
+        return live().teleport(new org.bukkit.Location(level().getWorld(), x, y, z, newYRot, newXRot));
     }
     public void dismountTo(double x, double y, double z) {
         absSnapTo(x, y, z, getYRot(), getXRot());
@@ -2017,7 +2017,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         return 0;
     }
     public CommandSourceStack createCommandSourceStackForNameResolution(ServerLevel level) {
-        return new CommandSourceStack(net.minecraft.commands.CommandSource.NULL, position(), getRotationVector(), level, net.minecraft.server.permissions.LevelBasedPermissionSet.GAMEMASTER, level.getServer(), this);
+        return new CommandSourceStack(net.minecraft.commands.CommandSource.NULL, position(), getRotationVector(), level(), net.minecraft.server.permissions.LevelBasedPermissionSet.GAMEMASTER, level().getServer(), this);
     }
     public void lookAt(EntityAnchorArgument.Anchor anchor, Vec3 pos) {
         Vec3 from = anchor.apply(this);

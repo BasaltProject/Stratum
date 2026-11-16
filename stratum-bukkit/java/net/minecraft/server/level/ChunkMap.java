@@ -57,6 +57,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
     ChunkMap(ServerChunkCache source, String world) {
         this.source = source;
         this.watcher = new ServerPlayer(new ChunkResender(world, source));
+        this.watcher.bindLevel((ServerLevel) source.getLevel());
     }
 
     /** Looked up by name by the world editing adapters. */
@@ -83,6 +84,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
         super((net.minecraft.world.level.chunk.storage.RegionStorageInfo) null, (java.nio.file.Path) null, (com.mojang.datafixers.DataFixer) null, false, (net.minecraft.util.datafix.DataFixTypes) null);
         this.source = level.getChunkSource();
         this.watcher = new ServerPlayer(new ChunkResender(level.getWorld().getName(), source));
+        this.watcher.bindLevel(level);
     }
     protected ChunkGenerator generator() {
         return source.getGenerator();

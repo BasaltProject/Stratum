@@ -87,6 +87,7 @@ public class ServerPlayer extends Player {
     private net.minecraft.world.entity.player.Input lastClientInput = new net.minecraft.world.entity.player.Input(false, false, false, false, false, false, false);
     public void bindPlayer(org.bukkit.entity.Player player){this.player=player;bindBukkitEntity(player);}
     public org.bukkit.entity.Player bukkitPlayer(){return player;}
+    @Override public org.bukkit.entity.Entity live(){return player;}
     @Override public int getId(){return player==null?super.getId():player.getEntityId();}
     @Override public java.util.UUID getUUID(){return player==null?super.getUUID():player.getUniqueId();}
     @Override public org.bukkit.craftbukkit.entity.CraftEntity getBukkitEntity(){return player==null?super.getBukkitEntity():(org.bukkit.craftbukkit.entity.CraftEntity)player;}
@@ -103,17 +104,23 @@ public class ServerPlayer extends Player {
     }
 
     public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile profile, ClientInformation information) {
-        this.level = level;
+        bindLevel(level);
     }
 
-    public ServerLevel level() {
+    public void bindLevel(ServerLevel level){this.level=level;gameMode.setLevel(level);}
+
+    public ServerLevel levelOrNull() {
         if (player != null && player.getWorld() instanceof org.bukkit.craftbukkit.CraftWorld world) {
             return world.getHandle();
         }
-        if (level == null) {
+        return level;
+    }
+
+    public ServerLevel level() {
+        if (levelOrNull() == null) {
             throw Unsupported.hit("net.minecraft.server.level.ServerPlayer.level");
         }
-        return level;
+        return levelOrNull();
     }
     public static final double BLOCK_INTERACTION_DISTANCE_VERIFICATION_BUFFER = 1.0;
     public static final double ENTITY_INTERACTION_DISTANCE_VERIFICATION_BUFFER = 3.0;
