@@ -124,13 +124,98 @@ public final class LegacyMaterials {
                 return found;
             }
         }
+        LegacyItems.Entry item = LegacyItems.entryOf(material);
+        if (item != null) {
+            return item.legacy();
+        }
         Material byName = Material.getMaterial(Material.LEGACY_PREFIX + material.name());
         return byName != null ? byName : material;
     }
 
     /** The data byte a modern material carries as a legacy item, 0 when it is the plain form. */
     public static byte legacyData(Material material) {
-        return material.isBlock() && !material.isLegacy() ? LegacyBlocks.dataOf(material.createBlockData()) : 0;
+        if (material.isLegacy()) {
+            return 0;
+        }
+        if (material.isBlock()) {
+            return LegacyBlocks.dataOf(material.createBlockData());
+        }
+        LegacyItems.Entry item = LegacyItems.entryOf(material);
+        return item == null ? 0 : item.data();
+    }
+
+    public static boolean isVariant(Material legacy) {
+        return legacy.isLegacy() && LegacyItems.isVariant(legacy);
+    }
+
+    public static Material withData(Material legacy, short data) {
+        return LegacyItems.withData(legacy, data);
+    }
+
+    private static boolean holdsMaterials(java.util.Collection<?> values) {
+        for (Object each : values) {
+            if (each != null) {
+                return each instanceof Material;
+            }
+        }
+        return false;
+    }
+
+    private static <T extends java.util.Collection<Object>> T convert(java.util.Collection<?> from, T into,
+            java.util.function.UnaryOperator<Material> step) {
+        for (Object each : from) {
+            into.add(each instanceof Material material ? step.apply(material) : each);
+        }
+        return into;
+    }
+
+    public static java.util.Set<?> legacySet(java.util.Set<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.LinkedHashSet<>(), LegacyMaterials::legacy);
+    }
+
+    public static java.util.Set<?> modernSet(java.util.Set<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.LinkedHashSet<>(), LegacyMaterials::modern);
+    }
+
+    public static java.util.List<?> legacyList(java.util.List<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.ArrayList<>(), LegacyMaterials::legacy);
+    }
+
+    public static java.util.List<?> modernList(java.util.List<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.ArrayList<>(), LegacyMaterials::modern);
+    }
+
+    public static java.util.Collection<?> legacyCollection(java.util.Collection<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.ArrayList<>(), LegacyMaterials::legacy);
+    }
+
+    public static java.util.Collection<?> modernCollection(java.util.Collection<?> values) {
+        return values == null || !holdsMaterials(values) ? values
+            : convert(values, new java.util.ArrayList<>(), LegacyMaterials::modern);
+    }
+
+    public static Material[] legacyArray(Material[] values) {
+        return mapArray(values, LegacyMaterials::legacy);
+    }
+
+    public static Material[] modernArray(Material[] values) {
+        return mapArray(values, LegacyMaterials::modern);
+    }
+
+    private static Material[] mapArray(Material[] values, java.util.function.UnaryOperator<Material> step) {
+        if (values == null) {
+            return null;
+        }
+        Material[] out = values.clone();
+        for (int at = 0; at < out.length; at++) {
+            out[at] = step.apply(out[at]);
+        }
+        return out;
     }
 
     public static BlockData blockData(Material legacy, byte data) {

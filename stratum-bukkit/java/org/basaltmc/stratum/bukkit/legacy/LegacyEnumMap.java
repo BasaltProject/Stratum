@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /** Stands in for java.util.EnumMap in plugins built when keys such as Sound and Biome were enums. */
-public final class LegacyEnumMap<K, V> extends AbstractMap<K, V> implements Serializable, Cloneable {
+public class LegacyEnumMap<K, V> extends AbstractMap<K, V> implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     private final Class<K> keyType;

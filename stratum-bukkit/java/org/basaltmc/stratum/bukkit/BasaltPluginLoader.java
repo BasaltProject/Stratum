@@ -1,6 +1,7 @@
 package org.basaltmc.stratum.bukkit;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -14,16 +15,38 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
 
-/** What JavaPlugin#getPluginLoader answers: loading goes through the plugin manager, never through this. */
-public final class DummyPluginLoader implements PluginLoader {
+/** What JavaPlugin#getPluginLoader answers, handing every call to the plugin manager that owns loading. */
+public final class BasaltPluginLoader implements PluginLoader {
+    private final BasaltPluginManager manager;
+
+    public BasaltPluginLoader() {
+        this.manager = null;
+    }
+
+    BasaltPluginLoader(BasaltPluginManager manager) {
+        this.manager = manager;
+    }
+
+    private BasaltPluginManager manager() {
+        return manager != null ? manager : (BasaltPluginManager) org.bukkit.Bukkit.getPluginManager();
+    }
+
     @Override
     public Plugin loadPlugin(File file) throws InvalidPluginException, UnknownDependencyException {
-        throw new UnsupportedOperationException();
+        try {
+            return manager().loadPlugin(file);
+        } catch (InvalidDescriptionException e) {
+            throw new InvalidPluginException(e);
+        }
     }
 
     @Override
     public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
-        throw new UnsupportedOperationException();
+        try {
+            return BasaltPluginManager.describe(file);
+        } catch (IOException e) {
+            throw new InvalidDescriptionException(e);
+        }
     }
 
     @Override
@@ -34,16 +57,16 @@ public final class DummyPluginLoader implements PluginLoader {
     @Override
     public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener,
             Plugin plugin) {
-        throw new UnsupportedOperationException();
+        return manager().createRegisteredListeners(listener, plugin);
     }
 
     @Override
     public void enablePlugin(Plugin plugin) {
-        throw new UnsupportedOperationException();
+        manager().enablePlugin(plugin);
     }
 
     @Override
     public void disablePlugin(Plugin plugin) {
-        throw new UnsupportedOperationException();
+        manager().disablePlugin(plugin);
     }
 }

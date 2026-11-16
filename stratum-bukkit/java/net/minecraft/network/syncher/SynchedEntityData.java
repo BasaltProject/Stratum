@@ -17,6 +17,11 @@ public class SynchedEntityData {
     }
     @SuppressWarnings("unchecked")
     public <T> T get(EntityDataAccessor<T> key) {
+        if (owner instanceof net.minecraft.world.entity.decoration.ArmorStand stand) {
+            Object live = stand.syncedValue(key);
+            if (live != null)
+                return (T) live;
+        }
         if (key.id() == 0 && key.serializer() == EntityDataSerializers.BYTE && owner != null)
             return (T) Byte.valueOf(owner.sharedFlags());
         DataValue<?> value = values.get(key.id());
@@ -28,6 +33,8 @@ public class SynchedEntityData {
         set(key, value, false);
     }
     public <T> void set(EntityDataAccessor<T> key, T value, boolean force) {
+        if (owner instanceof net.minecraft.world.entity.decoration.ArmorStand stand)
+            stand.applySyncedValue(key, value);
         DataValue<?> old = values.put(key.id(), DataValue.create(key, value));
         if (force || old == null || !Objects.equals(old.value(), value))
             dirty.add(key.id());

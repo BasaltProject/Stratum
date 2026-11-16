@@ -22,18 +22,37 @@ final class LegacyCalls {
     private static final String kKey = "Lorg/bukkit/NamespacedKey;";
     private static final String kKeyed = "Lorg/bukkit/Keyed;";
     private static final String kObject = "Ljava/lang/Object;";
+    static final String kEnumValueOf = "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;";
     private static final java.util.Set<String> kKeyedReceiver =
         java.util.Set.of("getKey", "getKeyOrThrow", "getKeyOrNull", "key", "isRegistered");
 
-    private static final Map<String, Target> kFlatteningStatic = Map.of(
-        kMaterial + " getMaterial (I)" + kMaterialType, new Target(kMaterials, "getMaterial", "(I)" + kMaterialType),
-        kMaterial + " values ()[" + kMaterialType, new Target(kMaterials, "values", "()[" + kMaterialType),
-        kMaterial + " valueOf (" + kString + ")" + kMaterialType,
-        new Target(kMaterials, "valueOf", "(" + kString + ")" + kMaterialType),
-        kMaterial + " getMaterial (" + kString + ")" + kMaterialType,
-        new Target(kMaterials, "getMaterial", "(" + kString + ")" + kMaterialType),
-        kMaterial + " matchMaterial (" + kString + ")" + kMaterialType,
-        new Target(kMaterials, "matchMaterial", "(" + kString + ")" + kMaterialType));
+    private static final String kConcatDescriptor = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;"
+        + "Ljava/lang/invoke/MethodType;";
+    private static final String kConcat = "org/basaltmc/stratum/bukkit/legacy/LegacyConcat";
+
+    private static final Map<String, Target> kFlatteningStatic = Map.ofEntries(
+        Map.entry(kMaterial + " getMaterial (I)" + kMaterialType,
+            new Target(kMaterials, "getMaterial", "(I)" + kMaterialType)),
+        Map.entry(kMaterial + " values ()[" + kMaterialType, new Target(kMaterials, "values", "()[" + kMaterialType)),
+        Map.entry(kMaterial + " valueOf (" + kString + ")" + kMaterialType,
+            new Target(kMaterials, "valueOf", "(" + kString + ")" + kMaterialType)),
+        Map.entry(kMaterial + " getMaterial (" + kString + ")" + kMaterialType,
+            new Target(kMaterials, "getMaterial", "(" + kString + ")" + kMaterialType)),
+        Map.entry(kMaterial + " matchMaterial (" + kString + ")" + kMaterialType,
+            new Target(kMaterials, "matchMaterial", "(" + kString + ")" + kMaterialType)),
+        Map.entry("java/lang/String valueOf (" + kObject + ")" + kString,
+            new Target(kLegacyEnums, "stringOf", "(" + kObject + ")" + kString)),
+        Map.entry("java/util/Objects toString (" + kObject + ")" + kString,
+            new Target(kLegacyEnums, "objectsToString", "(" + kObject + ")" + kString)),
+        Map.entry("java/util/Objects toString (" + kObject + kString + ")" + kString,
+            new Target(kLegacyEnums, "objectsToString", "(" + kObject + kString + ")" + kString)),
+        Map.entry("java/lang/invoke/StringConcatFactory makeConcatWithConstants (" + kConcatDescriptor.substring(1)
+            + kString + "[" + kObject + ")Ljava/lang/invoke/CallSite;",
+            new Target(kConcat, "makeConcatWithConstants", kConcatDescriptor + kString + "[" + kObject
+                + ")Ljava/lang/invoke/CallSite;")),
+        Map.entry("java/lang/invoke/StringConcatFactory makeConcat (" + kConcatDescriptor.substring(1)
+            + ")Ljava/lang/invoke/CallSite;",
+            new Target(kConcat, "makeConcat", kConcatDescriptor + ")Ljava/lang/invoke/CallSite;")));
 
     private static final Map<String, Target> kFlatteningInstance = Map.ofEntries(
         Map.entry(kMaterial + " name ()" + kString,
@@ -52,6 +71,18 @@ final class LegacyCalls {
         Map.entry(kWorld + " getBlockTypeIdAt (III)I",
             new Target(kEvil, "getBlockTypeIdAt", "(L" + kWorld + ";III)I")),
         Map.entry(kMaterial + " ordinal ()I", new Target(kMaterials, "ordinal", "(" + kMaterialType + ")I")),
+        Map.entry(kStack + " getDurability ()S", new Target(kEvil, "getDurability", "(L" + kStack + ";)S")),
+        Map.entry(kStack + " setDurability (S)V", new Target(kEvil, "setDurability", "(L" + kStack + ";S)V")),
+        Map.entry("java/lang/Object toString ()" + kString,
+            new Target(kLegacyEnums, "toString", "(" + kObject + ")" + kString)),
+        Map.entry("java/lang/StringBuilder append (" + kObject + ")Ljava/lang/StringBuilder;",
+            new Target(kLegacyEnums, "append", "(Ljava/lang/StringBuilder;" + kObject + ")Ljava/lang/StringBuilder;")),
+        Map.entry("java/lang/StringBuffer append (" + kObject + ")Ljava/lang/StringBuffer;",
+            new Target(kLegacyEnums, "append", "(Ljava/lang/StringBuffer;" + kObject + ")Ljava/lang/StringBuffer;")),
+        Map.entry("java/io/PrintStream println (" + kObject + ")V",
+            new Target(kLegacyEnums, "println", "(Ljava/io/PrintStream;" + kObject + ")V")),
+        Map.entry("java/io/PrintStream print (" + kObject + ")V",
+            new Target(kLegacyEnums, "print", "(Ljava/io/PrintStream;" + kObject + ")V")),
         Map.entry("org/bukkit/Tag isTagged (Lorg/bukkit/Keyed;)Z",
             new Target(kMaterials, "isTagged", "(Lorg/bukkit/Tag;Lorg/bukkit/Keyed;)Z")));
 
@@ -76,6 +107,11 @@ final class LegacyCalls {
         "java/lang/Enum name ()" + kString, new Target(kLegacyEnums, "name", "(" + kObject + ")" + kString),
         "java/lang/Enum toString ()" + kString, new Target(kLegacyEnums, "toString", "(" + kObject + ")" + kString),
         "java/lang/Enum ordinal ()I", new Target(kLegacyEnums, "ordinal", "(" + kObject + ")I"),
+        "java/lang/Enum compareTo (Ljava/lang/Enum;)I",
+        new Target(kLegacyEnums, "compareTo", "(" + kObject + kObject + ")I"),
+        "java/lang/Class isEnum ()Z", new Target(kLegacyEnums, "isEnum", "(Ljava/lang/Class;)Z"),
+        "java/lang/Class getEnumConstants ()[" + kObject,
+        new Target(kLegacyEnums, "enumConstants", "(Ljava/lang/Class;)[" + kObject),
         "org/bukkit/Registry get (" + kKey + ")" + kKeyed,
         new Target(kNames, "registryGet", "(Lorg/bukkit/Registry;" + kKey + ")" + kKeyed));
 
@@ -128,8 +164,14 @@ final class LegacyCalls {
     /** Whether a call into the Bukkit API passes or returns a Material, which a pre-flattening plugin holds as LEGACY_. */
     static boolean bridgesMaterial(ApiVersion plugin, String owner, String name, String descriptor, boolean isStatic) {
         return plugin.isOlderThan(ApiVersion.kFlattening) && owner.startsWith("org/bukkit/")
-            && (descriptor.contains(kMaterialType) || !isStatic && modernReceiver(owner, name)) && !owner.startsWith("org/bukkit/material/")
+            && (descriptor.contains(kMaterialType) || hasCollection(descriptor) || !isStatic && modernReceiver(owner, name))
+            && !owner.startsWith("org/bukkit/material/")
             && !(owner.equals(kMaterial) && isStatic) && !(owner.equals(kStack) && name.equals("<init>"));
+    }
+
+    static boolean hasCollection(String descriptor) {
+        return descriptor.contains("Ljava/util/Set;") || descriptor.contains("Ljava/util/List;")
+            || descriptor.contains("Ljava/util/Collection;");
     }
 
     /** A Material method that rejects a LEGACY_ receiver, so the receiver is made modern first. */

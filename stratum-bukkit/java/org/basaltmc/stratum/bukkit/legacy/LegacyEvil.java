@@ -68,4 +68,21 @@ public final class LegacyEvil {
         stack.setType(legacy == null ? Material.AIR : org.bukkit.Bukkit.getUnsafe().fromLegacy(
             new org.bukkit.material.MaterialData(legacy, (byte) 0)));
     }
+
+    public static short getDurability(ItemStack stack) {
+        byte data = LegacyMaterials.legacyData(stack.getType());
+        return data != 0 ? data : stack.getDurability();
+    }
+
+    public static void setDurability(ItemStack stack, short durability) {
+        Material legacy = LegacyMaterials.toLegacy(stack.getType());
+        if (LegacyMaterials.isVariant(legacy)) {
+            Material modern = LegacyMaterials.withData(legacy, durability);
+            if (modern != null) {
+                stack.setType(modern);
+                return;
+            }
+        }
+        stack.setDurability(durability);
+    }
 }

@@ -179,4 +179,55 @@ public final class BasaltApiBridge extends InternalAPIBridgeBase {
     public com.destroystokyo.paper.SkinParts.Mutable allSkinParts() {
         return new org.basaltmc.stratum.bukkit.misc.BasaltSkinParts(0x7F);
     }
+
+    @Override
+    public net.kyori.adventure.text.Component resolveWithContext(net.kyori.adventure.text.Component component,
+            org.bukkit.command.CommandSender context, org.bukkit.entity.Entity scoreboardSubject,
+            boolean bypassPermissions) throws java.io.IOException {
+        org.bukkit.command.CommandSender source = context != null && !bypassPermissions ? context
+            : org.bukkit.Bukkit.getConsoleSender();
+        return resolve(component, source, scoreboardSubject);
+    }
+
+    private static net.kyori.adventure.text.Component resolve(net.kyori.adventure.text.Component component,
+            org.bukkit.command.CommandSender source, org.bukkit.entity.Entity subject) {
+        net.kyori.adventure.text.Component out = component;
+        if (component instanceof net.kyori.adventure.text.SelectorComponent selector) {
+            java.util.List<net.kyori.adventure.text.Component> names = new java.util.ArrayList<>();
+            for (org.bukkit.entity.Entity found : org.bukkit.Bukkit.selectEntities(source, selector.pattern())) {
+                names.add(found.name());
+            }
+            net.kyori.adventure.text.Component separator = selector.separator() == null
+                ? net.kyori.adventure.text.Component.text(", ", net.kyori.adventure.text.format.NamedTextColor.GRAY)
+                : resolve(selector.separator(), source, subject);
+            out = net.kyori.adventure.text.Component.join(
+                net.kyori.adventure.text.JoinConfiguration.separator(separator), names).style(selector.style());
+        } else if (component instanceof net.kyori.adventure.text.ScoreComponent score) {
+            String holder = score.name();
+            if (holder.equals("*") && subject != null) {
+                holder = subject.getName();
+            } else if (holder.startsWith("@")) {
+                java.util.List<org.bukkit.entity.Entity> found = org.bukkit.Bukkit.selectEntities(source, holder);
+                holder = found.isEmpty() ? holder : found.get(0).getName();
+            }
+            org.bukkit.scoreboard.Objective objective = org.bukkit.Bukkit.getScoreboardManager().getMainScoreboard()
+                .getObjective(score.objective());
+            out = objective == null || !objective.getScore(holder).isScoreSet()
+                ? net.kyori.adventure.text.Component.empty().style(score.style())
+                : net.kyori.adventure.text.Component.text(objective.getScore(holder).getScore()).style(score.style());
+        } else if (component instanceof net.kyori.adventure.text.TranslatableComponent translatable
+                && !translatable.arguments().isEmpty()) {
+            java.util.List<net.kyori.adventure.text.Component> arguments = new java.util.ArrayList<>();
+            for (net.kyori.adventure.text.TranslationArgument argument : translatable.arguments()) {
+                arguments.add(argument.value() instanceof net.kyori.adventure.text.Component inner
+                    ? resolve(inner, source, subject) : argument.asComponent());
+            }
+            out = translatable.arguments(arguments);
+        }
+        java.util.List<net.kyori.adventure.text.Component> children = new java.util.ArrayList<>();
+        for (net.kyori.adventure.text.Component child : component.children()) {
+            children.add(resolve(child, source, subject));
+        }
+        return children.isEmpty() ? out : out.children(children);
+    }
 }

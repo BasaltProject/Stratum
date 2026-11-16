@@ -15,6 +15,7 @@ final class ConstantPoolPatch {
     private static final int kMethodref = 10;
     private static final int kInterfaceMethodref = 11;
     private static final int kNameAndType = 12;
+    private static final int kInvokeDynamic = 18;
     private static final int kMethodHandle = 15;
     private static final String kLegacyMysqlDriver = "com.mysql.jdbc.Driver";
     private static final String kModernMysqlDriver = "com.mysql.cj.jdbc.Driver";
@@ -22,6 +23,10 @@ final class ConstantPoolPatch {
     private static final String kLegacyEnumMap = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumMap";
     private static final String kLegacyEnumSet = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumSet";
     private static final String kNames = "org/basaltmc/stratum/bukkit/legacy/LegacyNames";
+
+    private static final String kLegacyPrefix = "org/basaltmc/stratum/bukkit/legacy/Legacy";
+    private static final java.util.Set<String> kEnumSafe =
+        java.util.Set.of("name", "ordinal", "toString", "equals", "hashCode", "valueOf", "compareTo");
 
     private static final Map<String, String> kRerouted = Map.ofEntries(
         Map.entry("org/bukkit/block/banner/PatternType valueOf", "valueOf_PatternType"),
@@ -40,6 +45,10 @@ final class ConstantPoolPatch {
 
     private final byte[] source;
     private final int poolEnd;
+    private final byte[] body;
+    private boolean widenSelf;
+    private boolean hideAnnotation;
+    private Predicate<String> formerEnum = name -> false;
     private final List<byte[]> entries = new ArrayList<>();
     private final Map<String, Integer> added = new HashMap<>();
     private boolean changed;
@@ -72,18 +81,31 @@ final class ConstantPoolPatch {
             at += size;
         }
         poolEnd = at;
+        body = java.util.Arrays.copyOfRange(source, poolEnd, source.length);
     }
 
     record Result(byte[] bytes, boolean formerClassCalls) {}
 
+    record Env(Predicate<String> becameInterface, Predicate<String> modernMaterial, Predicate<String> legacyMaterial,
+               Predicate<String> widensEnum) {}
+
     /** Null when the class needs no change. */
-    static Result apply(byte[] bytes, ApiVersion plugin, Predicate<String> becameInterface,
-            Predicate<String> modernMaterial, Predicate<String> legacyMaterial) {
+    static Result apply(byte[] bytes, ApiVersion plugin, Env env) {
         ConstantPoolPatch patch = new ConstantPoolPatch(bytes);
         patch.renameClasses(LegacyRenames.classRenames(plugin));
-        patch.patchMembers(plugin, becameInterface, modernMaterial, legacyMaterial);
-        patch.implementFormerSuper(becameInterface);
+        patch.patchMembers(plugin, env.becameInterface(), env.modernMaterial(), env.legacyMaterial());
+        patch.implementFormerSuper(env.becameInterface());
+        if (plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
+            patch.widenEnum(env.widensEnum());
+        }
+        patch.formerEnum = env.becameInterface();
+        patch.walkBody(plugin, env.modernMaterial(), env.legacyMaterial());
         return patch.changed || patch.formerClassCalls ? new Result(patch.write(), patch.formerClassCalls) : null;
+    }
+
+    /** Whether the class takes Enum where a former enum such as Sound may now be passed, and can be widened to Object. */
+    static boolean widensEnum(byte[] bytes, Predicate<String> widensOwn) {
+        return new ConstantPoolPatch(bytes).widenable(widensOwn);
     }
 
     private static int u2(byte[] bytes, int at) {
@@ -174,6 +196,17 @@ final class ConstantPoolPatch {
         return text.startsWith("org/", at) || text.startsWith("java/", at);
     }
 
+    /** A class name after primitive parameters in a descriptor, as in "(BIILjava/util/EnumSet;)V". */
+    private static int glued(String text, int from, int to) {
+        for (int at = from + 2; at < to; at++) {
+            if (startsPackage(text, at) && text.charAt(at - 1) == 'L'
+                    && text.substring(from, at - 1).chars().allMatch(c -> "BCDFIJSZ".indexOf(c) >= 0)) {
+                return at;
+            }
+        }
+        return -1;
+    }
+
     private static String replaceTokens(String text, Map<String, String> renames) {
         if (renames.isEmpty() || !text.contains("org/") && !text.contains("java/")) {
             return text;
@@ -189,7 +222,7 @@ final class ConstantPoolPatch {
             while (to < text.length() && isNameChar(text.charAt(to))) {
                 to++;
             }
-            int start = startsPackage(text, from) ? from : startsPackage(text, from + 1) ? from + 1 : -1;
+            int start = startsPackage(text, from) ? from : startsPackage(text, from + 1) ? from + 1 : glued(text, from, to);
             String replacement = start < 0 ? null : renames.get(text.substring(start, to));
             if (replacement != null) {
                 out = out == null ? new StringBuilder() : out;
@@ -228,6 +261,17 @@ final class ConstantPoolPatch {
         }
         int pair = ref(index, 1);
         String name = utf8(ref(pair, 0));
+        String renamed = renameConstant(plugin, owner, name, modernMaterial, legacyMaterial);
+        if (renamed.equals(name)) {
+            return;
+        }
+        int pairIndex = addPair(kNameAndType, renamed + " " + ref(pair, 1), addUtf8(renamed), ref(pair, 1));
+        put2(entries.get(index), 3, pairIndex);
+        changed = true;
+    }
+
+    private static String renameConstant(ApiVersion plugin, String owner, String name,
+            Predicate<String> modernMaterial, Predicate<String> legacyMaterial) {
         String renamed = LegacyRenames.rename(plugin, owner, name);
         if (owner.equals("org/bukkit/Material") && plugin.isOlderThan(ApiVersion.kFlattening)) {
             if (legacyMaterial.test("LEGACY_" + name)) {
@@ -236,12 +280,243 @@ final class ConstantPoolPatch {
                 renamed = "LEGACY_" + renamed;
             }
         }
-        if (renamed.equals(name)) {
+        return renamed;
+    }
+
+    private static boolean isEnumDescriptor(String text) {
+        return text.contains(kEnumType) && text.indexOf('<') < 0
+            && (text.charAt(0) == '(' || text.charAt(0) == 'L' || text.charAt(0) == '[');
+    }
+
+    private int enumClassIndex() {
+        for (int index = 1; index < entries.size(); index++) {
+            byte[] entry = entries.get(index);
+            if (entry != null && (entry[0] & 0xFF) == kClass && utf8(ref(index, 0)).equals("java/lang/Enum")) {
+                return index;
+            }
+        }
+        return 0;
+    }
+
+    private boolean widenable(Predicate<String> widensOwn) {
+        int superClass = u2(body, 4);
+        if (superClass == 0 || className(superClass).equals("java/lang/Enum")) {
+            return false;
+        }
+        String selfName = className(u2(body, 2));
+        int enumClass = enumClassIndex();
+        boolean mentions = false;
+        for (int index = 1; index < entries.size(); index++) {
+            byte[] entry = entries.get(index);
+            if (entry == null) {
+                continue;
+            }
+            int tag = entry[0] & 0xFF;
+            if (tag == kFieldref && utf8(ref(ref(index, 1), 1)).contains(kEnumType)) {
+                return false;
+            }
+            if (tag != kMethodref && tag != kInterfaceMethodref) {
+                continue;
+            }
+            if (enumClass > 0 && ref(index, 0) == enumClass && !kEnumSafe.contains(utf8(ref(ref(index, 1), 0)))) {
+                return false;
+            }
+            String desc = utf8(ref(ref(index, 1), 1));
+            String owner = className(ref(index, 0));
+            if (isEnumDescriptor(desc)) {
+                mentions = true;
+                if (!owner.equals(selfName) && !owner.equals("java/lang/Enum") && !owner.startsWith(kLegacyPrefix)
+                        && !widensOwn.test(owner)) {
+                    return false;
+                }
+            }
+        }
+        int at = 8 + 2 * u2(body, 6);
+        for (int group = 0; group < 2; group++) {
+            int count = u2(body, at);
+            at += 2;
+            for (int each = 0; each < count; each++) {
+                String desc = utf8(u2(body, at + 4));
+                if (desc.contains(kEnumType) && (group == 0 || desc.indexOf(')') < 0
+                        || desc.indexOf(kEnumType, desc.indexOf(')')) >= 0)) {
+                    return false;
+                }
+                mentions |= isEnumDescriptor(desc);
+                at = skipAttributes(at + 6);
+            }
+        }
+        return mentions;
+    }
+
+    private int skipAttributes(int at) {
+        int count = u2(body, at);
+        at += 2;
+        for (int each = 0; each < count; each++) {
+            at += 6 + ((body[at + 2] & 0xFF) << 24 | (body[at + 3] & 0xFF) << 16 | (body[at + 4] & 0xFF) << 8
+                | body[at + 5] & 0xFF);
+        }
+        return at;
+    }
+
+    private void widenEnum(Predicate<String> widensOwn) {
+        widenSelf = widenable(widensOwn);
+        String selfName = className(u2(body, 2));
+        int original = entries.size();
+        for (int index = 1; index < original; index++) {
+            byte[] entry = entries.get(index);
+            if (entry == null) {
+                continue;
+            }
+            int tag = entry[0] & 0xFF;
+            if (tag != kFieldref && tag != kMethodref && tag != kInterfaceMethodref && tag != kInvokeDynamic) {
+                continue;
+            }
+            int pair = ref(index, 1);
+            String desc = utf8(ref(pair, 1));
+            if (!isEnumDescriptor(desc)) {
+                continue;
+            }
+            if (tag == kInvokeDynamic ? !widenSelf : className(ref(index, 0)).startsWith("java/")
+                    || !(className(ref(index, 0)).equals(selfName) ? widenSelf : widensOwn.test(className(ref(index, 0))))) {
+                continue;
+            }
+            String widened = desc.replace(kEnumType, "Ljava/lang/Object;");
+            put2(entry, 3, addPair(kNameAndType, ref(pair, 0) + " " + widened, ref(pair, 0), addUtf8(widened)));
+            changed = true;
+        }
+        if (widenSelf) {
+            for (int index = 1; index < original; index++) {
+                byte[] entry = entries.get(index);
+                if (entry != null && (entry[0] & 0xFF) == kClass) {
+                    String name = utf8(ref(index, 0));
+                    if (name.startsWith("[") && name.endsWith(kEnumType) && name.indexOf('L') == name.lastIndexOf('[') + 1) {
+                        put2(entry, 1, addUtf8(name.replace(kEnumType, "Ljava/lang/Object;")));
+                        changed = true;
+                    }
+                }
+            }
+        }
+        int enumClass = enumClassIndex();
+        if (!widenSelf || enumClass == 0) {
             return;
         }
-        int pairIndex = addPair(kNameAndType, renamed + " " + ref(pair, 1), addUtf8(renamed), ref(pair, 1));
-        put2(entries.get(index), 3, pairIndex);
+        int keep = addClass("java/lang/Enum");
+        int object = addClass("java/lang/Object");
+        for (int index = 1; index < original; index++) {
+            byte[] entry = entries.get(index);
+            if (entry != null && ((entry[0] & 0xFF) == kMethodref || (entry[0] & 0xFF) == kInterfaceMethodref)
+                    && ref(index, 0) == enumClass) {
+                String name = utf8(ref(ref(index, 1), 0));
+                put2(entry, 1, name.equals("equals") || name.equals("hashCode") ? object : keep);
+            }
+        }
+        put2(entries.get(enumClass), 1, addUtf8("java/lang/Object"));
         changed = true;
+    }
+
+    private int attributes(int at, ApiVersion plugin, Predicate<String> modern, Predicate<String> legacy) {
+        int count = u2(body, at);
+        at += 2;
+        for (int each = 0; each < count; each++) {
+            String name = utf8(u2(body, at));
+            int length = (body[at + 2] & 0xFF) << 24 | (body[at + 3] & 0xFF) << 16 | (body[at + 4] & 0xFF) << 8
+                | body[at + 5] & 0xFF;
+            int data = at + 6;
+            hideAnnotation = false;
+            switch (name) {
+                case "RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations" -> {
+                    int pairs = u2(body, data);
+                    int cursor = data + 2;
+                    for (int annotation = 0; annotation < pairs; annotation++) {
+                        cursor = annotation(cursor, plugin, modern, legacy);
+                    }
+                }
+                case "RuntimeVisibleParameterAnnotations", "RuntimeInvisibleParameterAnnotations" -> {
+                    int cursor = data + 1;
+                    for (int param = 0; param < (body[data] & 0xFF); param++) {
+                        int pairs = u2(body, cursor);
+                        cursor += 2;
+                        for (int annotation = 0; annotation < pairs; annotation++) {
+                            cursor = annotation(cursor, plugin, modern, legacy);
+                        }
+                    }
+                }
+                case "AnnotationDefault" -> elementValue(data, plugin, modern, legacy);
+                default -> {
+                }
+            }
+            if (hideAnnotation) {
+                String hidden = name.equals("AnnotationDefault") ? "AnnotationDefaultHidden" : name.replace("Visible", "Invisible");
+                put2(body, at, addUtf8(hidden));
+                changed = true;
+            }
+            at = data + length;
+        }
+        return at;
+    }
+
+    private int annotation(int at, ApiVersion plugin, Predicate<String> modern, Predicate<String> legacy) {
+        int pairs = u2(body, at + 2);
+        at += 4;
+        for (int each = 0; each < pairs; each++) {
+            at = elementValue(at + 2, plugin, modern, legacy);
+        }
+        return at;
+    }
+
+    private int elementValue(int at, ApiVersion plugin, Predicate<String> modern, Predicate<String> legacy) {
+        char tag = (char) (body[at] & 0xFF);
+        at++;
+        switch (tag) {
+            case 'e' -> {
+                String type = utf8(u2(body, at));
+                String name = utf8(u2(body, at + 2));
+                if (type.startsWith("Lorg/bukkit/") && type.endsWith(";")
+                        && formerEnum.test(type.substring(1, type.length() - 1))) {
+                    hideAnnotation = true;
+                } else if (type.startsWith("Lorg/bukkit/") && type.endsWith(";")) {
+                    String renamed = renameConstant(plugin, type.substring(1, type.length() - 1), name, modern, legacy);
+                    if (!renamed.equals(name)) {
+                        put2(body, at + 2, addUtf8(renamed));
+                        changed = true;
+                    }
+                }
+                return at + 4;
+            }
+            case '@' -> {
+                return annotation(at, plugin, modern, legacy);
+            }
+            case '[' -> {
+                int count = u2(body, at);
+                at += 2;
+                for (int each = 0; each < count; each++) {
+                    at = elementValue(at, plugin, modern, legacy);
+                }
+                return at;
+            }
+            default -> {
+                return at + 2;
+            }
+        }
+    }
+
+    private void walkBody(ApiVersion plugin, Predicate<String> modern, Predicate<String> legacy) {
+        int at = 8 + 2 * u2(body, 6);
+        for (int group = 0; group < 2; group++) {
+            int count = u2(body, at);
+            at += 2;
+            for (int each = 0; each < count; each++) {
+                if (widenSelf) {
+                    String desc = utf8(u2(body, at + 4));
+                    if (isEnumDescriptor(desc)) {
+                        put2(body, at + 4, addUtf8(desc.replace(kEnumType, "Ljava/lang/Object;")));
+                        changed = true;
+                    }
+                }
+                at = attributes(at + 6, plugin, modern, legacy);
+            }
+        }
+        attributes(at, plugin, modern, legacy);
     }
 
     private void implementFormerSuper(Predicate<String> becameInterface) {
@@ -294,6 +569,17 @@ final class ConstantPoolPatch {
             widenEnumCall(index);
             return;
         }
+        if (name.equals("valueOf") && owner.equals("java/lang/Enum") && desc.equals(LegacyCalls.kEnumValueOf)
+                && plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
+            formerClassCalls = true;
+            return;
+        }
+        if (owner.equals("java/lang/Enum") && (name.equals("equals") || name.equals("hashCode"))
+                && plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
+            put2(entries.get(index), 1, addClass("java/lang/Object"));
+            changed = true;
+            return;
+        }
         LegacyCalls.Target replaced = LegacyCalls.staticCall(plugin, owner, name, desc);
         if (replaced != null) {
             retarget(index, replaced);
@@ -343,7 +629,7 @@ final class ConstantPoolPatch {
         for (byte[] entry : entries) {
             size += entry == null ? 0 : entry.length;
         }
-        byte[] out = new byte[size + source.length - poolEnd + (formerSuper >= 0 ? 2 : 0)];
+        byte[] out = new byte[size + body.length + (formerSuper >= 0 ? 2 : 0)];
         System.arraycopy(source, 0, out, 0, 10);
         put2(out, 8, entries.size());
         int at = 10;
@@ -354,16 +640,16 @@ final class ConstantPoolPatch {
             }
         }
         if (formerSuper < 0) {
-            System.arraycopy(source, poolEnd, out, at, source.length - poolEnd);
+            System.arraycopy(body, 0, out, at, body.length);
             return out;
         }
-        int interfaces = u2(source, poolEnd + 6);
-        int restFrom = poolEnd + 8 + 2 * interfaces;
-        System.arraycopy(source, poolEnd, out, at, 8 + 2 * interfaces);
+        int interfaces = u2(body, 6);
+        int restFrom = 8 + 2 * interfaces;
+        System.arraycopy(body, 0, out, at, restFrom);
         put2(out, at + 4, superObject);
         put2(out, at + 6, interfaces + 1);
         put2(out, at + 8 + 2 * interfaces, formerSuper);
-        System.arraycopy(source, restFrom, out, at + 10 + 2 * interfaces, source.length - restFrom);
+        System.arraycopy(body, restFrom, out, at + 10 + 2 * interfaces, body.length - restFrom);
         return out;
     }
 }

@@ -262,7 +262,14 @@ public abstract class PathNavigation {
         return false;
     }
     public NodeEvaluator getNodeEvaluator() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.navigation.PathNavigation#getNodeEvaluator");
+        if (nodeEvaluator == null && pathFinder == null) {
+            try {
+                pathFinder = createPathFinder(512);
+            } catch (UnsupportedOperationException none) {
+                return null;
+            }
+        }
+        return nodeEvaluator;
     }
     public boolean isStuck() {
         return false;

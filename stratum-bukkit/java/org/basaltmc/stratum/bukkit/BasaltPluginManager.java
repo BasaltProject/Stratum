@@ -51,6 +51,8 @@ public final class BasaltPluginManager extends PluginManagerBase {
     private final List<BasaltPluginClassLoader> loaders = new ArrayList<>();
     /** Owns the permission maps, which permission plugins swap through reflection as on Paper. */
     private SimplePluginManager shared;
+    private volatile io.papermc.paper.plugin.PermissionManager permissionOverride;
+    private final BasaltPluginLoader pluginLoader = new BasaltPluginLoader(this);
 
     BasaltPluginManager(BasaltServer server, File folder) {
         this.server = server;
@@ -335,6 +337,17 @@ public final class BasaltPluginManager extends PluginManagerBase {
         if (!plugin.isEnabled()) {
             throw new IllegalPluginAccessException("Plugin attempted to register " + listener + " while not enabled");
         }
+        for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry
+                : createRegisteredListeners(listener, plugin).entrySet()) {
+            for (RegisteredListener registered : entry.getValue()) {
+                handlerList(entry.getKey()).register(registered);
+                EventBridge.listening(entry.getKey(), registered.getPriority());
+            }
+        }
+    }
+
+    Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, Plugin plugin) {
+        Map<Class<? extends Event>, Set<RegisteredListener>> created = new HashMap<>();
         Set<Method> methods = new HashSet<>();
         try {
             methods.addAll(Arrays.asList(listener.getClass().getMethods()));
@@ -343,7 +356,7 @@ public final class BasaltPluginManager extends PluginManagerBase {
             plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName()
                 + " has failed to register events for " + listener.getClass() + " because " + e.getMessage()
                 + " does not exist.");
-            return;
+            return created;
         }
         for (Method method : methods) {
             EventHandler handler = method.getAnnotation(EventHandler.class);
@@ -370,8 +383,10 @@ public final class BasaltPluginManager extends PluginManagerBase {
                     throw new org.bukkit.event.EventException(t);
                 }
             };
-            registerEvent(eventClass, listener, handler.priority(), executor, plugin, handler.ignoreCancelled());
+            created.computeIfAbsent(eventClass, k -> new HashSet<>())
+                .add(new RegisteredListener(listener, executor, handler.priority(), plugin, handler.ignoreCancelled()));
         }
+        return created;
     }
 
     @Override
@@ -468,11 +483,20 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public Permission getPermission(String name) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            return override.getPermission(name);
+        }
         return shared.permissions.get(name.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void addPermission(Permission permission) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.addPermission(permission);
+            return;
+        }
         String key = permission.getName().toLowerCase(Locale.ROOT);
         if (shared.permissions.containsKey(key)) {
             return;
@@ -496,6 +520,11 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public void addPermissions(List<Permission> list) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.addPermissions(list);
+            return;
+        }
         for (Permission permission : list) {
             addPermission(permission);
         }
@@ -503,11 +532,21 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public void removePermission(Permission permission) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.removePermission(permission);
+            return;
+        }
         removePermission(permission.getName());
     }
 
     @Override
     public void removePermission(String name) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.removePermission(name);
+            return;
+        }
         Permission removed = shared.permissions.remove(name.toLowerCase(Locale.ROOT));
         if (removed != null) {
             shared.defaultPerms.get(true).remove(removed);
@@ -518,6 +557,11 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public void clearPermissions() {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.clearPermissions();
+            return;
+        }
         for (String name : shared.permissions.keySet()) {
             org.basaltmc.stratum.bukkit.misc.PermissionBridge.undeclare(name);
         }
@@ -528,11 +572,20 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public Set<Permission> getDefaultPermissions(boolean op) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            return override.getDefaultPermissions(op);
+        }
         return Set.copyOf(shared.defaultPerms.get(op));
     }
 
     @Override
     public void recalculatePermissionDefaults(Permission permission) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.recalculatePermissionDefaults(permission);
+            return;
+        }
         if (permission != null && shared.permissions.containsKey(permission.getName().toLowerCase(Locale.ROOT))) {
             calculateDefault(permission);
         }
@@ -540,36 +593,68 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     @Override
     public Set<Permission> getPermissions() {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            return override.getPermissions();
+        }
         return Set.copyOf(shared.permissions.values());
     }
 
     @Override
     public void subscribeToPermission(String permission, Permissible permissible) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.subscribeToPermission(permission, permissible);
+            return;
+        }
         subscribe(shared.permSubs, permission.toLowerCase(Locale.ROOT), permissible);
     }
 
     @Override
     public void unsubscribeFromPermission(String permission, Permissible permissible) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.unsubscribeFromPermission(permission, permissible);
+            return;
+        }
         unsubscribe(shared.permSubs, permission.toLowerCase(Locale.ROOT), permissible);
     }
 
     @Override
     public Set<Permissible> getPermissionSubscriptions(String permission) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            return override.getPermissionSubscriptions(permission);
+        }
         return subscribers(shared.permSubs.get(permission.toLowerCase(Locale.ROOT)));
     }
 
     @Override
     public void subscribeToDefaultPerms(boolean op, Permissible permissible) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.subscribeToDefaultPerms(op, permissible);
+            return;
+        }
         subscribe(shared.defSubs, op, permissible);
     }
 
     @Override
     public void unsubscribeFromDefaultPerms(boolean op, Permissible permissible) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            override.unsubscribeFromDefaultPerms(op, permissible);
+            return;
+        }
         unsubscribe(shared.defSubs, op, permissible);
     }
 
     @Override
     public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
+        io.papermc.paper.plugin.PermissionManager override = permissionOverride;
+        if (override != null) {
+            return override.getDefaultPermSubscriptions(op);
+        }
         return subscribers(shared.defSubs.get(op));
     }
 
@@ -594,6 +679,15 @@ public final class BasaltPluginManager extends PluginManagerBase {
 
     private static Set<Permissible> subscribers(Map<Permissible, Boolean> found) {
         return found == null ? Set.of() : Set.copyOf(found.keySet());
+    }
+
+    @Override
+    public void overridePermissionManager(Plugin plugin, io.papermc.paper.plugin.PermissionManager permissionManager) {
+        this.permissionOverride = permissionManager;
+    }
+
+    BasaltPluginLoader pluginLoader() {
+        return pluginLoader;
     }
 
     @Override

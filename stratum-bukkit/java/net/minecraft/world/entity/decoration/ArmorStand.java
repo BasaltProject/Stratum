@@ -45,6 +45,76 @@ public class ArmorStand extends LivingEntity {
             : new Rotations((float) Math.toDegrees(angle.getX()), (float) Math.toDegrees(angle.getY()), (float) Math.toDegrees(angle.getZ()));
     }
 
+    public Object syncedValue(EntityDataAccessor<?> key) {
+        org.bukkit.entity.ArmorStand api = stand();
+        if (api == null) {
+            return null;
+        }
+        int id = key.id();
+        if (id == DATA_CLIENT_FLAGS.id()) {
+            return (byte) ((api.isSmall() ? CLIENT_FLAG_SMALL : 0) | (api.hasArms() ? CLIENT_FLAG_SHOW_ARMS : 0)
+                | (api.hasBasePlate() ? 0 : CLIENT_FLAG_NO_BASEPLATE) | (api.isMarker() ? CLIENT_FLAG_MARKER : 0));
+        }
+        if (id == DATA_HEAD_POSE.id()) {
+            return getHeadPose();
+        }
+        if (id == DATA_BODY_POSE.id()) {
+            return getBodyPose();
+        }
+        if (id == DATA_LEFT_ARM_POSE.id()) {
+            return getLeftArmPose();
+        }
+        if (id == DATA_RIGHT_ARM_POSE.id()) {
+            return getRightArmPose();
+        }
+        if (id == DATA_LEFT_LEG_POSE.id()) {
+            return getLeftLegPose();
+        }
+        return id == DATA_RIGHT_LEG_POSE.id() ? getRightLegPose() : null;
+    }
+
+    public void applySyncedValue(EntityDataAccessor<?> key, Object value) {
+        org.bukkit.entity.ArmorStand api = stand();
+        if (api == null) {
+            return;
+        }
+        int id = key.id();
+        if (id == DATA_CLIENT_FLAGS.id() && value instanceof Byte flags) {
+            api.setSmall((flags & CLIENT_FLAG_SMALL) != 0);
+            api.setArms((flags & CLIENT_FLAG_SHOW_ARMS) != 0);
+            api.setBasePlate((flags & CLIENT_FLAG_NO_BASEPLATE) == 0);
+            api.setMarker((flags & CLIENT_FLAG_MARKER) != 0);
+        } else if (value instanceof Rotations rotations) {
+            if (id == DATA_HEAD_POSE.id()) {
+                setHeadPose(rotations);
+            } else if (id == DATA_BODY_POSE.id()) {
+                setBodyPose(rotations);
+            } else if (id == DATA_LEFT_ARM_POSE.id()) {
+                setLeftArmPose(rotations);
+            } else if (id == DATA_RIGHT_ARM_POSE.id()) {
+                setRightArmPose(rotations);
+            } else if (id == DATA_LEFT_LEG_POSE.id()) {
+                setLeftLegPose(rotations);
+            } else if (id == DATA_RIGHT_LEG_POSE.id()) {
+                setRightLegPose(rotations);
+            }
+        }
+    }
+
+    private void setSmall(boolean value) {
+        org.bukkit.entity.ArmorStand api = stand();
+        if (api != null) {
+            api.setSmall(value);
+        }
+    }
+
+    private void setMarker(boolean value) {
+        org.bukkit.entity.ArmorStand api = stand();
+        if (api != null) {
+            api.setMarker(value);
+        }
+    }
+
     public static final int WOBBLE_TIME = 5;
     public static final Rotations DEFAULT_HEAD_POSE = new Rotations(0.0F, 0.0F, 0.0F);
     public static final Rotations DEFAULT_BODY_POSE = new Rotations(0.0F, 0.0F, 0.0F);

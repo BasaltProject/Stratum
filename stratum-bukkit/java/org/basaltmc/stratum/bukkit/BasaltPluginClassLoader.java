@@ -154,6 +154,13 @@ public final class BasaltPluginClassLoader extends URLClassLoader implements Con
         this.plugin = plugin;
         Logger logger = Logger.getLogger(description.getName());
         plugin.init(BasaltServer.instance(), description, dataFolder, jar, this, description, logger);
+        try {
+            java.lang.reflect.Field loader = JavaPlugin.class.getDeclaredField("loader");
+            loader.setAccessible(true);
+            loader.set(plugin, manager.pluginLoader());
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            logger.fine("Could not hand the plugin its loader: " + e);
+        }
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 
 /** Stands in for java.util.EnumSet in plugins built when elements such as Sound and Biome were enums. */
-public final class LegacyEnumSet<E> extends AbstractSet<E> implements Serializable, Cloneable {
+public class LegacyEnumSet<E> extends AbstractSet<E> implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     private final Class<E> elementType;
