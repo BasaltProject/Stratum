@@ -110,8 +110,10 @@ public abstract class Player extends Avatar implements ContainerUser {
     protected final List<Identifier> postEffects = null;
     public FishingHook fishing;
     protected float hurtDir;
+    public GameProfile gameProfile;
     public Player(Level level, GameProfile gameProfile) {
         super(null, level);
+        this.gameProfile = gameProfile;
     }
     protected EntityEquipment createEquipment() {
         return null;
@@ -394,7 +396,7 @@ public abstract class Player extends Avatar implements ContainerUser {
         return true;
     }
     public GameProfile getGameProfile() {
-        return new GameProfile(getUUID(), getScoreboardName());
+        return gameProfile != null ? gameProfile : new GameProfile(getUUID(), getScoreboardName());
     }
     public NameAndId nameAndId() {
         return new net.minecraft.server.players.NameAndId(getUUID(), getScoreboardName());
