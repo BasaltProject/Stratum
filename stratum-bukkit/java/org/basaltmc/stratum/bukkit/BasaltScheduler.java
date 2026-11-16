@@ -90,7 +90,7 @@ public final class BasaltScheduler extends BukkitSchedulerBase {
                 tasks.remove(id);
                 if (worker != null) {
                     worker.cancel(false);
-                } else if (sync) {
+                } else {
                     Natives.cancelTask(id);
                 }
             }
@@ -106,14 +106,11 @@ public final class BasaltScheduler extends BukkitSchedulerBase {
         Task task = new Task(id, plugin, body, sync, repeating);
         tasks.put(id, task);
         int start = (int) Math.max(delay, 0);
-        if (!sync) {
-            long delayMs = start * 50L;
-            task.worker = repeating
-                ? kWorkers.scheduleAtFixedRate(() -> run(id), delayMs, period * 50L,
-                    java.util.concurrent.TimeUnit.MILLISECONDS)
-                : kWorkers.schedule(() -> run(id), delayMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+        if (!sync && !repeating && start == 0) {
+            task.worker = kWorkers.schedule(() -> exec(id), 0, java.util.concurrent.TimeUnit.MILLISECONDS);
             return task;
         }
+        // Timed async tasks count game ticks too, so a paused server wakes no timer thread.
         // A task due now still waits a tick, as Bukkit's does when it is scheduled mid-tick.
         if (repeating) {
             Natives.scheduleEvery(id, start, (int) period);
@@ -129,6 +126,15 @@ public final class BasaltScheduler extends BukkitSchedulerBase {
 
     /** Called by the native task service when the tick of a task comes. */
     void run(long id) {
+        Task task = tasks.get(id);
+        if (task != null && !task.sync) {
+            kWorkers.execute(() -> exec(id));
+            return;
+        }
+        exec(id);
+    }
+
+    private void exec(long id) {
         Task task = tasks.get(id);
         if (task == null || task.cancelled) {
             return;

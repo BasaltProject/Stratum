@@ -13,7 +13,7 @@ import java.util.Set;
  */
 final class Sampler {
     private static final long kIntervalMillis = 10;
-    private static final long kIdlePollMillis = 50;
+    private static final long kIdlePollMillis = 250;
     private static final long kWindowMillis = 10_000;
     private static final int kMaxWindows = 180;
     private static final int kMaxNodes = 60_000;
