@@ -41,7 +41,8 @@ basalt_module(stratum-bukkit
         src/BukkitWorldEnvNatives.cpp
         src/BukkitWorldEnvMoreNatives.cpp
         src/ShimHost.cpp
-    DEPENDS basalt::server-plugins basalt::wire-common basalt::wire-io basalt::wire-nbt basalt::wire-protocol
+    DEPENDS basalt::server-plugins basalt::wire-auth basalt::wire-common basalt::wire-io basalt::wire-nbt
+            basalt::wire-protocol
 )
 target_include_directories(stratum-bukkit SYSTEM PUBLIC ${STRATUM_JNI_INCLUDE_DIR} ${STRATUM_JNI_INCLUDE_DIR}/linux
                                                       ${STRATUM_JNI_INCLUDE_DIR}/darwin ${STRATUM_JNI_INCLUDE_DIR}/win32

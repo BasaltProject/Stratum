@@ -41,6 +41,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 public class Rabbit extends Animal {
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_TYPE_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(17);
     public void setVariant(Variant variant) {
     }
     public static final double STROLL_SPEED_MOD = 0.6;

@@ -35,10 +35,29 @@ public final class BasaltTeam implements Team {
 
     private final BasaltScoreboard board;
     private final String name;
+    public volatile net.minecraft.world.scores.PlayerTeam team;
 
     BasaltTeam(BasaltScoreboard board, String name) {
         this.board = board;
         this.name = name;
+        this.team = new net.minecraft.world.scores.PlayerTeam(null, name);
+    }
+
+    private void mirror(String[] fields) {
+        net.minecraft.world.scores.PlayerTeam made = new net.minecraft.world.scores.PlayerTeam(null, name);
+        for (net.minecraft.world.scores.Team.Visibility each : net.minecraft.world.scores.Team.Visibility.values()) {
+            if (each.name.equals(fields[kNameTag])) {
+                made.setNameTagVisibility(each);
+            }
+        }
+        for (net.minecraft.world.scores.Team.CollisionRule each : net.minecraft.world.scores.Team.CollisionRule.values()) {
+            if (each.name.equals(fields[kCollision])) {
+                made.setCollisionRule(each);
+            }
+        }
+        net.minecraft.world.scores.TeamColor color = net.minecraft.world.scores.TeamColor.byName(fields[kColor]);
+        made.setColor(java.util.Optional.ofNullable(color));
+        team = made;
     }
 
     private String[] fields() {
@@ -51,6 +70,11 @@ public final class BasaltTeam implements Team {
 
     private void write(String[] fields) {
         MiscNatives.sbUpdateTeam(board.handle(), fields);
+        try {
+            mirror(fields);
+        } catch (RuntimeException ignored) {
+            // The mirror only feeds the packet helpers of plugins that read it.
+        }
     }
 
     private static String status(OptionStatus status, boolean collision) {

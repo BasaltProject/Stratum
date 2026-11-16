@@ -1,5 +1,7 @@
 #include "BukkitWorldNativesShared.hpp"
 
+#include <basalt/wire/auth/MojangSessionService.hpp>
+
 namespace basalt::stratum::bukkit {
 namespace {
 using namespace shared;
@@ -67,6 +69,25 @@ void JNICALL nativeNpcAnimate(JNIEnv* env, jclass, jstring world, jint id, jint 
 void JNICALL nativeNpcRemove(JNIEnv* env, jclass, jstring world, jint id) {
     withNpc(env, world, id, [&](PluginNpcRef& npc) { npc.remove(); });
 }
+
+jstring JNICALL nativeProfileUuid(JNIEnv* env, jclass, jstring name) {
+    const std::optional<std::string> id = wire::auth::mojangUuidOf(toStd(env, name));
+    return id.has_value() ? toJava(env, *id) : nullptr;
+}
+
+jobjectArray JNICALL nativeProfileTextures(JNIEnv* env, jclass, jstring uuid) {
+    const std::optional<wire::auth::SessionProfile> profile = wire::auth::mojangProfileOf(toStd(env, uuid));
+    if (!profile.has_value()) {
+        return nullptr;
+    }
+    std::vector<std::string> fields{profile->name};
+    for (const wire::auth::SessionProfileProperty& property : profile->properties) {
+        fields.push_back(property.name);
+        fields.push_back(property.value);
+        fields.push_back(property.signature.value_or(""));
+    }
+    return stringArray(env, fields);
+}
 } // namespace
 
 void registerWorldNativesNpc(JNIEnv* env, jclass natives) {
@@ -81,6 +102,10 @@ void registerWorldNativesNpc(JNIEnv* env, jclass natives) {
         nativeMethod("npcEquip", "(Ljava/lang/String;II[B)V", reinterpret_cast<void*>(&nativeNpcEquip)),
         nativeMethod("npcAnimate", "(Ljava/lang/String;II)V", reinterpret_cast<void*>(&nativeNpcAnimate)),
         nativeMethod("npcRemove", "(Ljava/lang/String;I)V", reinterpret_cast<void*>(&nativeNpcRemove)),
+        nativeMethod("profileUuid", "(Ljava/lang/String;)Ljava/lang/String;",
+                     reinterpret_cast<void*>(&nativeProfileUuid)),
+        nativeMethod("profileTextures", "(Ljava/lang/String;)[Ljava/lang/String;",
+                     reinterpret_cast<void*>(&nativeProfileTextures)),
     };
     registerMethods(env, natives, methods.data(), static_cast<jint>(methods.size()));
 }

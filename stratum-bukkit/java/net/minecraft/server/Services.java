@@ -15,7 +15,8 @@ public record Services(SessionService sessionService, ServicesKeySet servicesKey
     UserNameToIdResolver nameToIdCache, ProfileResolver profileResolver) {
     public static Services create(MinecraftServicesDiscoveryService serviceAccess, File nameCacheDir) {
         CachedUserNameToIdResolver cache = new CachedUserNameToIdResolver(null, new File(nameCacheDir, "usercache.json"));
-        return new Services(null, null, null, cache, new ProfileResolver.Cached(null, cache));
+        org.basaltmc.stratum.bukkit.MojangProfiles profiles = new org.basaltmc.stratum.bukkit.MojangProfiles();
+        return new Services(profiles, null, profiles, cache, new ProfileResolver.Cached(profiles, cache));
     }
 
     public SignatureValidator profileKeySignatureValidator() {

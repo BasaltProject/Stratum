@@ -31,6 +31,8 @@ public final class WorldNatives {
     public static native void npcEquip(String world, int id, int slot, byte[] stack);
     public static native void npcAnimate(String world, int id, int action);
     public static native void npcRemove(String world, int id);
+    public static native String profileUuid(String name);
+    public static native String[] profileTextures(String uuid);
 
     public static native String[] worldStrings(String world);
     public static native long[] worldNumbers(String world);

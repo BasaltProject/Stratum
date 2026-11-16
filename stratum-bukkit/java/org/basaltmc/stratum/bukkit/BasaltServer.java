@@ -111,7 +111,8 @@ public class BasaltServer extends ServerTail {
                 return player;
             }
         }
-        return world.entity(id);
+        org.bukkit.entity.Entity fake = FakePlayers.entity(id);
+        return fake != null ? fake : world.entity(id);
     }
 
     private synchronized void forgetUnloaded(String[] live) {

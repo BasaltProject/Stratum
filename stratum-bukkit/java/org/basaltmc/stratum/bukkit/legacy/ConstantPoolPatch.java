@@ -19,6 +19,7 @@ final class ConstantPoolPatch {
     private static final int kMethodHandle = 15;
     private static final String kLegacyMysqlDriver = "com.mysql.jdbc.Driver";
     private static final String kModernMysqlDriver = "com.mysql.cj.jdbc.Driver";
+    private static final int kInstanceOf = 0xC1;
     private static final String kEnumType = "Ljava/lang/Enum;";
     private static final String kLegacyEnumMap = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumMap";
     private static final String kLegacyEnumSet = "org/basaltmc/stratum/bukkit/legacy/LegacyEnumSet";
@@ -298,6 +299,15 @@ final class ConstantPoolPatch {
         return 0;
     }
 
+    private boolean testsForEnum(int enumClass) {
+        for (int at = 0; at + 2 < body.length; at++) {
+            if ((body[at] & 0xFF) == kInstanceOf && u2(body, at + 1) == enumClass) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean widenable(Predicate<String> widensOwn) {
         int superClass = u2(body, 4);
         if (superClass == 0 || className(superClass).equals("java/lang/Enum")) {
@@ -305,6 +315,9 @@ final class ConstantPoolPatch {
         }
         String selfName = className(u2(body, 2));
         int enumClass = enumClassIndex();
+        if (enumClass > 0 && testsForEnum(enumClass)) {
+            return false;
+        }
         boolean mentions = false;
         for (int index = 1; index < entries.size(); index++) {
             byte[] entry = entries.get(index);

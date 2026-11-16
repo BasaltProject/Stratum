@@ -27,6 +27,18 @@ public final class FakePlayers {
         }
     }
 
+    public static org.bukkit.entity.Entity entity(int entityId) {
+        if (kByUuid.isEmpty()) {
+            return null;
+        }
+        for (ServerPlayer player : kByUuid.values()) {
+            if (player.getId() == entityId) {
+                return player.getBukkitEntity();
+            }
+        }
+        return null;
+    }
+
     public static void register(ServerPlayer player) {
         kByUuid.put(player.getUUID(), player);
     }

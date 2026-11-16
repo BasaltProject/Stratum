@@ -180,7 +180,6 @@ public class ServerPlayer extends Player {
         valid = true;
         org.basaltmc.stratum.bukkit.FakePlayers.register(this);
         pushSkin();
-        pushPlace();
         pushPosture();
         fakeState.pushAll(world, made);
         return true;
