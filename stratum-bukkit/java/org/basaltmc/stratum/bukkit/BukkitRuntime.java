@@ -169,6 +169,8 @@ public final class BukkitRuntime {
             }
             Natives.log(1, "Bukkit", manager.getPlugins().length + " Bukkit plugin(s) loaded");
             Warmup.install();
+            org.basaltmc.stratum.bukkit.brigadier.BasaltLifecycleManager.reloadCommands(
+                io.papermc.paper.plugin.lifecycle.event.registrar.ReloadableRegistrarEvent.Cause.INITIAL);
             manager.callEvent(new org.bukkit.event.server.ServerLoadEvent(
                 org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
             return true;

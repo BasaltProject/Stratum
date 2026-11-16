@@ -22,7 +22,11 @@ public final class BasaltCommandSourceStack implements CommandSourceStack {
         this.executor = executor;
     }
 
-    public static BasaltCommandSourceStack of(CommandSender sender) {
+    public static CommandSourceStack of(CommandSender sender) {
+        if (sender instanceof org.bukkit.craftbukkit.entity.CraftPlayer
+                || sender instanceof org.bukkit.command.ConsoleCommandSender) {
+            return org.bukkit.craftbukkit.command.VanillaCommandWrapper.getListener(sender);
+        }
         Entity entity = sender instanceof Entity found ? found : null;
         Location at = entity != null ? entity.getLocation() : Bukkit.getWorlds().get(0).getSpawnLocation();
         return new BasaltCommandSourceStack(sender, at, entity);

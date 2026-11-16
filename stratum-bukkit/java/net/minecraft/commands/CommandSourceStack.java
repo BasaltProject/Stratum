@@ -404,6 +404,10 @@ public class CommandSourceStack implements SharedSuggestionProvider, ExecutionCo
             : org.bukkit.Bukkit.getConsoleSender();
     }
 
+    public org.bukkit.command.CommandSender getBukkitSender() {
+        return getSender();
+    }
+
     @Override
     public org.bukkit.entity.Entity getExecutor() {
         return entity == null ? null : entity.getBukkitEntity() instanceof org.bukkit.entity.Entity found ? found : null;

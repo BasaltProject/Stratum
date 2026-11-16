@@ -21,6 +21,7 @@ public class EntitySelector {
     private String raw = "";
     private int maxResults = Integer.MAX_VALUE;
     private boolean includesEntities = true;
+    private boolean usesSelector;
 
     /** Builds a selector that the server resolves from its text form. */
     public static EntitySelector ofText(String text, int maxResults, boolean includesEntities) {
@@ -45,7 +46,9 @@ public class EntitySelector {
     };
     public static final Codec<CompilableString<EntitySelector>> COMPILABLE_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.commands.arguments.selector.EntitySelector.class, "COMPILABLE_CODEC");
     public EntitySelector(int maxResults, boolean includesEntities, boolean worldLimited, List<Predicate<Entity>> contextFreePredicates, MinMaxBounds. Doubles range, Function<Vec3, Vec3> position, AABB aabb, BiConsumer<Vec3, List<? extends Entity>> order, boolean currentEntity, String playerName, UUID entityUUID, EntityType<?> type, boolean usesSelector) {
-        
+        this.maxResults = maxResults;
+        this.includesEntities = includesEntities;
+        this.usesSelector = usesSelector;
     }
     public int getMaxResults() {
         return maxResults;
@@ -60,7 +63,7 @@ public class EntitySelector {
         return false;
     }
     public boolean usesSelector() {
-        return raw.startsWith("@");
+        return usesSelector || raw.startsWith("@");
     }
     public Entity findSingleEntity(CommandSourceStack sender) throws CommandSyntaxException {
         List<? extends Entity> found = findEntities(sender);

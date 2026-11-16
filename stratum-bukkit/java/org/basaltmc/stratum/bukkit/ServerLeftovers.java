@@ -102,6 +102,7 @@ public abstract class ServerLeftovers extends ServerExtras {
     public void reloadData() {
         RestNatives.reloadData();
         dropDataCaches();
+        org.basaltmc.stratum.bukkit.brigadier.BasaltLifecycleManager.reloadCommands();
     }
 
     static void dropDataCaches() {

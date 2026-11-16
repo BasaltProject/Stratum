@@ -13,6 +13,9 @@ import org.bukkit.plugin.Plugin;
 public final class BasaltLifecycleManager implements LifecycleEventManager<Plugin> {
     private static final Set<String> kReported = ConcurrentHashMap.newKeySet();
 
+    private static final java.util.Map<BasaltLifecycleEventTypeProvider.Handler<?>, Plugin> kCommandHandlers =
+        new java.util.concurrent.ConcurrentHashMap<>();
+
     private final Plugin plugin;
 
     public BasaltLifecycleManager(Plugin plugin) {
@@ -43,6 +46,22 @@ public final class BasaltLifecycleManager implements LifecycleEventManager<Plugi
     }
 
     public static void runCommands(Plugin plugin, BasaltLifecycleEventTypeProvider.Handler<?> handler) {
+        kCommandHandlers.put(handler, plugin);
+        runCommands(plugin, handler, ReloadableRegistrarEvent.Cause.INITIAL);
+    }
+
+    public static void reloadCommands() {
+        reloadCommands(ReloadableRegistrarEvent.Cause.RELOAD);
+    }
+
+    public static void reloadCommands(ReloadableRegistrarEvent.Cause cause) {
+        for (var entry : new java.util.ArrayList<>(kCommandHandlers.entrySet())) {
+            runCommands(entry.getValue(), entry.getKey(), cause);
+        }
+    }
+
+    private static void runCommands(Plugin plugin, BasaltLifecycleEventTypeProvider.Handler<?> handler,
+            ReloadableRegistrarEvent.Cause cause) {
         Commands registrar = new BasaltCommands(plugin);
         handler.<ReloadableRegistrarEvent<Commands>>handler().run(new ReloadableRegistrarEvent<>() {
             @Override
@@ -52,7 +71,7 @@ public final class BasaltLifecycleManager implements LifecycleEventManager<Plugi
 
             @Override
             public Cause cause() {
-                return Cause.INITIAL;
+                return cause;
             }
         });
     }

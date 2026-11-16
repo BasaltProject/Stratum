@@ -45,7 +45,7 @@ public final class BrigadierCommand extends Command implements PluginIdentifiabl
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        BasaltCommandSourceStack source = BasaltCommandSourceStack.of(sender);
+        CommandSourceStack source = BasaltCommandSourceStack.of(sender);
         if (basic != null) {
             if (!basic.canUse(sender)) {
                 sender.sendMessage(Component.text("I'm sorry, but you do not have permission to perform this command.",
@@ -71,7 +71,7 @@ public final class BrigadierCommand extends Command implements PluginIdentifiabl
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) {
-        BasaltCommandSourceStack source = BasaltCommandSourceStack.of(sender);
+        CommandSourceStack source = BasaltCommandSourceStack.of(sender);
         if (basic != null) {
             return basic.canUse(sender) ? new ArrayList<>(basic.suggest(source, args)) : List.of();
         }
