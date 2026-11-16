@@ -34,7 +34,4 @@ public record ScoreContents(Either<CompilableString<EntitySelector>, String> nam
         org.bukkit.scoreboard.Score score = found.getScore(holder);
         return score.isScoreSet() ? Component.literal(Integer.toString(score.getScore())) : Component.empty();
     }
-    public String toString() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.network.chat.contents.ScoreContents#toString");
-    }
 }

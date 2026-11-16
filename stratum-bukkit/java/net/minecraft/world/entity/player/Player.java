@@ -75,6 +75,11 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 public abstract class Player extends Avatar implements ContainerUser {
+    @Override
+    public org.bukkit.craftbukkit.entity.CraftHumanEntity getBukkitEntity() {
+        return (org.bukkit.craftbukkit.entity.CraftHumanEntity) super.getBukkitEntity();
+    }
+
     private org.bukkit.entity.Player bukkit() {
         return live() instanceof org.bukkit.entity.Player player ? player : null;
     }

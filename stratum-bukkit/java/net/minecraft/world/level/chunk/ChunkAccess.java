@@ -381,7 +381,7 @@ public abstract class ChunkAccess implements LightChunk, StructureAccess, BiomeR
         throw Unsupported.hit("net.minecraft.world.level.chunk.ChunkAccess.setBlockEntityNbt");
     }
     public BlockState setBlockState(BlockPos pos, BlockState state) {
-        throw Unsupported.hit("net.minecraft.world.level.chunk.ChunkAccess.setBlockState");
+        return setBlockState(pos, state, 3);
     }
     public BlockState setBlockState(BlockPos blockPos, BlockState blockState, int value) {
         throw Unsupported.hit("net.minecraft.world.level.chunk.ChunkAccess.setBlockState");
@@ -423,7 +423,11 @@ public abstract class ChunkAccess implements LightChunk, StructureAccess, BiomeR
         kSkyNibbles = sWMRNibbleArrays;
     }
     public boolean tryMarkSaved() {
-        return true;
+        if (unsaved) {
+            unsaved = false;
+            return true;
+        }
+        return false;
     }
 
     public record PackedTicks(List blocks, List fluids) {

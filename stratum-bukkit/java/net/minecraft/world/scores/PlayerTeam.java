@@ -83,8 +83,8 @@ public class PlayerTeam extends Team {
     public void setSeeFriendlyInvisibles(boolean value) {
         seeFriendlyInvisibles = value;
     }
-    public int packOptions() {
-        return (friendlyFire ? 1 : 0) | (seeFriendlyInvisibles ? 2 : 0);
+    public byte packOptions() {
+        return (byte) ((friendlyFire ? 1 : 0) | (seeFriendlyInvisibles ? 2 : 0));
     }
     public Packed pack() {
         return new Packed(name, Optional.of(displayName), color, friendlyFire, seeFriendlyInvisibles, playerPrefix,

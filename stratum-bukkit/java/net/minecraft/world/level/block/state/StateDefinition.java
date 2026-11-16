@@ -13,17 +13,17 @@ import java.util.function.Function;
 public class StateDefinition<O, S extends StateHolder<O, S>> {
     private final O owner;
     private final Map<String, Property<?>> propertiesByName = new TreeMap<>();
-    private List<S> states;
+    private com.google.common.collect.ImmutableList<S> states;
 
     public StateDefinition(O owner, List<Property<?>> properties, List<S> states) {
         this.owner = owner;
         for (Property<?> property : properties) {
             propertiesByName.put(property.getName(), property);
         }
-        this.states = states;
+        this.states = com.google.common.collect.ImmutableList.copyOf(states);
     }
 
-    public List<S> getPossibleStates() {
+    public com.google.common.collect.ImmutableList<S> getPossibleStates() {
         return states;
     }
 
@@ -71,7 +71,7 @@ public class StateDefinition<O, S extends StateHolder<O, S>> {
         for (S state : created) {
             Comparable<?>[] current = new Comparable<?>[keyArray.length];
             for (int i = 0; i < keyArray.length; i++) {
-                current[i] = state.getValues().get(keyArray[i]);
+                current[i] = state.valuesMap().get(keyArray[i]);
             }
             S[][] table = (S[][]) new StateHolder[keyArray.length][];
             for (int i = 0; i < keyArray.length; i++) {
@@ -85,7 +85,7 @@ public class StateDefinition<O, S extends StateHolder<O, S>> {
             }
             state.initializeNeighbors(table);
         }
-        this.states = List.copyOf(created);
+        this.states = com.google.common.collect.ImmutableList.copyOf(created);
     }
     public MapCodec<S> propertiesCodec() {
         return com.mojang.serialization.MapCodec.of(

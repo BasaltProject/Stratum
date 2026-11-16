@@ -69,7 +69,16 @@ public abstract class StateHolder<O, S> {
         return hasProperty(property) ? setValue(property, value) : self();
     }
 
-    public Map<Property<?>, Comparable<?>> getValues() {
+    public java.util.stream.Stream<Property.Value<?>> getValues() {
+        return valuesMap().entrySet().stream().map(entry -> valueOf(entry.getKey(), entry.getValue()));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Property.Value<?> valueOf(Property<?> property, Comparable<?> value) {
+        return new Property.Value(property, value);
+    }
+
+    public Map<Property<?>, Comparable<?>> valuesMap() {
         Map<Property<?>, Comparable<?>> all = new java.util.LinkedHashMap<>();
         for (int i = 0; i < keys.length; i++) {
             all.put(keys[i], values[i]);

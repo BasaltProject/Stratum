@@ -65,6 +65,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.waypoints.Waypoint;
 public class LivingEntity extends Entity implements Attackable, WaypointTransmitter {
+    @Override
+    public org.bukkit.craftbukkit.entity.CraftLivingEntity getBukkitEntity() {
+        return (org.bukkit.craftbukkit.entity.CraftLivingEntity) super.getBukkitEntity();
+    }
+
     protected LivingEntity() {
     }
 

@@ -53,6 +53,18 @@ public final class EnumProperty<T extends Enum<T> & StringRepresentable> extends
     public int generateHashCode() {
         return 31 * super.generateHashCode() + values.hashCode();
     }
+    public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> clazz,
+            java.util.function.Predicate<T> filter) {
+        return create(name, clazz, java.util.Arrays.stream(clazz.getEnumConstants()).filter(filter).toList());
+    }
+
+    public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> clazz,
+            List<T> values) {
+        List<T> list = List.copyOf(values);
+        List<String> names = list.stream().map(StringRepresentable::getSerializedName).toList();
+        return PropertyPool.intern("enum:" + name + ":" + names, () -> new EnumProperty<>(name, clazz, list));
+    }
+
     public static <T extends Enum<T> & StringRepresentable> EnumProperty<T> create(String name, Class<T> clazz) {
         return create(name, clazz, clazz.getEnumConstants());
     }

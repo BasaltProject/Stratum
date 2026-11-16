@@ -191,6 +191,10 @@ public class ClientboundBossEventPacket implements Packet<ClientGamePacketListen
     }
 
     static record UpdateStyleOperation(BossEvent.BossBarColor color, BossEvent.BossBarOverlay overlay) implements Operation {
+        private UpdateStyleOperation(RegistryFriendlyByteBuf input) {
+            this(input.readEnum(BossEvent.BossBarColor.class), input.readEnum(BossEvent.BossBarOverlay.class));
+        }
+
         public OperationType getType() {
             return OperationType.UPDATE_STYLE;
         }
@@ -206,6 +210,14 @@ public class ClientboundBossEventPacket implements Packet<ClientGamePacketListen
     }
 
     static record UpdatePropertiesOperation(boolean darkenScreen, boolean playMusic, boolean createWorldFog) implements Operation {
+        private UpdatePropertiesOperation(RegistryFriendlyByteBuf input) {
+            this(input.readUnsignedByte());
+        }
+
+        private UpdatePropertiesOperation(int flags) {
+            this((flags & kDarkenScreen) != 0, (flags & kPlayMusic) != 0, (flags & kCreateWorldFog) != 0);
+        }
+
         static UpdatePropertiesOperation read(RegistryFriendlyByteBuf input) {
             int flags = input.readUnsignedByte();
             return new UpdatePropertiesOperation((flags & kDarkenScreen) != 0, (flags & kPlayMusic) != 0, (flags & kCreateWorldFog) != 0);

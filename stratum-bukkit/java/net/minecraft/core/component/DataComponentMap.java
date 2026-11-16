@@ -91,16 +91,16 @@ public interface DataComponentMap extends Iterable<TypedDataComponent<?>>, DataC
         }
 
         public <T> Builder set(DataComponentType<T> type, T value) {
-            return setUnchecked(type, value);
+            setUnchecked(type, value);
+            return this;
         }
 
-        <T> Builder setUnchecked(DataComponentType<T> type, Object value) {
+        void setUnchecked(DataComponentType<?> type, Object value) {
             if (value == null) {
                 map.remove(type);
             } else {
                 map.put(type, value);
             }
-            return this;
         }
 
         public Builder addAll(DataComponentMap other) {

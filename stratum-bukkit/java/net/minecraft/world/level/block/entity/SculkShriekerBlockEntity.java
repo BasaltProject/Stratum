@@ -33,13 +33,11 @@ public class SculkShriekerBlockEntity extends BlockEntity implements GameEventLi
         super(level, pos, nbt);
     }
 
-    public boolean tryShriek(ServerLevel level, ServerPlayer player) {
+    public void tryShriek(ServerLevel level, ServerPlayer player) {
         org.bukkit.block.SculkShrieker shrieker = bukkit(org.bukkit.block.SculkShrieker.class);
-        if (shrieker == null || player == null || !(player.getBukkitEntity() instanceof org.bukkit.entity.Player bukkitPlayer)) {
-            return false;
+        if (shrieker != null && player != null && player.getBukkitEntity() instanceof org.bukkit.entity.Player bukkitPlayer) {
+            shrieker.tryShriek(bukkitPlayer);
         }
-        shrieker.tryShriek(bukkitPlayer);
-        return true;
     }
 
     public boolean canRespond() {

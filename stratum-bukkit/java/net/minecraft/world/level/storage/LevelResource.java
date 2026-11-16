@@ -14,7 +14,4 @@ public record LevelResource(String id) {
     public static final LevelResource DATAPACK_DIR = new LevelResource("datapacks");
     public static final LevelResource MAP_RESOURCE_FILE = new LevelResource("resourcepacks/resources.zip");
     public static final LevelResource ROOT = new LevelResource(".");
-    public String toString() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.LevelResource#toString");
-    }
 }

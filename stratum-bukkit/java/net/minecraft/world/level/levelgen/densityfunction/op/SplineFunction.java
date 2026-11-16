@@ -149,7 +149,4 @@ public record SplineFunction(CubicSpline<Coordinate> spline) implements DensityF
     interface SplineInput {
         float sampleCoordinate(DensitySampler coordinateSampler, int coordinateIndex);
     }
-    public String toString() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.densityfunction.op.SplineFunction#toString");
-    }
 }

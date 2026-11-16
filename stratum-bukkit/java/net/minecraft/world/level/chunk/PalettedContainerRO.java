@@ -20,7 +20,7 @@ public interface PalettedContainerRO<T> {
 
     boolean maybeHas(Predicate<T> predicate);
 
-    PalettedContainerRO<T> copy();
+    PalettedContainer<T> copy();
 
     PalettedContainer<T> recreate();
 

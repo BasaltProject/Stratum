@@ -135,10 +135,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
         throw Unsupported.hit("net.minecraft.world.level.Level.updateNeighborsAt");
     }
     public void updateNeighbourForOutputSignal(BlockPos pos, Block changedBlock) {
-        throw Unsupported.hit("net.minecraft.world.level.Level.updateNeighbourForOutputSignal");
     }
     public void updatePOIOnBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
-        throw Unsupported.hit("net.minecraft.world.level.Level.updatePOIOnBlockStateChange");
     }
     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.level.Level.class, "RESOURCE_KEY_CODEC");
     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, net.minecraft.resources.Identifier.withDefaultNamespace("overworld"));

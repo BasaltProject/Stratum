@@ -59,9 +59,6 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return y;
         }
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.Absolute#toString");
-        }
 }
 
     public static record AboveBottom(int offset) implements VerticalAnchor {
@@ -69,9 +66,6 @@ public interface VerticalAnchor {
 
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.getMinGenY() + offset;
-        }
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.AboveBottom#toString");
         }
 }
 
@@ -81,9 +75,6 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.getMinGenY() + heightAccessor.getGenDepth() - 1 - offset;
         }
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.BelowTop#toString");
-        }
 }
 
     public static record RelativeToSeaLevel(int offset) implements VerticalAnchor {
@@ -91,9 +82,6 @@ public interface VerticalAnchor {
 
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.seaLevel() + offset;
-        }
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.RelativeToSeaLevel#toString");
         }
 }
 }

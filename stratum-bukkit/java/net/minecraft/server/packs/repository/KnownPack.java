@@ -13,7 +13,4 @@ public record KnownPack(String namespace, String id, String version) {
     public boolean isVanilla() {
         return namespace.equals(VANILLA_NAMESPACE);
     }
-    public String toString() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.packs.repository.KnownPack#toString");
-    }
 }

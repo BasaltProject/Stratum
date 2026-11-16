@@ -17,7 +17,4 @@ public class MultipliedFloats implements SampledFloat {
         }
         return result;
     }
-    public String toString() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.valueproviders.MultipliedFloats#toString");
-    }
 }

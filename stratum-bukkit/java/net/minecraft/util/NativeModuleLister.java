@@ -18,14 +18,8 @@ public class NativeModuleLister {
     }
 
     public static record NativeModuleVersion(String description, String version, String company) {
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NativeModuleLister.NativeModuleVersion#toString");
-        }
 }
 
     public static record NativeModuleInfo(String name, Optional<NativeModuleVersion> version) {
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NativeModuleLister.NativeModuleInfo#toString");
-        }
 }
 }

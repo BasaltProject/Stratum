@@ -542,11 +542,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
         Effects.neighborsAt(this, pos, sourceBlock.defaultBlockState());
     }
     public void updateNeighbourForOutputSignal(BlockPos blockPos, Block block) {
-        return;
+        WorldNatives.settleBlocks(getWorld().getName(), new int[] {blockPos.getX(), blockPos.getY(), blockPos.getZ()},
+            new int[0], kOutputSignalEffect);
     }
     public void updatePOIOnBlockStateChange(BlockPos pos, BlockState oldState, BlockState newState) {
-        return;
+        WorldNatives.settleBlocks(getWorld().getName(), new int[] {pos.getX(), pos.getY(), pos.getZ()},
+            new int[] {oldState.stateId()}, kPoiEffect);
     }
+    private static final int kPoiEffect = 16;
+    private static final int kOutputSignalEffect = 512;
     public static final BlockPos END_SPAWN_POINT = new BlockPos(100, 50, 0);
     public static final IntProvider RAIN_DELAY = net.minecraft.util.valueproviders.UniformInt.of(12000, 180000);
     public static final IntProvider RAIN_DURATION = net.minecraft.util.valueproviders.UniformInt.of(12000, 24000);

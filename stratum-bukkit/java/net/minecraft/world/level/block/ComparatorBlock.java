@@ -67,7 +67,7 @@ public class ComparatorBlock extends DiodeBlock implements EntityBlock {
         return super.triggerEvent(state, level, pos, b0, b1);
     }
     public BlockEntity newBlockEntity(BlockPos worldPosition, BlockState blockState) {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.ComparatorBlock#newBlockEntity");
+        return org.basaltmc.stratum.bukkit.facade.BlockEntityTypes.detached(blockKey(), worldPosition);
     }
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);

@@ -116,7 +116,7 @@ public abstract class BlockBehaviour implements FeatureElement {
         }
 
         @Override
-        public Map<Property<?>, Comparable<?>> getValues() {
+        public Map<Property<?>, Comparable<?>> valuesMap() {
             Map<Property<?>, Comparable<?>> values = new LinkedHashMap<>();
             Property<?>[] properties = owner.propertiesInOrder();
             for (int i = 0; i < properties.length; i++) {

@@ -225,9 +225,6 @@ public class Climate {
         public Parameter span(Parameter other) {
             return new Parameter(Math.min(min, other.min()), Math.max(max, other.max()));
         }
-            public String toString() {
-            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.biome.Climate.Parameter#toString");
-        }
 }
     interface DistanceMetric<T> {
         long distance(RTree.Node<T> node, long[] target);

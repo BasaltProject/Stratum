@@ -88,9 +88,13 @@ public class ServerPlayer extends Player {
     public void bindPlayer(org.bukkit.entity.Player player){this.player=player;bindBukkitEntity(player);}
     public org.bukkit.entity.Player bukkitPlayer(){return player;}
     @Override public org.bukkit.entity.Entity live(){return player;}
+    @Override
+    public org.bukkit.craftbukkit.entity.CraftPlayer getBukkitEntity() {
+        return player instanceof org.bukkit.craftbukkit.entity.CraftPlayer craft ? craft
+            : (org.bukkit.craftbukkit.entity.CraftPlayer) super.getBukkitEntity();
+    }
     @Override public int getId(){return player==null?super.getId():player.getEntityId();}
     @Override public java.util.UUID getUUID(){return player==null?super.getUUID():player.getUniqueId();}
-    @Override public org.bukkit.craftbukkit.entity.CraftEntity getBukkitEntity(){return player==null?super.getBukkitEntity():(org.bukkit.craftbukkit.entity.CraftEntity)player;}
 
     public ServerGamePacketListenerImpl connection;
     private ServerLevel level;

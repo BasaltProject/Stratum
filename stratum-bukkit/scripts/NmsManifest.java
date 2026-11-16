@@ -631,6 +631,7 @@ public final class NmsManifest {
         }
         Set<String> fields = new HashSet<>();
         Set<String> methods = new HashSet<>();
+        Set<String> typed = new HashSet<>();
         if (k != null) {
             try {
                 for (var f : k.getDeclaredFields()) {
@@ -638,9 +639,15 @@ public final class NmsManifest {
                 }
                 for (var m : k.getDeclaredMethods()) {
                     methods.add(m.getName() + "/" + m.getParameterCount());
+                    typed.add(m.getName() + "(" + Arrays.stream(m.getParameterTypes()).map(c -> c.getSimpleName())
+                        .collect(Collectors.joining(",")) + ")" + m.getReturnType().getSimpleName());
                 }
+                boolean inner = k.isMemberClass() && !java.lang.reflect.Modifier.isStatic(k.getModifiers());
                 for (var c : k.getDeclaredConstructors()) {
                     methods.add("<init>/" + c.getParameterCount());
+                    if (inner) {
+                        methods.add("<init>/" + (c.getParameterCount() - 1));
+                    }
                 }
             } catch (LinkageError e) {
                 // unresolvable member types count as missing
@@ -669,11 +676,68 @@ public final class NmsManifest {
                 if (methods.contains(key)) {
                     pkg[4]++;
                     totals[4]++;
+                    if (System.getProperty("types") != null && mt.getReturnType() != null && k != null) {
+                        List<String> tv = mt.getTypeParameters().stream().map(tp -> tp.getName().toString()).toList();
+                        List<String> tvOuter = ct.getTypeParameters().stream().map(tp -> tp.getName().toString()).toList();
+                        String want = mt.getName() + "(" + mt.getParameters().stream().map(pp -> simpleErased(text(pp.getType()), tv, tvOuter))
+                            .collect(Collectors.joining(",")) + ")" + simpleErased(text(mt.getReturnType()), tv, tvOuter);
+                        if (typed.stream().noneMatch(x -> matchTyped(x, want)) && typed.stream().anyMatch(x -> x.startsWith(mt.getName() + "(")
+                            && sameArityTyped(x, mt.getParameters().size()))) {
+                            System.out.println("TYPE " + binary + "#" + want);
+                        }
+                    }
                 } else if (System.getProperty("missing") != null) {
                     System.out.println("MISSING " + binary + "#" + key);
                 }
             }
         }
+    }
+
+    private static boolean matchTyped(String have, String want) {
+        if (!have.substring(0, have.indexOf('(')).equals(want.substring(0, want.indexOf('(')))) {
+            return false;
+        }
+        String[] hp = have.substring(have.indexOf('(') + 1, have.indexOf(')')).split(",", -1);
+        String[] wp = want.substring(want.indexOf('(') + 1, want.indexOf(')')).split(",", -1);
+        if (hp.length != wp.length) {
+            return false;
+        }
+        for (int i = 0; i < hp.length; i++) {
+            if (!wp[i].startsWith("*") && !hp[i].equals(wp[i]) && !(hp[i].startsWith("Object") && !hp[i].equals(wp[i]) && wp[i].length() <= 2)) {
+                return false;
+            }
+        }
+        String hr = have.substring(have.indexOf(')') + 1);
+        String wr = want.substring(want.indexOf(')') + 1);
+        return wr.startsWith("*") || hr.equals(wr);
+    }
+
+    private static boolean sameArityTyped(String sig, int arity) {
+        String inner = sig.substring(sig.indexOf('(') + 1, sig.indexOf(')'));
+        return (inner.isEmpty() ? 0 : inner.split(",").length) == arity;
+    }
+
+    private static String simpleErased(String type, List<String> methodVars, List<String> classVars) {
+        String t = type.replace("...", "[]");
+        StringBuilder e = new StringBuilder();
+        int depth = 0;
+        for (char c : t.toCharArray()) {
+            if (c == '<') {
+                depth++;
+            } else if (c == '>') {
+                depth--;
+            } else if (depth == 0 && c != ' ') {
+                e.append(c);
+            }
+        }
+        String er = e.toString();
+        String base = er.replace("[]", "");
+        String dims = er.substring(base.length());
+        base = base.substring(base.lastIndexOf('.') + 1);
+        if (methodVars.contains(base) || classVars.contains(base) || base.length() <= 2 && Character.isUpperCase(base.charAt(0))) {
+            base = "*";
+        }
+        return base + dims;
     }
 
     // ---- stubs mode
@@ -1284,6 +1348,11 @@ public final class NmsManifest {
             && !has(m, Modifier.STATIC));
         if (isInterface && !ctor && List.of("toString/0", "hashCode/0", "equals/1")
             .contains(mt.getName() + "/" + mt.getParameters().size())) {
+            return;
+        }
+        if (forceConcrete && !ctor && !has(m, Modifier.STATIC) && (mt.getName().contentEquals("toString") && mt.getParameters().isEmpty()
+            || mt.getName().contentEquals("hashCode") && mt.getParameters().isEmpty()
+            || mt.getName().contentEquals("equals") && mt.getParameters().size() == 1)) {
             return;
         }
         if (forceConcrete && !ctor) {
