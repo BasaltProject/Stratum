@@ -218,6 +218,19 @@ final class HookEntityEvents {
             f.put("count", (long) thrown.getNumHatches());
             f.put("hatch_type", thrown.getHatchingType().key().asString());
         });
+        EventBridge.map("entity.egg_hatch", com.destroystokyo.paper.event.entity.ThrownEggHatchEvent.class, f -> {
+            if (!(f.entity() instanceof org.bukkit.entity.Egg egg)) {
+                return null;
+            }
+            return new com.destroystokyo.paper.event.entity.ThrownEggHatchEvent(egg, f.flag("hatching"),
+                (byte) f.whole("count"), org.basaltmc.stratum.bukkit.entity.EntityCore.typeOf(f.text("hatch_type")));
+        }, (e, f) -> {
+            com.destroystokyo.paper.event.entity.ThrownEggHatchEvent hatched =
+                (com.destroystokyo.paper.event.entity.ThrownEggHatchEvent) e;
+            f.put("hatching", hatched.isHatching());
+            f.put("count", (long) hatched.getNumHatches());
+            f.put("hatch_type", hatched.getHatchingType().key().asString());
+        });
         EventBridge.map("entity.break_door", org.bukkit.event.entity.EntityBreakDoorEvent.class,
             f -> f.entity() instanceof LivingEntity who ? new org.bukkit.event.entity.EntityBreakDoorEvent(who,
                 f.block(), Material.AIR.createBlockData()) : null);
