@@ -131,6 +131,10 @@ public final class PathTranslator {
         if (world != null) {
             return inWorld(head, world, tail);
         }
+        Path nested = nestedWorld(head);
+        if (nested != null) {
+            return inWorld(head, new World(nested, "NORMAL"), tail);
+        }
         return shadowed(rel, "shadow-root");
     }
 
@@ -138,8 +142,30 @@ public final class PathTranslator {
         if (rel.getNameCount() == 1) {
             return new Resolved(root.resolve(rel), Access.READ_ONLY, "native-worlds");
         }
+        Path direct = root.resolve(rel.getName(0)).resolve(rel.getName(1));
+        if (!Files.exists(direct)) {
+            Path nested = nestedWorld(rel.getName(1).toString());
+            if (nested != null) {
+                return new Resolved(join(nested, tail(rel, 2)), Access.READ_WRITE, "native-nested-world");
+            }
+        }
         boolean settings = rel.getNameCount() == 3 && rel.getName(2).toString().equals("settings.toml");
         return new Resolved(root.resolve(rel), settings ? Access.READ_ONLY : Access.READ_WRITE, "native-world");
+    }
+
+    private Path nestedWorld(String name) {
+        Path worldsDir = root.resolve("worlds");
+        try (var primaries = Files.newDirectoryStream(worldsDir, Files::isDirectory)) {
+            for (Path primary : primaries) {
+                Path found = primary.resolve("dimensions").resolve("minecraft").resolve(name);
+                if (Files.isDirectory(found)) {
+                    return found;
+                }
+            }
+        } catch (IOException | java.nio.file.InvalidPathException ignored) {
+            return null;
+        }
+        return null;
     }
 
     private Resolved inWorld(String name, World world, Path tail) {

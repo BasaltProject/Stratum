@@ -151,6 +151,7 @@ public final class BukkitRuntime {
             File folder = new File(pluginsFolder);
             Natives.log(1, "Bukkit", "Loading Bukkit plugins from " + folder.getPath());
             BasaltPluginManager manager = server.pluginManagerImpl();
+            ServerFiles.write(server);
             server.schedulerImpl().runTaskTimer((Plugin) null, () -> {
                 net.minecraft.server.MinecraftServer.currentTick = (int) Natives.currentTick();
                 net.minecraft.server.level.ServerChunkCache.tickAll();
