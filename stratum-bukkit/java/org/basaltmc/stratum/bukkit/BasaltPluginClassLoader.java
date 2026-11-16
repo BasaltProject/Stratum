@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import org.basaltmc.stratum.bukkit.legacy.ApiVersion;
+import org.basaltmc.stratum.bukkit.legacy.LegacyTransformer;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +26,8 @@ public final class BasaltPluginClassLoader extends URLClassLoader implements Con
     private final PluginDescriptionFile description;
     private final File dataFolder;
     private final File jar;
+    private final ApiVersion apiVersion;
+    private final java.security.CodeSource codeSource;
     private final ConcurrentHashMap<String, Class<?>> classes = new ConcurrentHashMap<>();
     private JavaPlugin plugin;
 
@@ -34,6 +38,8 @@ public final class BasaltPluginClassLoader extends URLClassLoader implements Con
         this.description = description;
         this.dataFolder = dataFolder;
         this.jar = jar;
+        this.apiVersion = ApiVersion.parse(description.getAPIVersion());
+        this.codeSource = new java.security.CodeSource(jar.toURI().toURL(), (java.security.cert.Certificate[]) null);
     }
 
     public static String pluginOfClass(String className) {
@@ -81,10 +87,38 @@ public final class BasaltPluginClassLoader extends URLClassLoader implements Con
         if (cached != null) {
             return cached;
         }
-        Class<?> found = super.findClass(name);
+        Class<?> found = defineOwn(name);
         classes.put(name, found);
         classOwners.put(name, description.getName());
         return found;
+    }
+
+    private Class<?> defineOwn(String name) throws ClassNotFoundException {
+        String path = name.replace('.', '/') + ".class";
+        URL resource = findResource(path);
+        if (resource == null || !resource.toString().startsWith("jar:" + jar.toURI() + "!")) {
+            return super.findClass(name);
+        }
+        byte[] bytes;
+        try (java.io.InputStream in = resource.openStream()) {
+            bytes = in.readAllBytes();
+        } catch (IOException e) {
+            throw new ClassNotFoundException(name, e);
+        }
+        try {
+            bytes = LegacyTransformer.transform(bytes, apiVersion, this);
+        } catch (RuntimeException | LinkageError e) {
+            Logger.getLogger(description.getName()).warning("Could not apply the legacy API layer to " + name + ": " + e);
+        }
+        int dot = name.lastIndexOf('.');
+        if (dot > 0 && getDefinedPackage(name.substring(0, dot)) == null) {
+            try {
+                definePackage(name.substring(0, dot), null, null, null, null, null, null, null);
+            } catch (IllegalArgumentException alreadyDefined) {
+                // Another thread defined it first.
+            }
+        }
+        return defineClass(name, bytes, 0, bytes.length, codeSource);
     }
 
     Class<?> ownClass(String name) {
