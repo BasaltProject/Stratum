@@ -53,8 +53,9 @@ final class LootEvents {
                 builder.lootedEntity(who).luck(who.getAttribute(org.bukkit.attribute.Attribute.LUCK) == null ? 0f
                     : (float) who.getAttribute(org.bukkit.attribute.Attribute.LUCK).getValue());
             }
-            org.bukkit.inventory.InventoryHolder holder = block.getState() instanceof org.bukkit.inventory.InventoryHolder h
-                ? h : null;
+            org.bukkit.entity.Entity cart = f.whole("entity_id") >= 0 ? f.entity() : null;
+            org.bukkit.inventory.InventoryHolder holder = cart instanceof org.bukkit.inventory.InventoryHolder c ? c
+                : block.getState() instanceof org.bukkit.inventory.InventoryHolder h ? h : null;
             return new org.bukkit.event.world.LootGenerateEvent(world, who, holder, table, builder.build(),
                 stacks(f.text("loot")), false);
         }, (e, f) -> f.put("loot", lines(((org.bukkit.event.world.LootGenerateEvent) e).getLoot())));

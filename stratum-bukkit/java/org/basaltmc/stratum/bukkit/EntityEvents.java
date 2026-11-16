@@ -65,11 +65,31 @@ final class EntityEvents {
             f.put("drops", lines.toString());
             f.put("exp", (long) death.getDroppedExp());
         });
+        EventBridge.map("entity.spawn", org.bukkit.event.entity.SpawnerSpawnEvent.class, f -> {
+            if (!f.text("reason").equals("spawner") || f.world() == null) {
+                return null;
+            }
+            Entity made = template(f);
+            return made == null ? null : new org.bukkit.event.entity.SpawnerSpawnEvent(made,
+                f.world().getBlockAt((int) f.whole("spawner_x"), (int) f.whole("spawner_y"),
+                    (int) f.whole("spawner_z")).getState() instanceof org.bukkit.block.CreatureSpawner spawner
+                    ? spawner : null);
+        });
+        EventBridge.map("entity.spawn", org.bukkit.event.entity.TrialSpawnerSpawnEvent.class, f -> {
+            if (!f.text("reason").equals("trial_spawner") || f.world() == null) {
+                return null;
+            }
+            Entity made = template(f);
+            return made == null || !(f.world().getBlockAt((int) f.whole("spawner_x"), (int) f.whole("spawner_y"),
+                (int) f.whole("spawner_z")).getState() instanceof org.bukkit.block.TrialSpawner spawner) ? null
+                : new org.bukkit.event.entity.TrialSpawnerSpawnEvent(made, spawner);
+        });
         EventBridge.map("entity.spawn", CreatureSpawnEvent.class, f -> {
             if (!mobType(f.text("entity_type"))) {
                 return null;
             }
-            Entity made = template(f);
+            Entity shared = f.text("reason").endsWith("spawner") ? pending.get(key(f)) : null;
+            Entity made = shared != null ? shared : template(f);
             return made instanceof Mob ? new CreatureSpawnEvent((LivingEntity) made, spawnReason(f.text("reason")))
                 : null;
         });

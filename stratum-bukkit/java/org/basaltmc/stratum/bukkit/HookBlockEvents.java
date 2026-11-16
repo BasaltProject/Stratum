@@ -60,8 +60,10 @@ final class HookBlockEvents {
             } catch (IllegalArgumentException unknown) {
                 reason = org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.UNKNOWN;
             }
-            return new org.bukkit.event.block.CauldronLevelChangeEvent(block, f.player(), reason, state);
-        });
+            org.bukkit.entity.Entity who = f.whole("entity_id") >= 0 ? f.entity() : f.player();
+            return new org.bukkit.event.block.CauldronLevelChangeEvent(block, who, reason, state);
+        }, (e, f) -> f.put("new_block",
+            ((org.bukkit.event.block.CauldronLevelChangeEvent) e).getNewState().getBlockData().getAsString()));
         EventBridge.map("block.note_play", org.bukkit.event.block.NotePlayEvent.class,
             f -> new org.bukkit.event.block.NotePlayEvent(f.block(), instrument(f.text("instrument")),
                 new Note((int) f.whole("note"))));

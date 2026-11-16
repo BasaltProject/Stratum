@@ -430,6 +430,13 @@ public abstract class PlayerTail extends PlayerActions {
             && target instanceof LivingEntity && !isSprinting();
     }
 
+    private static final java.util.Map<java.util.UUID, org.bukkit.inventory.Merchant> CUSTOM_MERCHANTS =
+        new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static org.bukkit.inventory.Merchant customMerchant(java.util.UUID player) {
+        return CUSTOM_MERCHANTS.get(player);
+    }
+
     @Override
     public org.bukkit.inventory.InventoryView openMerchant(org.bukkit.inventory.Merchant merchant, boolean force) {
         if (merchant == null) {
@@ -439,6 +446,9 @@ public abstract class PlayerTail extends PlayerActions {
             return null;
         }
         boolean opened;
+        if (!(merchant instanceof org.bukkit.entity.AbstractVillager)) {
+            CUSTOM_MERCHANTS.put(getUniqueId(), merchant);
+        }
         if (merchant instanceof org.bukkit.entity.AbstractVillager villager) {
             opened = PlayerCalls.done(key(), "open_trades", (long) villager.getEntityId());
         } else {

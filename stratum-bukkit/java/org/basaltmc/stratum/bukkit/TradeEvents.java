@@ -63,6 +63,18 @@ final class TradeEvents {
                 return villager == null || recipe == null ? null
                     : new org.bukkit.event.entity.VillagerReplenishTradeEvent(villager, recipe);
             });
+        EventBridge.map("player.trade", io.papermc.paper.event.player.PlayerPurchaseEvent.class, f -> {
+            org.bukkit.inventory.Merchant merchant = f.whole("villager_id") >= 0 || f.player() == null ? null
+                : org.basaltmc.stratum.bukkit.player.PlayerTail.customMerchant(f.player().getUniqueId());
+            MerchantRecipe recipe = recipe(f);
+            return merchant == null || recipe == null ? null : new io.papermc.paper.event.player.PlayerPurchaseEvent(
+                f.player(), merchant, recipe, f.flag("reward_exp"), f.flag("increase_uses"));
+        }, (e, f) -> {
+            io.papermc.paper.event.player.PlayerPurchaseEvent event = (io.papermc.paper.event.player.PlayerPurchaseEvent) e;
+            write(event.getTrade(), f);
+            f.put("reward_exp", event.isRewardingExp());
+            f.put("increase_uses", event.willIncreaseTradeUses());
+        });
         EventBridge.map("player.trade", io.papermc.paper.event.player.PlayerTradeEvent.class, f -> {
             org.bukkit.entity.AbstractVillager villager = f.player() == null ? null
                 : villager(f, "villager_id");
