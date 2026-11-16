@@ -35,6 +35,11 @@ final class HookGapEvents {
             return f.player() == null ? null
                 : new org.bukkit.event.entity.EntityExhaustionEvent(f.player(), reason, (float) f.real("exhaustion"));
         }, (e, f) -> f.put("exhaustion", (double) ((org.bukkit.event.entity.EntityExhaustionEvent) e).getExhaustion()));
+        EventBridge.map("block.dispense_armor", org.bukkit.event.block.BlockDispenseArmorEvent.class, f -> {
+            org.bukkit.inventory.ItemStack stack = PlayerEvents.stackOf(f.text("item"), 1);
+            return !(f.entity() instanceof org.bukkit.entity.LivingEntity living) || stack == null ? null
+                : new org.bukkit.event.block.BlockDispenseArmorEvent(f.block(), stack, living);
+        });
         EventBridge.map("block.shear_entity", org.bukkit.event.block.BlockShearEntityEvent.class, f -> {
             org.bukkit.inventory.ItemStack tool = PlayerEvents.stackOf(f.text("tool"), 1);
             return f.entity() == null || tool == null ? null
