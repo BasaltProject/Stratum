@@ -331,6 +331,25 @@ final class PlayerEvents {
                 new Location(world, f.real("from_x"), f.real("from_y"), f.real("from_z")),
                 new Location(world, f.real("x"), f.real("y"), f.real("z")));
         });
+        EventBridge.map("player.armor_stand_manipulate", org.bukkit.event.player.PlayerArmorStandManipulateEvent.class,
+            f -> {
+                Player who = f.player();
+                if (who == null || !(f.entity() instanceof org.bukkit.entity.ArmorStand stand)) {
+                    return null;
+                }
+                EquipmentSlot slot = switch (f.text("slot")) {
+                    case "off_hand" -> EquipmentSlot.OFF_HAND;
+                    case "feet" -> EquipmentSlot.FEET;
+                    case "legs" -> EquipmentSlot.LEGS;
+                    case "chest" -> EquipmentSlot.CHEST;
+                    case "head" -> EquipmentSlot.HEAD;
+                    default -> EquipmentSlot.HAND;
+                };
+                EquipmentSlot hand = f.text("hand").equals("off_hand") ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND;
+                return new org.bukkit.event.player.PlayerArmorStandManipulateEvent(who, stand,
+                    stackOf(f.text("item"), (int) f.whole("count")),
+                    stackOf(f.text("stand_item"), (int) f.whole("stand_count")), slot, hand);
+            });
         EventBridge.map("player.flower_pot", io.papermc.paper.event.player.PlayerFlowerPotManipulateEvent.class, f -> {
             Player who = f.player();
             Material material = Material.matchMaterial(f.text("item"));
@@ -665,5 +684,10 @@ final class PlayerEvents {
         public String getEventName() {
             return io.papermc.paper.event.player.PlayerPickItemEvent.class.getSimpleName();
         }
+    }
+
+    private static ItemStack stackOf(String id, int count) {
+        Material material = id.isEmpty() ? null : Material.matchMaterial(id);
+        return material == null ? new ItemStack(Material.AIR) : new ItemStack(material, Math.max(count, 1));
     }
 }

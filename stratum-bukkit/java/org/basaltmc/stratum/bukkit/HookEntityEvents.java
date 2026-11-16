@@ -192,6 +192,21 @@ final class HookEntityEvents {
         EventBridge.map("entity.firework_explode", org.bukkit.event.entity.FireworkExplodeEvent.class,
             f -> f.entity() instanceof org.bukkit.entity.Firework rocket
                 ? new org.bukkit.event.entity.FireworkExplodeEvent(rocket) : null);
+        EventBridge.map("entity.break_door", org.bukkit.event.entity.EntityBreakDoorEvent.class,
+            f -> f.entity() instanceof LivingEntity who ? new org.bukkit.event.entity.EntityBreakDoorEvent(who,
+                f.block(), Material.AIR.createBlockData()) : null);
+        EventBridge.map("entity.pose_change", org.bukkit.event.entity.EntityPoseChangeEvent.class, f -> {
+            Entity who = f.entity();
+            if (who == null) {
+                return null;
+            }
+            try {
+                return new org.bukkit.event.entity.EntityPoseChangeEvent(who,
+                    org.bukkit.entity.Pose.valueOf(f.text("pose")));
+            } catch (IllegalArgumentException unknown) {
+                return null;
+            }
+        });
         EventBridge.map("entity.toggle_swim", org.bukkit.event.entity.EntityToggleSwimEvent.class,
             f -> f.entity() instanceof LivingEntity who
                 ? new org.bukkit.event.entity.EntityToggleSwimEvent(who, f.flag("swimming")) : null);
