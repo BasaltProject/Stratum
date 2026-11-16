@@ -8,13 +8,6 @@ final class HookGapEvents {
     private HookGapEvents() {}
 
     static void install() {
-        EventBridge.map("player.item_cooldown", io.papermc.paper.event.player.PlayerItemCooldownEvent.class, f -> {
-            Material type = Material.matchMaterial(f.text("item"));
-            NamespacedKey group = NamespacedKey.fromString(f.text("group"));
-            return f.player() == null || type == null || group == null ? null
-                : new io.papermc.paper.event.player.PlayerItemCooldownEvent(f.player(), type, group,
-                    (int) f.whole("cooldown"));
-        }, (e, f) -> f.put("cooldown", (long) ((io.papermc.paper.event.player.PlayerItemCooldownEvent) e).getCooldown()));
         EventBridge.map("player.stop_using_item", io.papermc.paper.event.player.PlayerStopUsingItemEvent.class, f -> {
             org.bukkit.inventory.ItemStack stack = f.stack("item");
             return f.player() == null || stack == null ? null
@@ -41,31 +34,12 @@ final class HookGapEvents {
             return f.player() == null ? null
                 : new org.bukkit.event.entity.EntityExhaustionEvent(f.player(), reason, (float) f.real("exhaustion"));
         }, (e, f) -> f.put("exhaustion", (double) ((org.bukkit.event.entity.EntityExhaustionEvent) e).getExhaustion()));
-        EventBridge.map("entity.launch", com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent.class, f -> {
-            org.bukkit.entity.Entity made = f.entity();
-            org.bukkit.entity.Entity shooter = f.whole("shooter_id") < 0 ? null
-                : BasaltServer.instance().entityById(f.world(), (int) f.whole("shooter_id"));
-            if (!(made instanceof org.bukkit.entity.Projectile projectile) || !(shooter instanceof org.bukkit.entity.Player who)) {
-                return null;
-            }
-            org.bukkit.inventory.ItemStack held = who.getInventory().getItemInMainHand();
-            if (held == null || held.getType().isAir()) {
-                held = who.getInventory().getItemInOffHand();
-            }
-            return new com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent(who, held.clone(), projectile);
-        });
         EventBridge.map("block.shear_entity", org.bukkit.event.block.BlockShearEntityEvent.class, f -> {
             org.bukkit.inventory.ItemStack tool = PlayerEvents.stackOf(f.text("tool"), 1);
             return f.entity() == null || tool == null ? null
                 : new org.bukkit.event.block.BlockShearEntityEvent(f.block(), f.entity(), tool,
                     new java.util.ArrayList<>());
         });
-        EventBridge.map("player.shield_disable", io.papermc.paper.event.player.PlayerShieldDisableEvent.class, f -> {
-            org.bukkit.entity.Entity attacker = BasaltServer.instance().entityById(f.world(), (int) f.whole("attacker_id"));
-            return f.player() == null || attacker == null ? null
-                : new io.papermc.paper.event.player.PlayerShieldDisableEvent(f.player(), attacker,
-                    (int) f.whole("cooldown"));
-        }, (e, f) -> f.put("cooldown", (long) ((io.papermc.paper.event.player.PlayerShieldDisableEvent) e).getCooldown()));
         EventBridge.map("player.item_frame_change", io.papermc.paper.event.player.PlayerItemFrameChangeEvent.class, f -> {
             org.bukkit.inventory.ItemStack stack = PlayerEvents.stackOf(f.text("item"), 1);
             if (f.player() == null || !(f.entity() instanceof org.bukkit.entity.ItemFrame frame) || stack == null) {

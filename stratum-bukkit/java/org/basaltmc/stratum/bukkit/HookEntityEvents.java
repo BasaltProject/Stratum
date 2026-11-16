@@ -176,9 +176,6 @@ final class HookEntityEvents {
             };
             return new org.bukkit.event.entity.EntityTransformEvent(original, java.util.List.of(made), reason);
         });
-        EventBridge.map("entity.sheep_regrow", org.bukkit.event.entity.SheepRegrowWoolEvent.class,
-            f -> f.entity() instanceof org.bukkit.entity.Sheep sheep
-                ? new org.bukkit.event.entity.SheepRegrowWoolEvent(sheep) : null);
         EventBridge.map("entity.pig_zap", org.bukkit.event.entity.PigZapEvent.class, f -> {
             Entity bolt = BasaltServer.instance().entityById(f.world(), (int) f.whole("bolt_id"));
             if (!(f.entity() instanceof org.bukkit.entity.Pig pig) || !(bolt instanceof org.bukkit.entity.LightningStrike strike)
@@ -188,12 +185,6 @@ final class HookEntityEvents {
                 return null;
             }
             return new org.bukkit.event.entity.PigZapEvent(pig, strike, piglin);
-        });
-        EventBridge.map("entity.creeper_power", org.bukkit.event.entity.CreeperPowerEvent.class, f -> {
-            Entity bolt = BasaltServer.instance().entityById(f.world(), (int) f.whole("bolt_id"));
-            return f.entity() instanceof org.bukkit.entity.Creeper creeper && bolt instanceof org.bukkit.entity.LightningStrike strike
-                ? new org.bukkit.event.entity.CreeperPowerEvent(creeper, strike,
-                    org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING) : null;
         });
         EventBridge.map("entity.remove", org.bukkit.event.entity.EntityRemoveEvent.class, f -> {
             Entity gone = f.entity();
