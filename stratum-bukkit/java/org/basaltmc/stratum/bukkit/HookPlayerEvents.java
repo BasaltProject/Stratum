@@ -100,6 +100,78 @@ final class HookPlayerEvents {
                     ? io.papermc.paper.event.player.PlayerLecternPageChangeEvent.PageChangeDirection.LEFT
                     : io.papermc.paper.event.player.PlayerLecternPageChangeEvent.PageChangeDirection.RIGHT, from, to);
         });
+        EventBridge.map("player.sign_open", io.papermc.paper.event.player.PlayerOpenSignEvent.class, f -> {
+            if (f.player() == null || !(f.block().getState() instanceof org.bukkit.block.Sign sign)) {
+                return null;
+            }
+            return new io.papermc.paper.event.player.PlayerOpenSignEvent(f.player(), sign, signSide(f),
+                switch (f.text("cause")) {
+                    case "place" -> io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.PLACE;
+                    case "plugin" -> io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.PLUGIN;
+                    case "interact" -> io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.INTERACT;
+                    default -> io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.UNKNOWN;
+                });
+        });
+        EventBridge.map("player.sign_open", org.bukkit.event.player.PlayerSignOpenEvent.class, f -> {
+            if (f.player() == null || !(f.block().getState() instanceof org.bukkit.block.Sign sign)) {
+                return null;
+            }
+            return new org.bukkit.event.player.PlayerSignOpenEvent(f.player(), sign, signSide(f),
+                switch (f.text("cause")) {
+                    case "place" -> org.bukkit.event.player.PlayerSignOpenEvent.Cause.PLACE;
+                    case "plugin" -> org.bukkit.event.player.PlayerSignOpenEvent.Cause.PLUGIN;
+                    case "interact" -> org.bukkit.event.player.PlayerSignOpenEvent.Cause.INTERACT;
+                    default -> org.bukkit.event.player.PlayerSignOpenEvent.Cause.UNKNOWN;
+                });
+        });
+        EventBridge.map("player.input", org.bukkit.event.player.PlayerInputEvent.class, f -> {
+            if (f.player() == null) {
+                return null;
+            }
+            boolean forward = f.flag("forward");
+            boolean backward = f.flag("backward");
+            boolean left = f.flag("left");
+            boolean right = f.flag("right");
+            boolean jump = f.flag("jump");
+            boolean sneak = f.flag("sneak");
+            boolean sprint = f.flag("sprint");
+            return new org.bukkit.event.player.PlayerInputEvent(f.player(), new org.bukkit.Input() {
+                @Override
+                public boolean isForward() {
+                    return forward;
+                }
+
+                @Override
+                public boolean isBackward() {
+                    return backward;
+                }
+
+                @Override
+                public boolean isLeft() {
+                    return left;
+                }
+
+                @Override
+                public boolean isRight() {
+                    return right;
+                }
+
+                @Override
+                public boolean isJump() {
+                    return jump;
+                }
+
+                @Override
+                public boolean isSneak() {
+                    return sneak;
+                }
+
+                @Override
+                public boolean isSprint() {
+                    return sprint;
+                }
+            });
+        });
         EventBridge.map("command.unknown", org.bukkit.event.command.UnknownCommandEvent.class, f -> {
             return f.player() == null ? null : new org.bukkit.event.command.UnknownCommandEvent(
                 org.basaltmc.stratum.bukkit.brigadier.BasaltCommandSourceStack.of(f.player()), f.text("command"),
@@ -112,6 +184,10 @@ final class HookPlayerEvents {
                 f.put("message", net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().serialize(message));
             }
         });
+    }
+
+    private static org.bukkit.block.sign.Side signSide(EventBridge.Fields f) {
+        return f.text("side").equals("back") ? org.bukkit.block.sign.Side.BACK : org.bukkit.block.sign.Side.FRONT;
     }
 
     private static final net.kyori.adventure.text.Component UNKNOWN =

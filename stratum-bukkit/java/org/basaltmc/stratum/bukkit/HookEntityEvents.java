@@ -192,6 +192,32 @@ final class HookEntityEvents {
         EventBridge.map("entity.firework_explode", org.bukkit.event.entity.FireworkExplodeEvent.class,
             f -> f.entity() instanceof org.bukkit.entity.Firework rocket
                 ? new org.bukkit.event.entity.FireworkExplodeEvent(rocket) : null);
+        EventBridge.map("entity.enter_love", org.bukkit.event.entity.EntityEnterLoveModeEvent.class, f -> {
+            if (!(f.entity() instanceof org.bukkit.entity.Animals animal)) {
+                return null;
+            }
+            return new org.bukkit.event.entity.EntityEnterLoveModeEvent(animal, f.player(), (int) f.whole("ticks"));
+        }, (e, f) -> f.put("ticks", (long) ((org.bukkit.event.entity.EntityEnterLoveModeEvent) e).getTicksInLove()));
+        EventBridge.map("entity.sheep_dye", org.bukkit.event.entity.SheepDyeWoolEvent.class, f -> {
+            if (!(f.entity() instanceof org.bukkit.entity.Sheep sheep)) {
+                return null;
+            }
+            return new org.bukkit.event.entity.SheepDyeWoolEvent(sheep,
+                org.bukkit.DyeColor.valueOf(f.text("color").toUpperCase(java.util.Locale.ROOT)), f.player());
+        }, (e, f) -> f.put("color", ((org.bukkit.event.entity.SheepDyeWoolEvent) e).getColor().name()
+            .toLowerCase(java.util.Locale.ROOT)));
+        EventBridge.map("player.egg_throw", org.bukkit.event.player.PlayerEggThrowEvent.class, f -> {
+            if (f.player() == null || !(f.entity() instanceof org.bukkit.entity.Egg egg)) {
+                return null;
+            }
+            return new org.bukkit.event.player.PlayerEggThrowEvent(f.player(), egg, f.flag("hatching"),
+                (byte) f.whole("count"), org.basaltmc.stratum.bukkit.entity.EntityCore.typeOf(f.text("hatch_type")));
+        }, (e, f) -> {
+            org.bukkit.event.player.PlayerEggThrowEvent thrown = (org.bukkit.event.player.PlayerEggThrowEvent) e;
+            f.put("hatching", thrown.isHatching());
+            f.put("count", (long) thrown.getNumHatches());
+            f.put("hatch_type", thrown.getHatchingType().key().asString());
+        });
         EventBridge.map("entity.break_door", org.bukkit.event.entity.EntityBreakDoorEvent.class,
             f -> f.entity() instanceof LivingEntity who ? new org.bukkit.event.entity.EntityBreakDoorEvent(who,
                 f.block(), Material.AIR.createBlockData()) : null);

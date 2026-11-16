@@ -271,6 +271,13 @@ final class EventBridge {
             f.flag("insta_break")));
         map("block.place", org.bukkit.event.block.BlockPlaceEvent.class, f -> {
             org.bukkit.block.Block placed = f.block();
+            if (f.flag("multi")) {
+                org.bukkit.block.Block other = f.world().getBlockAt((int) f.whole("second_x"),
+                    (int) f.whole("second_y"), (int) f.whole("second_z"));
+                return new org.bukkit.event.block.BlockMultiPlaceEvent(List.of(placed.getState(), other.getState()),
+                    placed.getRelative(org.bukkit.block.BlockFace.DOWN), f.stack("block"), f.player(), true,
+                    org.bukkit.inventory.EquipmentSlot.HAND);
+            }
             return new org.bukkit.event.block.BlockPlaceEvent(placed, placed.getState(), placed.getRelative(
                 org.bukkit.block.BlockFace.DOWN), f.stack("block"), f.player(), true,
                 org.bukkit.inventory.EquipmentSlot.HAND);
