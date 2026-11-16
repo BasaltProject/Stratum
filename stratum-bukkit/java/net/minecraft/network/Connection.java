@@ -45,6 +45,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     public Channel getChannel() {
         return channel;
     }
+    public void bindChannel(Channel bound) {
+        if (channel == null) {
+            channel = bound;
+        }
+    }
     public static final Marker ROOT_MARKER = org.slf4j.MarkerFactory.getMarker("NETWORK");
     public static final Marker PACKET_MARKER = packetMarker("NETWORK_PACKETS", ROOT_MARKER);
     public static final Marker PACKET_RECEIVED_MARKER = packetMarker("PACKET_RECEIVED", PACKET_MARKER);
@@ -97,13 +102,6 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
             connection.setupOutboundProtocol(outbound);
         });
     }
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void receive(Packet<?> packet) {
-        receivedInWindow++;
-        if (packetListener != null && isConnected()) {
-            ((Packet) packet).handle(packetListener);
-        }
-    }
     public void send(Packet<?> packet) {
         send(packet, null, true);
     }
@@ -118,6 +116,13 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
         io.netty.channel.ChannelFuture future = flush ? channel.writeAndFlush(packet) : channel.write(packet);
         if (listener != null) {
             future.addListener(listener);
+        }
+    }
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void receive(Packet<?> packet) {
+        receivedInWindow++;
+        if (packetListener != null && isConnected()) {
+            ((Packet) packet).handle(packetListener);
         }
     }
     public void runOnceConnected(Consumer<Connection> action) {

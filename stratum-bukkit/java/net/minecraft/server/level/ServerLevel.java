@@ -130,6 +130,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
 
     public ServerLevel(CraftWorld world) {
         this.world = world;
+        bindCraftWorld(world);
         this.entityManager = new PersistentEntitySectionManager(this);
         String[] strings = WorldNatives.worldStrings(world.getName());
         this.dimension = ResourceKey.create(Registries.DIMENSION, Identifier.parse(

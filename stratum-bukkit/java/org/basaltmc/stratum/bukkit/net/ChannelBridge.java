@@ -24,9 +24,9 @@ import org.basaltmc.stratum.bukkit.Natives;
 
 public final class ChannelBridge {
     private static final int kHandshake = 0;
+    private static final int kPlay = 4;
     private static final int kServerProtocol = 777;
     private static final long kInboundTimeoutSeconds = 5;
-    static final boolean kTrace = System.getenv("BASALT_PACKET_TRACE") != null;
 
     static final ConcurrentHashMap<Long, Link> links = new ConcurrentHashMap<>();
     private static final Object guard = new Object();
@@ -46,12 +46,68 @@ public final class ChannelBridge {
             start();
             return super.iterator();
         }
+
+        @Override
+        public java.util.ListIterator<ChannelFuture> listIterator() {
+            start();
+            return super.listIterator();
+        }
+
+        @Override
+        public java.util.ListIterator<ChannelFuture> listIterator(int index) {
+            start();
+            return super.listIterator(index);
+        }
+
+        @Override
+        public java.util.Spliterator<ChannelFuture> spliterator() {
+            start();
+            return super.spliterator();
+        }
+
+        @Override
+        public Object[] toArray() {
+            start();
+            return super.toArray();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] array) {
+            start();
+            return super.toArray(array);
+        }
+
+        @Override
+        public int size() {
+            start();
+            return super.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            start();
+            return super.isEmpty();
+        }
+
+        @Override
+        public ChannelFuture get(int index) {
+            start();
+            return super.get(index);
+        }
+
+        @Override
+        public void forEach(java.util.function.Consumer<? super ChannelFuture> action) {
+            start();
+            super.forEach(action);
+        }
     }
 
     static final class Link {
         final BasaltChannel channel;
         final Connection connection;
         volatile Pending pending;
+        volatile boolean claimed;
+        volatile int phase;
 
         Link(BasaltChannel channel) {
             this.channel = channel;
@@ -79,6 +135,10 @@ public final class ChannelBridge {
         connections = live;
     }
 
+    public static boolean active() {
+        return tapped;
+    }
+
     private static void start() {
         synchronized (guard) {
             if (tapped) {
@@ -100,10 +160,27 @@ public final class ChannelBridge {
         start();
         long id = Natives.packetConnectionOf(player.toString());
         Link link = id == 0 ? null : links.get(id);
-        if (kTrace) {
-            Natives.log(1, "PacketTrace", "channelOf " + player + " connection " + id + (link == null ? " none" : " found"));
+        if (link != null) {
+            link.claimed = true;
         }
         return link == null ? null : link.channel;
+    }
+
+    /** The oldest connection from this host that no player has claimed yet, for the login stage. */
+    public static io.netty.channel.Channel channelAt(String host) {
+        Link best = null;
+        for (Link link : links.values()) {
+            InetSocketAddress remote = (InetSocketAddress) link.channel.remoteAddress();
+            if (!link.claimed && remote.getHostString().equals(host)
+                && (best == null || link.channel.connection() < best.channel.connection())) {
+                best = link;
+            }
+        }
+        if (best == null) {
+            return null;
+        }
+        best.claimed = true;
+        return best.channel;
     }
 
     /** Hands a facade packet to the pipeline of a live connection as if the client had sent it. */
@@ -148,6 +225,28 @@ public final class ChannelBridge {
         return length;
     }
 
+    static boolean typed(Link link) {
+        return link.channel.pipeline().get("protocol_lib_inbound_interceptor") != null;
+    }
+
+    static void deliver(Link link, byte[] whole) {
+        Pending pending = link.pending;
+        if (pending == null) {
+            // A plugin handed a packet to the server as if the client had sent it.
+            int id = readVarInt(whole);
+            if (id < 0) {
+                return;
+            }
+            int skip = varIntLength(id);
+            byte[] body = new byte[whole.length - skip];
+            System.arraycopy(whole, skip, body, 0, body.length);
+            Natives.packetReceive(link.channel.connection(), id, body);
+            return;
+        }
+        pending.reached = true;
+        pending.result = whole;
+    }
+
     static final class FromWire extends ChannelInboundHandlerAdapter {
         final Link link;
 
@@ -159,31 +258,43 @@ public final class ChannelBridge {
         public void channelRead(ChannelHandlerContext ctx, Object message) {
             ByteBuf buffer = (ByteBuf) message;
             try {
-                Pending pending = link.pending;
-                if (pending == null) {
-                    // A plugin handed a packet to the server as if the client had sent it.
-                    if (buffer.isReadable()) {
-                        byte[] whole = new byte[buffer.readableBytes()];
-                        buffer.readBytes(whole);
-                        int id = readVarInt(whole);
-                        if (id < 0) {
-                            return;
-                        }
-                        int skip = varIntLength(id);
-                        byte[] body = new byte[whole.length - skip];
-                        System.arraycopy(whole, skip, body, 0, body.length);
-                        Natives.packetReceive(link.channel.connection(), id, body);
-                    }
+                if (!buffer.isReadable()) {
                     return;
                 }
-                pending.reached = true;
-                if (buffer.isReadable()) {
-                    byte[] whole = new byte[buffer.readableBytes()];
-                    buffer.readBytes(whole);
-                    pending.result = whole;
+                byte[] whole = new byte[buffer.readableBytes()];
+                buffer.readBytes(whole);
+                if (link.phase == kPlay && typed(link)) {
+                    int id = readVarInt(whole);
+                    int skip = varIntLength(id);
+                    if (id >= 0) {
+                        byte[] body = java.util.Arrays.copyOfRange(whole, skip, whole.length);
+                        net.minecraft.network.protocol.Packet<?> packet = TypedPackets.decode(true, id, body);
+                        if (packet != null) {
+                            ctx.fireChannelRead(packet);
+                            return;
+                        }
+                    }
                 }
+                deliver(link, whole);
             } finally {
                 buffer.release();
+            }
+        }
+    }
+
+    static final class Terminal extends ChannelInboundHandlerAdapter {
+        final Link link;
+
+        Terminal(Link link) {
+            this.link = link;
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object message) {
+            if (message instanceof net.minecraft.network.protocol.Packet<?> packet) {
+                deliver(link, TypedPackets.frameOf(packet));
+            } else {
+                ctx.fireChannelRead(message);
             }
         }
     }
@@ -242,6 +353,8 @@ public final class ChannelBridge {
             fresh.channel.pipeline().addLast("decoder", new FromWire(fresh));
             fresh.channel.pipeline().addLast("prepender", new ToWire(fresh));
             fresh.channel.pipeline().addLast("encoder", new WirePacketEncoder());
+            fresh.channel.pipeline().addLast("basalt_terminal", new Terminal(fresh));
+            fresh.channel.pipeline().addLast("packet_handler", fresh.connection);
             links.put(connection, made);
             try {
                 // Like netty's acceptor: the server pipeline sees the child first, then the child registers.
@@ -254,9 +367,9 @@ public final class ChannelBridge {
                 links.remove(connection);
                 return null;
             }
-            if (kTrace) {
-                Natives.log(1, "PacketTrace", "opened " + connection + " pipeline " + made.channel.pipeline().names()
-                    + " server pipeline " + serverChannel.pipeline().names());
+            if (typed(made)) {
+                made.channel.pipeline().addFirst("basalt_encoder_marker", new net.minecraft.network.PacketEncoder<>(TypedPackets.clientboundInfo()));
+                made.channel.pipeline().addLast("basalt_decoder_marker", new net.minecraft.network.PacketDecoder<>(TypedPackets.serverboundInfo()));
             }
             synchronized (connections) {
                 connections.add(made.connection);
@@ -303,14 +416,11 @@ public final class ChannelBridge {
     /** A serverbound packet; returns the same array to let it through, null to drop it, another array to rewrite it. */
     public static byte[] inbound(long connection, int phase, int id, byte[] body, String address, int port) {
         Link link = linkFor(connection, phase, address, port);
-        if (kTrace) {
-            Natives.log(1, "PacketTrace", "in conn " + connection + " phase " + phase + " id " + id + " len " + body.length
-                + (link == null ? " unmanaged" : ""));
-        }
         if (link == null) {
             return body;
         }
         byte[] shown = phase == kHandshake && id == 0 ? patchHandshake(body) : body;
+        link.phase = phase;
         Pending pending = new Pending();
         Future<?> done = link.channel.eventLoop().submit(() -> {
             link.pending = pending;
@@ -360,17 +470,16 @@ public final class ChannelBridge {
     /** A clientbound packet; true when a plugin's pipeline took it over and will send what comes out of it. */
     public static boolean outbound(long connection, int phase, int id, byte[] body) {
         Link link = links.get(connection);
-        if (kTrace) {
-            Natives.log(1, "PacketTrace", "out conn " + connection + " phase " + phase + " id " + id + " len " + body.length
-                + (link == null ? " unmanaged" : ""));
-        }
         if (link == null) {
             return false;
         }
+        link.phase = phase;
         link.channel.eventLoop().execute(() -> {
             long started = System.nanoTime();
             try {
-                link.channel.writeAndFlush(PacketCodec.fromNative(id, body));
+                io.netty.channel.Channel target = link.connection.getChannel() == null ? link.channel : link.connection.getChannel();
+                Object typed = phase == kPlay && typed(link) ? TypedPackets.decode(false, id, body) : null;
+                target.writeAndFlush(typed != null ? typed : PacketCodec.fromNative(id, body));
             } catch (Throwable t) {
                 Natives.log(2, "Bukkit", "A packet listener failed on an outbound packet: " + t);
             } finally {

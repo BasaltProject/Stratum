@@ -46,25 +46,25 @@ public class ServerCommonPacketListenerImpl implements ServerCommonPacketListene
         throw new IllegalStateException("Packet error", e);
     }
     public void handleClientInformation(ServerboundClientInformationPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleKeepAlive(ServerboundKeepAlivePacket packet) {
     }
     public void handlePong(ServerboundPongPacket serverboundPongPacket) {
     }
     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleCustomClickAction(ServerboundCustomClickActionPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleResourcePackResponse(ServerboundResourcePackPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleCookieResponse(ServerboundCookieResponsePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
-    protected void forward(Packet<?> packet) {
+    protected void forwardToNative(Packet<?> packet) {
         org.basaltmc.stratum.bukkit.net.ChannelBridge.receiveFrom(connection.getChannel(), packet);
     }
     protected void keepConnectionAlive() {

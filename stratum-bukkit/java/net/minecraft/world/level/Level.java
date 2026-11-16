@@ -112,8 +112,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
     public int getSectionIndex(int value) {
         return (value >> 4) - (getMinY() >> 4);
     }
+    private CraftWorld world;
+    protected final void bindCraftWorld(CraftWorld bound) {
+        this.world = bound;
+    }
     public CraftWorld getWorld() {
-        throw Unsupported.hit("net.minecraft.world.level.Level.getWorld");
+        if (world == null) {
+            throw Unsupported.hit("net.minecraft.world.level.Level.getWorld");
+        }
+        return world;
     }
     public boolean isClientSide() {
         return false;

@@ -124,85 +124,85 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
         return new GameProfile((player.bukkitPlayer()).getUniqueId(), (player.bukkitPlayer()).getName());
     }
     public void handlePlayerInput(ServerboundPlayerInputPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleMoveVehicle(ServerboundMoveVehiclePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleAcceptTeleportPacket(ServerboundAcceptTeleportationPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleAcceptPlayerLoad(ServerboundPlayerLoadedPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleRecipeBookSeenRecipePacket(ServerboundRecipeBookSeenRecipePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleBundleItemSelectedPacket(ServerboundSelectBundleItemPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleRecipeBookChangeSettingsPacket(ServerboundRecipeBookChangeSettingsPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSeenAdvancements(ServerboundSeenAdvancementsPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleCustomCommandSuggestions(ServerboundCommandSuggestionPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetCommandBlock(ServerboundSetCommandBlockPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetCommandMinecart(ServerboundSetCommandMinecartPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePickItemFromBlock(ServerboundPickItemFromBlockPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePickItemFromEntity(ServerboundPickItemFromEntityPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleRenameItem(ServerboundRenameItemPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetBeaconPacket(ServerboundSetBeaconPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetGameRule(ServerboundSetGameRulePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetStructureBlock(ServerboundSetStructureBlockPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetTestBlock(ServerboundSetTestBlockPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleTestInstanceBlockAction(ServerboundTestInstanceBlockActionPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetJigsawBlock(ServerboundSetJigsawBlockPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleJigsawGenerate(ServerboundJigsawGeneratePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSelectTrade(ServerboundSelectTradePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleEditBook(ServerboundEditBookPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleEntityTagQuery(ServerboundEntityTagQueryPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleContainerSlotStateChanged(ServerboundContainerSlotStateChangedPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleBlockEntityTagQuery(ServerboundBlockEntityTagQueryPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleMovePlayer(ServerboundMovePlayerPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void teleport(double x, double y, double z, float yRot, float xRot) {
         org.bukkit.entity.Player bukkit = player.bukkitPlayer();
@@ -220,19 +220,19 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
         teleport(x, y, z, yRot, xRot);
     }
     public void handlePlayerAction(ServerboundPlayerActionPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleUseItemOn(ServerboundUseItemOnPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleUseItem(ServerboundUseItemPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleTeleportToEntityPacket(ServerboundTeleportToEntityPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePaddleBoat(ServerboundPaddleBoatPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void onDisconnect(DisconnectionDetails details) {
         if (connection.isConnected()) {
@@ -243,25 +243,25 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
         send(new net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket(packetSequenceNr));
     }
     public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChat(ServerboundChatPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChatCommand(ServerboundChatCommandPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSignedChatCommand(ServerboundChatCommandSignedPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChatAck(ServerboundChatAckPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePunch(ServerboundPunchPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePlayerCommand(ServerboundPlayerCommandPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void sendPlayerChatMessage(PlayerChatMessage message, ChatType.Bound chatType) {
         send(new net.minecraft.network.protocol.game.ClientboundDisguisedChatPacket(message.unsignedContent() != null ? message.unsignedContent() : Component.literal(message.signedContent()), chatType));
@@ -276,70 +276,70 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
         send(net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket.INSTANCE);
     }
     public void handlePingRequest(ServerboundPingRequestPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleAttack(ServerboundAttackPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleInteract(ServerboundInteractPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSpectatorAction(ServerboundSpectatorActionPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleClientCommand(ServerboundClientCommandPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleContainerClose(ServerboundContainerClosePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleContainerClick(ServerboundContainerClickPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePlaceRecipe(ServerboundPlaceRecipePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleContainerButtonClick(ServerboundContainerButtonClickPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSetCreativeModeSlot(ServerboundSetCreativeModeSlotPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleSignUpdate(ServerboundSignUpdatePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleClientInformation(ServerboundClientInformationPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChangeDifficulty(ServerboundChangeDifficultyPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChangeGameMode(ServerboundChangeGameModePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleLockDifficulty(ServerboundLockDifficultyPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChatSessionUpdate(ServerboundChatSessionUpdatePacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleConfigurationAcknowledged(ServerboundConfigurationAcknowledgedPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleChunkBatchReceived(ServerboundChunkBatchReceivedPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleDebugSubscriptionRequest(ServerboundDebugSubscriptionRequestPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public void handleClientTickEnd(ServerboundClientTickEndPacket packet) {
-        forward(packet);
+        forwardToNative(packet);
     }
     public boolean hasInfiniteMaterials() {
         return (player.bukkitPlayer()).getGameMode() == org.bukkit.GameMode.CREATIVE;
@@ -348,7 +348,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
         return (player.bukkitPlayer()).isOp() && (player.bukkitPlayer()).getGameMode() == org.bukkit.GameMode.CREATIVE;
     }
     @Override
-    protected void forward(Packet<?> packet) {
+    protected void forwardToNative(Packet<?> packet) {
         org.basaltmc.stratum.bukkit.net.WirePacket wire = org.basaltmc.stratum.bukkit.net.PacketEncoding.toWire(packet);
         io.netty.buffer.ByteBuf body = io.netty.buffer.Unpooled.buffer();
         try {

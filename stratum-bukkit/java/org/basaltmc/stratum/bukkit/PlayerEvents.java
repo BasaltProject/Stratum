@@ -303,6 +303,9 @@ final class PlayerEvents {
         });
         EventBridge.map("player.login", PlayerLoginEvent.class, f -> {
             Player who = f.player();
+            if (who instanceof org.bukkit.craftbukkit.entity.CraftPlayer craft) {
+                craft.bindLoginChannel(f.text("address"));
+            }
             return who == null ? null : new LoginGate(who, "", address(f));
         }, (e, f) -> {
             PlayerLoginEvent login = (PlayerLoginEvent) e;

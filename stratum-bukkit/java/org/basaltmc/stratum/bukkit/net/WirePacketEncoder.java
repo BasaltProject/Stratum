@@ -1,6 +1,7 @@
 package org.basaltmc.stratum.bukkit.net;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.protocol.Packet;
 public final class WirePacketEncoder extends MessageToMessageEncoder<Packet<?>> {
     protected void encode(ChannelHandlerContext context, Packet<?> packet, java.util.List<Object> out) {
