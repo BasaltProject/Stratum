@@ -20,7 +20,7 @@ public final class MetaVariants {
     private MetaVariants() {}
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Axolotls extends MetaItem implements AxolotlBucketMeta {
+    public static class Axolotls extends MetaItem implements AxolotlBucketMeta {
         public Axolotls(Material type, Map<String, Object> components) {
             super(type, components);
         }
@@ -50,7 +50,7 @@ public final class MetaVariants {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class TropicalFishes extends MetaItem implements TropicalFishBucketMeta {
+    public static class TropicalFishes extends MetaItem implements TropicalFishBucketMeta {
         private static final String kPattern = "minecraft:tropical_fish/pattern";
         private static final String kBody = "minecraft:tropical_fish/base_color";
         private static final String kPatternColor = "minecraft:tropical_fish/pattern_color";
@@ -125,7 +125,7 @@ public final class MetaVariants {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Knowledge extends MetaItem implements KnowledgeBookMeta {
+    public static class Knowledge extends MetaItem implements KnowledgeBookMeta {
         public Knowledge(Material type, Map<String, Object> components) {
             super(type, components);
         }
@@ -178,7 +178,7 @@ public final class MetaVariants {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Instruments extends MetaItem implements MusicInstrumentMeta {
+    public static class Instruments extends MetaItem implements MusicInstrumentMeta {
         public Instruments(Material type, Map<String, Object> components) {
             super(type, components);
         }
@@ -201,7 +201,7 @@ public final class MetaVariants {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Ominous extends MetaItem implements OminousBottleMeta {
+    public static class Ominous extends MetaItem implements OminousBottleMeta {
         private static final String kAmplifier = "minecraft:ominous_bottle_amplifier";
 
         public Ominous(Material type, Map<String, Object> components) {

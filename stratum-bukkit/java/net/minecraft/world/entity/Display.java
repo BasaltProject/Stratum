@@ -20,6 +20,21 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 public abstract class Display extends Entity {
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(8);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_TRANSFORMATION_INTERPOLATION_DURATION_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(9);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_POS_ROT_INTERPOLATION_DURATION_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(10);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<org.joml.Vector3fc> DATA_TRANSLATION_ID = net.minecraft.network.syncher.EntityDataSerializers.VECTOR3.createAccessor(11);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<org.joml.Vector3fc> DATA_SCALE_ID = net.minecraft.network.syncher.EntityDataSerializers.VECTOR3.createAccessor(12);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<org.joml.Quaternionfc> DATA_LEFT_ROTATION_ID = net.minecraft.network.syncher.EntityDataSerializers.QUATERNION.createAccessor(13);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<org.joml.Quaternionfc> DATA_RIGHT_ROTATION_ID = net.minecraft.network.syncher.EntityDataSerializers.QUATERNION.createAccessor(14);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_BILLBOARD_RENDER_CONSTRAINTS_ID = net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(15);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_BRIGHTNESS_OVERRIDE_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(16);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_VIEW_RANGE_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(17);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_SHADOW_RADIUS_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(18);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_SHADOW_STRENGTH_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(19);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_WIDTH_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(20);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_HEIGHT_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(21);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_GLOW_COLOR_OVERRIDE_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(22);
     public static final int NO_BRIGHTNESS_OVERRIDE = -1;
     public static final String TAG_POS_ROT_INTERPOLATION_DURATION = "teleport_duration";
     public static final String TAG_TRANSFORMATION_INTERPOLATION_DURATION = "interpolation_duration";
@@ -106,6 +121,8 @@ public abstract class Display extends Entity {
     public static record RenderState(GenericInterpolator<Transformation> transformation, BillboardConstraints billboardConstraints, int brightnessOverride, FloatInterpolator shadowRadius, FloatInterpolator shadowStrength, int glowColorOverride) {
     }
     public static class ItemDisplay extends Display {
+    public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.world.item.ItemStack> DATA_ITEM_STACK_ID = net.minecraft.network.syncher.EntityDataSerializers.ITEM_STACK.createAccessor(23);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_ITEM_DISPLAY_ID = net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(24);
         public ItemDisplay(EntityType<?> type, Level level) {
             super(type, level);
         }
@@ -154,6 +171,7 @@ public abstract class Display extends Entity {
         }
     }
     public static class BlockDisplay extends Display {
+    public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.world.level.block.state.BlockState> DATA_BLOCK_STATE_ID = net.minecraft.network.syncher.EntityDataSerializers.BLOCK_STATE.createAccessor(23);
         public static final String TAG_BLOCK_STATE = "block_state";
         public BlockDisplay(EntityType<?> type, Level level) {
             super(type, level);
@@ -177,6 +195,11 @@ public abstract class Display extends Entity {
         }
     }
     public static class TextDisplay extends Display {
+    public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.network.chat.Component> DATA_TEXT_ID = net.minecraft.network.syncher.EntityDataSerializers.COMPONENT.createAccessor(23);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_LINE_WIDTH_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(24);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(25);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(26);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_STYLE_FLAGS_ID = net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(27);
         public static final String TAG_TEXT = "text";
         public static final byte FLAG_SHADOW = (byte) 1;
         public static final byte FLAG_SEE_THROUGH = (byte) 2;

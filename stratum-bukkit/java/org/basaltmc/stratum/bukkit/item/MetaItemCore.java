@@ -63,6 +63,11 @@ public abstract class MetaItemCore extends org.bukkit.craftbukkit.inventory.Craf
     }
 
     @Override
+    public boolean isEmpty() {
+        return c.isEmpty();
+    }
+
+    @Override
     public MetaItem clone() {
         return ItemMetas.create(type, Nbt.deepCopy(c));
     }

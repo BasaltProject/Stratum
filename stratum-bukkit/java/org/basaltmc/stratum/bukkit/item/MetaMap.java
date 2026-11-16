@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaMap extends MetaItem implements MapMeta {
+public class MetaMap extends MetaItem implements MapMeta {
     public MetaMap(Material type, Map<String, Object> components) {
         super(type, components);
     }

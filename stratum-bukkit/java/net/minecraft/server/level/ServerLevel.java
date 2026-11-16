@@ -116,6 +116,10 @@ import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.LevelTicks;
 public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGetter {
+    /** Plugins reflect this counter for client-only entity ids; it starts far above the native allocator. */
+    private static final java.util.concurrent.atomic.AtomicInteger ENTITY_COUNTER =
+        new java.util.concurrent.atomic.AtomicInteger(1 << 30);
+
     private static final net.minecraft.world.item.crafting.RecipeManager kRecipes =
         new net.minecraft.world.item.crafting.RecipeManager(null);
     public boolean captureBlockStates = false;

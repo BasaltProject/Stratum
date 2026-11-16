@@ -162,51 +162,51 @@ public final class ItemMetas {
     public static MetaItem create(Material material, Map<String, Object> components) {
         switch (kindOf(material)) {
             case SKULL:
-                return new MetaSkull(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaSkull(material, components);
             case LEATHER:
-                return new MetaLeatherArmor(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaLeatherArmor(material, components);
             case ARMOR:
-                return new MetaArmor(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaArmor(material, components);
             case BOOK:
-                return new MetaBook(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaBookSigned(material, components);
             case WRITABLE_BOOK:
-                return new MetaWritableBook(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaBook(material, components);
             case ENCHANTED_BOOK:
-                return new MetaEnchantedBook(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaEnchantedBook(material, components);
             case FIREWORK:
-                return new MetaFirework(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaFirework(material, components);
             case FIREWORK_EFFECT:
-                return new MetaFireworkEffect(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaCharge(material, components);
             case POTION:
-                return new MetaPotion(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaPotion(material, components);
             case BANNER:
-                return new MetaBanner(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaBanner(material, components);
             case SHIELD:
-                return new MetaShield(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaShield(material, components);
             case MAP:
-                return new MetaMap(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaMap(material, components);
             case COMPASS:
-                return new MetaCompass(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaCompass(material, components);
             case AXOLOTL:
-                return new MetaVariants.Axolotls(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaAxolotlBucket(material, components);
             case BUNDLE:
-                return new MetaContainers.Bundles(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaBundle(material, components);
             case STEW:
-                return new MetaContainers.Stews(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaSuspiciousStew(material, components);
             case TROPICAL:
-                return new MetaVariants.TropicalFishes(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaTropicalFishBucket(material, components);
             case KNOWLEDGE:
-                return new MetaVariants.Knowledge(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaKnowledgeBook(material, components);
             case CROSSBOW:
-                return new MetaContainers.Crossbows(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaCrossbow(material, components);
             case INSTRUMENT:
-                return new MetaVariants.Instruments(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaMusicInstrument(material, components);
             case OMINOUS:
-                return new MetaVariants.Ominous(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaOminousBottle(material, components);
             case SPAWN_EGG:
-                return new MetaSpawnEgg(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaSpawnEgg(material, components);
             case BLOCK_STATE:
-                return new MetaBlockState(material, components);
+                return new org.bukkit.craftbukkit.inventory.CraftMetaBlockState(material, components);
             default:
                 return new MetaItem(material, components);
         }

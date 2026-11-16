@@ -7,7 +7,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.ShieldMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaShield extends MetaBanner implements ShieldMeta {
+public class MetaShield extends MetaBanner implements ShieldMeta {
     public MetaShield(Material type, Map<String, Object> components) {
         super(type, components);
     }

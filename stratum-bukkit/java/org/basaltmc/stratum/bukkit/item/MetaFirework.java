@@ -9,7 +9,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaFirework extends MetaItem implements FireworkMeta {
+public class MetaFirework extends MetaItem implements FireworkMeta {
     private static final String kFireworks = "minecraft:fireworks";
 
     public MetaFirework(Material type, Map<String, Object> components) {

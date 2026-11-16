@@ -7,7 +7,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaEnchantedBook extends MetaItem implements EnchantmentStorageMeta {
+public class MetaEnchantedBook extends MetaItem implements EnchantmentStorageMeta {
     public MetaEnchantedBook(Material type, Map<String, Object> components) {
         super(type, components);
     }

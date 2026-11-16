@@ -15,7 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaPotion extends MetaItem implements PotionMeta {
+public class MetaPotion extends MetaItem implements PotionMeta {
     private static final String kContents = "minecraft:potion_contents";
     private static final int kWaterColor = 0x385DC6;
 

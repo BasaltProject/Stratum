@@ -15,12 +15,41 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class CraftItemStack extends BasaltItemStack {
+    /** Snapshot of the stack as vanilla sees it, refreshed on every mutation; writes to it do not reach the stack. */
+    public net.minecraft.world.item.ItemStack handle;
+
     protected CraftItemStack() {
         super(Material.AIR, 0, Nbt.compound());
+        handle = net.minecraft.world.item.ItemStack.EMPTY;
     }
 
     private CraftItemStack(Material type, int amount, Map<String, Object> components) {
         super(type, amount, components);
+        refreshHandle();
+    }
+
+    private void refreshHandle() {
+        try {
+            handle = asNMSCopy(this);
+        } catch (RuntimeException failed) {
+            handle = net.minecraft.world.item.ItemStack.EMPTY;
+        }
+    }
+
+    @Override
+    public void changed() {
+        super.changed();
+        if (handle != null) {
+            refreshHandle();
+        }
+    }
+
+    public static boolean isCraftItemStack(ItemStack stack) {
+        return stack instanceof CraftItemStack;
+    }
+
+    public static CraftItemStack getCraftStack(ItemStack stack) {
+        return stack instanceof CraftItemStack craft ? craft : asCraftCopy(stack);
     }
 
     public static ItemStack asBukkitMirror(net.minecraft.world.item.ItemStack original) {

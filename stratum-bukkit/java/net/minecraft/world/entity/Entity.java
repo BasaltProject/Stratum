@@ -101,6 +101,12 @@ import org.joml.Quaternionf;
 public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHolder, DataComponentGetter, ItemOwner, SlotProvider, DebugValueSource, TypedInstance<EntityType<?>> {
     public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_SHARED_FLAGS_ID =
         net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(0);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(1);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<java.util.Optional<net.minecraft.network.chat.Component>> DATA_CUSTOM_NAME = net.minecraft.network.syncher.EntityDataSerializers.OPTIONAL_COMPONENT.createAccessor(2);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_CUSTOM_NAME_VISIBLE = net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN.createAccessor(3);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_SILENT = net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN.createAccessor(4);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_NO_GRAVITY = net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN.createAccessor(5);
+    public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_TICKS_FROZEN = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(7);
     private final net.minecraft.network.syncher.SynchedEntityData entityData = new net.minecraft.network.syncher.SynchedEntityData(this);
     private org.bukkit.entity.Entity boundEntity;
     private byte unboundFlags;

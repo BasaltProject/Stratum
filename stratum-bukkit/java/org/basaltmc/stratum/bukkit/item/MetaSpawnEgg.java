@@ -10,7 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaSpawnEgg extends MetaItem implements SpawnEggMeta {
+public class MetaSpawnEgg extends MetaItem implements SpawnEggMeta {
     private static final String kData = "minecraft:entity_data";
 
     public MetaSpawnEgg(Material type, Map<String, Object> components) {

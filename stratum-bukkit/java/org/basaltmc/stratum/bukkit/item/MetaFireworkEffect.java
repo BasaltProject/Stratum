@@ -7,7 +7,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaFireworkEffect extends MetaItem implements FireworkEffectMeta {
+public class MetaFireworkEffect extends MetaItem implements FireworkEffectMeta {
     private static final String kExplosion = "minecraft:firework_explosion";
 
     public MetaFireworkEffect(Material type, Map<String, Object> components) {

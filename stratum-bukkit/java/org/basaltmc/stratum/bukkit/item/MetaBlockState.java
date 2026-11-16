@@ -11,7 +11,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaBlockState extends MetaItem implements BlockStateMeta {
+public class MetaBlockState extends MetaItem implements BlockStateMeta {
     private static final String kEntityData = "minecraft:block_entity_data";
     private static final String kContainer = "minecraft:container";
     private static final String kBees = "minecraft:bees";

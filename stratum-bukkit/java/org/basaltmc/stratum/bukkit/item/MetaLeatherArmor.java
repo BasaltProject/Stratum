@@ -7,7 +7,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.ColorableArmorMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaLeatherArmor extends MetaArmor implements ColorableArmorMeta {
+public class MetaLeatherArmor extends MetaArmor implements ColorableArmorMeta {
     static final Color kDefault = Color.fromRGB(0xA06540);
 
     public MetaLeatherArmor(Material type, Map<String, Object> components) {

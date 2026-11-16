@@ -13,7 +13,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.SkullMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaSkull extends MetaItem implements SkullMeta {
+public class MetaSkull extends MetaItem implements SkullMeta {
     private static final String kProfile = "minecraft:profile";
     private static final String kSound = "minecraft:note_block_sound";
 

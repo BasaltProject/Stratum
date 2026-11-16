@@ -12,7 +12,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.CompassMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaCompass extends MetaItem implements CompassMeta {
+public class MetaCompass extends MetaItem implements CompassMeta {
     private static final String kTracker = "minecraft:lodestone_tracker";
 
     public MetaCompass(Material type, Map<String, Object> components) {

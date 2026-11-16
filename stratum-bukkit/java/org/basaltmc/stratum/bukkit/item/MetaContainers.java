@@ -18,7 +18,7 @@ public final class MetaContainers {
     private MetaContainers() {}
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Bundles extends MetaItem implements BundleMeta {
+    public static class Bundles extends MetaItem implements BundleMeta {
         private static final String kContents = "minecraft:bundle_contents";
 
         public Bundles(Material type, Map<String, Object> components) {
@@ -62,7 +62,7 @@ public final class MetaContainers {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Crossbows extends MetaItem implements CrossbowMeta {
+    public static class Crossbows extends MetaItem implements CrossbowMeta {
         private static final String kCharged = "minecraft:charged_projectiles";
 
         public Crossbows(Material type, Map<String, Object> components) {
@@ -106,7 +106,7 @@ public final class MetaContainers {
     }
 
     @DelegateDeserialization(ItemMetas.Serial.class)
-    public static final class Stews extends MetaItem implements SuspiciousStewMeta {
+    public static class Stews extends MetaItem implements SuspiciousStewMeta {
         private static final String kEffects = "minecraft:suspicious_stew_effects";
 
         public Stews(Material type, Map<String, Object> components) {

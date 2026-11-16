@@ -20,6 +20,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class ItemEntity extends Entity implements TraceableEntity {
+    public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.world.item.ItemStack> DATA_ITEM = net.minecraft.network.syncher.EntityDataSerializers.ITEM_STACK.createAccessor(8);
     public static final float EYE_HEIGHT = 0.2125F;
     public static final int DEFAULT_HEALTH = 5;
     public final float bobOffs = 0;

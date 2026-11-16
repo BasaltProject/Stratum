@@ -8,7 +8,7 @@ import org.bukkit.configuration.serialization.DelegateDeserialization;
 import org.bukkit.inventory.meta.WritableBookMeta;
 
 @DelegateDeserialization(ItemMetas.Serial.class)
-public final class MetaWritableBook extends MetaItem implements WritableBookMeta {
+public class MetaWritableBook extends MetaItem implements WritableBookMeta {
     private static final String kContent = "minecraft:writable_book_content";
 
     public MetaWritableBook(Material type, Map<String, Object> components) {
