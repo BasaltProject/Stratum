@@ -64,10 +64,7 @@ public final class BasaltUnsafe extends UnsafeValuesBase {
             return modern;
         }
         org.bukkit.Material flattened = flattenedItem(material, data);
-        if (flattened == null) {
-            throw Unsupported.hit("UnsafeValues#fromLegacy of " + material + " with data " + data);
-        }
-        return flattened;
+        return flattened == null ? org.bukkit.Material.AIR : flattened;
     }
 
     private static org.bukkit.Material flattenedItem(org.bukkit.Material legacy, byte data) {

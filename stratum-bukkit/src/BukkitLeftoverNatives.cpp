@@ -196,7 +196,7 @@ jboolean JNICALL nativeDatafixSupports(JNIEnv* env, jclass, jstring type) {
 }
 
 jobjectArray JNICALL nativeDatafixLegacyState(JNIEnv* env, jclass, jint id) {
-    const metamorph::datafix::LegacyBlockState state = server::plugins::datafix::legacyState(id);
+    const metamorph::datafix::LegacyBlockState state = server::plugins::datafix::modernState(id);
     std::vector<std::string> flat{state.name};
     for (const auto& [key, value] : state.properties) {
         flat.push_back(key);

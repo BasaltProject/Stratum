@@ -53,3 +53,4 @@ org.apache.httpcomponents:httpcore:4.4.16
 commons-codec:commons-codec:1.16.1
 org.slf4j:jcl-over-slf4j:2.0.17
 org.xerial:sqlite-jdbc:3.49.1.0
+com.googlecode.json-simple:json-simple:1.1.1
