@@ -1,6 +1,7 @@
 package org.basaltmc.stratum.bukkit;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
@@ -107,6 +108,76 @@ final class HookGapEvents {
             f.put("message", message == null ? ""
                 : message instanceof net.kyori.adventure.text.TranslatableComponent t ? t.key()
                 : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(message));
+        });
+        EventBridge.map("player.stonecutter_select", io.papermc.paper.event.player.PlayerStonecutterRecipeSelectEvent.class,
+            f -> {
+                org.basaltmc.stratum.bukkit.inv.BasaltInventoryView window = f.player() == null ? null
+                    : org.basaltmc.stratum.bukkit.inv.Windows.current(f.player());
+                org.bukkit.inventory.Recipe recipe = InventoryEvents.recipeOf(f.text("recipe"));
+                if (window == null || !(recipe instanceof org.bukkit.inventory.StonecuttingRecipe cutting)) {
+                    return null;
+                }
+                org.bukkit.inventory.Inventory top = org.basaltmc.stratum.bukkit.inv.TypedInventories.wrap(
+                    org.basaltmc.stratum.bukkit.inv.TypedInventories.unwrap(window.getTopInventory()), null,
+                    java.util.Map.of());
+                return top instanceof org.bukkit.inventory.StonecutterInventory cutter
+                    ? new io.papermc.paper.event.player.PlayerStonecutterRecipeSelectEvent(f.player(), cutter, cutting)
+                    : null;
+            }, (e, f) -> f.put("recipe", ((io.papermc.paper.event.player.PlayerStonecutterRecipeSelectEvent) e)
+                .getStonecuttingRecipe().getKey().toString()));
+        EventBridge.map("player.loom_select", io.papermc.paper.event.player.PlayerLoomPatternSelectEvent.class, f -> {
+            org.basaltmc.stratum.bukkit.inv.BasaltInventoryView window = f.player() == null ? null
+                : org.basaltmc.stratum.bukkit.inv.Windows.current(f.player());
+            NamespacedKey key = NamespacedKey.fromString(f.text("pattern"));
+            org.bukkit.block.banner.PatternType type = key == null ? null : org.bukkit.Registry.BANNER_PATTERN.get(key);
+            if (window == null || type == null) {
+                return null;
+            }
+            org.bukkit.inventory.Inventory top = org.basaltmc.stratum.bukkit.inv.TypedInventories.wrap(
+                org.basaltmc.stratum.bukkit.inv.TypedInventories.unwrap(window.getTopInventory()), null,
+                java.util.Map.of());
+            return top instanceof org.bukkit.inventory.LoomInventory loom
+                ? new io.papermc.paper.event.player.PlayerLoomPatternSelectEvent(f.player(), loom, type) : null;
+        }, (e, f) -> f.put("pattern", ((io.papermc.paper.event.player.PlayerLoomPatternSelectEvent) e)
+            .getPatternType().getKey().toString()));
+        EventBridge.map("block.target_hit", io.papermc.paper.event.block.TargetHitEvent.class, f -> {
+            org.bukkit.block.BlockFace face = switch (f.text("face")) {
+                case "down" -> org.bukkit.block.BlockFace.DOWN;
+                case "north" -> org.bukkit.block.BlockFace.NORTH;
+                case "south" -> org.bukkit.block.BlockFace.SOUTH;
+                case "west" -> org.bukkit.block.BlockFace.WEST;
+                case "east" -> org.bukkit.block.BlockFace.EAST;
+                default -> org.bukkit.block.BlockFace.UP;
+            };
+            return BasaltServer.instance().entityById(f.world(), (int) f.whole("projectile_id"))
+                instanceof org.bukkit.entity.Projectile projectile
+                ? new io.papermc.paper.event.block.TargetHitEvent(projectile, f.block(), face, (int) f.whole("signal"))
+                : null;
+        }, (e, f) -> f.put("signal", (long) ((io.papermc.paper.event.block.TargetHitEvent) e).getSignalStrength()));
+        EventBridge.map("entity.jump", com.destroystokyo.paper.event.entity.EntityJumpEvent.class,
+            f -> f.entity() instanceof org.bukkit.entity.LivingEntity living
+                ? new com.destroystokyo.paper.event.entity.EntityJumpEvent(living) : null);
+        EventBridge.map("entity.horse_jump", org.bukkit.event.entity.HorseJumpEvent.class,
+            f -> f.entity() instanceof org.bukkit.entity.AbstractHorse horse
+                ? new org.bukkit.event.entity.HorseJumpEvent(horse, (float) f.real("power")) : null);
+        EventBridge.map("entity.portal_ready", io.papermc.paper.event.entity.EntityPortalReadyEvent.class, f -> {
+            org.bukkit.World target = org.bukkit.Bukkit.getWorld(f.text("to_world"));
+            return f.entity() == null || target == null ? null
+                : new io.papermc.paper.event.entity.EntityPortalReadyEvent(f.entity(), target, org.bukkit.PortalType.NETHER);
+        });
+        EventBridge.map("entity.portal_exit", org.bukkit.event.entity.EntityPortalExitEvent.class, f -> {
+            org.bukkit.World target = org.bukkit.Bukkit.getWorld(f.text("to_world"));
+            if (f.entity() == null || target == null) {
+                return null;
+            }
+            org.bukkit.util.Vector velocity = f.entity().getVelocity();
+            return new org.bukkit.event.entity.EntityPortalExitEvent(f.entity(), f.entity().getLocation(),
+                new Location(target, f.real("to_x"), f.real("to_y"), f.real("to_z")), velocity, velocity.clone());
+        }, (e, f) -> {
+            Location to = ((org.bukkit.event.entity.EntityPortalExitEvent) e).getTo();
+            f.put("to_x", to.getX());
+            f.put("to_y", to.getY());
+            f.put("to_z", to.getZ());
         });
     }
 

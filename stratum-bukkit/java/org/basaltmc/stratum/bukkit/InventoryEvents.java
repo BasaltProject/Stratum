@@ -73,6 +73,8 @@ final class InventoryEvents {
             f -> f.text("kind").equals("anvil") ? prepareAnvil(f) : null, InventoryEvents::anvilBack);
         EventBridge.map("inventory.prepare", org.bukkit.event.inventory.PrepareSmithingEvent.class,
             f -> f.text("kind").equals("smithing") ? prepareSmithing(f) : null, InventoryEvents::resultBack);
+        EventBridge.map("inventory.prepare", com.destroystokyo.paper.event.inventory.PrepareGrindstoneEvent.class,
+            f -> f.text("kind").equals("grindstone") ? prepareGrindstone(f) : null, InventoryEvents::resultBack);
         EventBridge.map("inventory.take", org.bukkit.event.inventory.CraftItemEvent.class,
             f -> f.text("kind").equals("crafting") ? takeCraft(f) : null);
         EventBridge.map("inventory.take", org.bukkit.event.inventory.SmithItemEvent.class,
@@ -286,7 +288,7 @@ final class InventoryEvents {
         return new InventoryDragEvent(view, remaining > 0 ? newCursor : null, cursor, single, placed);
     }
 
-    private static org.bukkit.inventory.Recipe recipeOf(String id) {
+    static org.bukkit.inventory.Recipe recipeOf(String id) {
         if (id.isEmpty()) {
             return null;
         }
@@ -328,6 +330,20 @@ final class InventoryEvents {
     }
 
     private static final Map<String, Map<String, Object>> anvilStates = new java.util.HashMap<>();
+
+    private static Event prepareGrindstone(EventBridge.Fields f) {
+        Player player = f.player();
+        BasaltInventoryView window = player == null ? null : Windows.current(player);
+        if (window == null) {
+            return null;
+        }
+        ItemStack result = Items.fromSnbt(f.text(kResultKey));
+        org.basaltmc.stratum.bukkit.inv.SnapshotInventory snapshot = PrepareViews.copyOf(window, InventoryType.GRINDSTONE,
+            2, result);
+        org.bukkit.inventory.Inventory typed = TypedInventories.wrap(snapshot, null, Map.of());
+        return new com.destroystokyo.paper.event.inventory.PrepareGrindstoneEvent(PrepareViews.view(player, typed, window),
+            result);
+    }
 
     private static Event prepareSmithing(EventBridge.Fields f) {
         Player player = f.player();
