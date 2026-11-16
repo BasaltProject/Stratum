@@ -287,4 +287,10 @@ public class Rabbit extends Animal {
             rabbit.setSpeedModifier(speedModifier);
         }
     }
+    public void jumpFromGround() {
+        super.jumpFromGround();
+    }
+    public void setLeashData(Leashable. LeashData leashData) {
+        super.setLeashData(leashData);
+    }
 }

@@ -52,4 +52,10 @@ public class WitherSkeleton extends AbstractSkeleton {
     public boolean canBeAffected(MobEffectInstance newEffect) {
         return super.canBeAffected(newEffect);
     }
+    public TagKey<Item> getPreferredWeaponType() {
+        return super.getPreferredWeaponType();
+    }
+    public boolean canHoldItem(ItemStack itemStack) {
+        return super.canHoldItem(itemStack);
+    }
 }

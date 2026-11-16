@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
-public class SculkSensorBlockEntity extends BlockEntity {
+public class SculkSensorBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem {
     public int getListenerRange() {
         org.bukkit.block.SculkSensor sensor = bukkit(org.bukkit.block.SculkSensor.class);
         return sensor == null ? 8 : sensor.getListenerRange();
@@ -70,5 +70,25 @@ public class SculkSensorBlockEntity extends BlockEntity {
         public boolean requiresAdjacentChunksToBeTicking() {
             return true;
         }
+    }
+    public VibrationSystem.User createVibrationUser() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkSensorBlockEntity#createVibrationUser");
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public VibrationSystem.Data getVibrationData() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkSensorBlockEntity#getVibrationData");
+    }
+    public VibrationSystem.User getVibrationUser() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkSensorBlockEntity#getVibrationUser");
+    }
+    public void setLastVibrationFrequency(int lastVibrationFrequency) {
+    }
+    public VibrationSystem.Listener getListener() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkSensorBlockEntity#getListener");
     }
 }

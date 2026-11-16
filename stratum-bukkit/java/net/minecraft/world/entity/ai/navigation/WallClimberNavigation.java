@@ -36,4 +36,6 @@ public class WallClimberNavigation extends GroundPathNavigation {
         this.speedModifier = speedModifier;
         return moveTo(target.getX(), target.getY(), target.getZ(), speedModifier);
     }
+    public void tick() {
+    }
 }

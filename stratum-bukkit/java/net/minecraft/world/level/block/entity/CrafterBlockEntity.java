@@ -12,8 +12,15 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class CrafterBlockEntity extends RandomizableContainerBlockEntity {
+public class CrafterBlockEntity extends RandomizableContainerBlockEntity implements CraftingContainer {
     public static final int CONTAINER_WIDTH = 3;
     public static final int CONTAINER_HEIGHT = 3;
     public static final int CONTAINER_SIZE = 9;
@@ -140,5 +147,31 @@ public class CrafterBlockEntity extends RandomizableContainerBlockEntity {
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
         return new net.minecraft.world.inventory.DispenserMenu(containerId, inventory, this);
+    }
+    protected ContainerData containerData = null;
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public boolean isEmpty() {
+        return super.isEmpty();
+    }
+    public ItemStack getItem(int slot) {
+        return super.getItem(slot);
+    }
+    public boolean stillValid(Player player) {
+        return super.stillValid(player);
+    }
+    public NonNullList<ItemStack> getItems() {
+        return super.getItems();
+    }
+    protected void setItems(NonNullList<ItemStack> items) {
+        super.setItems(items);
+    }
+    public void fillStackedContents(StackedItemContents contents) {
+    }
+    public static void serverTick(Level level, BlockPos blockPos, BlockState blockState, CrafterBlockEntity entity) {
     }
 }

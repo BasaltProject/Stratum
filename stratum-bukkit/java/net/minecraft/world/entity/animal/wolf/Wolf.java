@@ -194,5 +194,25 @@ public class Wolf extends TamableAnimal implements NeutralMob {
         public WolfAvoidEntityGoal(Wolf wolf, Class<T> avoidClass, float maxDist, double walkSpeedModifier, double sprintSpeedModifier) {
             super(wolf, avoidClass, maxDist, walkSpeedModifier, sprintSpeedModifier);
         }
+            public boolean canUse() {
+            return false;
+        }
+        public void start() {
+            
+        }
+        public void tick() {
+        }
+}
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
+    public void die(DamageSource source) {
+        super.die(source);
+    }
+    public int getMaxSpawnClusterSize() {
+        return super.getMaxSpawnClusterSize();
+    }
+    public boolean wantsToAttack(LivingEntity target, LivingEntity owner) {
+        return super.wantsToAttack(target, owner);
     }
 }

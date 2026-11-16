@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 public interface BlockPredicate extends BiPredicate<LevelAccessor, BlockPos> {
     Codec<BlockPredicate> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.class, "CODEC");
     BlockPredicate ONLY_IN_AIR_PREDICATE = matchesBlocks(Blocks.AIR);
@@ -123,5 +124,11 @@ public interface BlockPredicate extends BiPredicate<LevelAccessor, BlockPos> {
     }
     static BlockPredicate unobstructed() {
         return unobstructed(Vec3i.ZERO);
+    }
+    static BlockPredicate heightRange(VerticalAnchor minInclusive, VerticalAnchor maxInclusive) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate#heightRange");
+    }
+    static BlockPredicate volumeMatch(Vec3i min, Vec3i max, BlockPredicate match) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate#volumeMatch");
     }
 }

@@ -44,4 +44,7 @@ public class ChorusPlantBlock extends PipeBlock {
     protected boolean isPathfindable(BlockState state, PathComputationType type) {
         return super.isPathfindable(state, type);
     }
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
+    }
 }

@@ -32,6 +32,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.phys.Vec3;
 import org.basaltmc.stratum.bukkit.facade.HolderRefs;
+import java.util.function.Supplier;
+import net.minecraft.stats.StatsCounter;
 public record PlayerPredicate(MinMaxBounds.Ints level, FoodPredicate food, GameTypePredicate gameType, List<StatMatcher> stats, Object2BooleanMap<ResourceKey<Recipe<?>>> recipes, Map<Identifier, AdvancementPredicate> advancements, Optional<EntityPredicate> lookingAt, Optional<InputPredicate> input) implements EntitySubPredicate {
     public static final int LOOKING_AT_RANGE = 100;
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -172,6 +174,24 @@ public record PlayerPredicate(MinMaxBounds.Ints level, FoodPredicate food, GameT
         }
         public PlayerPredicate build() {
             return new PlayerPredicate(level, food, gameType, List.copyOf(stats), recipes, advancements, lookingAt, input);
+        }
+            public Builder() {
+            
+        }
+        public <T> Builder addStat(StatType<T> type, Holder.Reference<T> value, MinMaxBounds.Ints range) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.PlayerPredicate.Builder#addStat");
+        }
+}
+    static record AdvancementDonePredicate(boolean state) implements AdvancementPredicate {
+        public static final Codec<AdvancementDonePredicate> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.advancements.predicates.entity.PlayerPredicate.AdvancementDonePredicate.class, "CODEC");
+        public boolean test(AdvancementProgress progress) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.PlayerPredicate.AdvancementDonePredicate#test");
+        }
+    }
+    static record AdvancementCriterionsPredicate(Object2BooleanMap<String> criterions) implements AdvancementPredicate {
+        public static final Codec<AdvancementCriterionsPredicate> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.advancements.predicates.entity.PlayerPredicate.AdvancementCriterionsPredicate.class, "CODEC");
+        public boolean test(AdvancementProgress progress) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.PlayerPredicate.AdvancementCriterionsPredicate#test");
         }
     }
 }

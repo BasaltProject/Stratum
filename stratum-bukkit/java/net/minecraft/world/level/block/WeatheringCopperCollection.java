@@ -137,4 +137,9 @@ public record WeatheringCopperCollection<T>(ByState<T> weathering, ByState<T> wa
                 operation.apply(first.oxidized, second.oxidized));
         }
     }
+    public static <T, U> void zipApply(ByState<T> first, ByState<U> second, BiConsumer<T, U> consumer) {
+    }
+    public static <T, U, R> ByState<R> zipMap(ByState<T> first, ByState<U> second, BiFunction<T, U, R> operation) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.WeatheringCopperCollection#zipMap");
+    }
 }

@@ -6,6 +6,7 @@ import javax.management.AttributeList;
 import javax.management.DynamicMBean;
 import javax.management.MBeanInfo;
 import net.minecraft.server.MinecraftServer;
+import java.util.function.Supplier;
 
 public final class MinecraftServerStatistics implements DynamicMBean {
     private static final MBeanInfo kInfo = new MBeanInfo(MinecraftServerStatistics.class.getName(), "Minecraft server statistics", null, null, null, null);
@@ -43,5 +44,14 @@ public final class MinecraftServerStatistics implements DynamicMBean {
     @Override
     public MBeanInfo getMBeanInfo() {
         return kInfo;
+    }
+    private MinecraftServerStatistics(MinecraftServer server) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.monitoring.jmx.MinecraftServerStatistics#<init>");
+    }
+    static final class AttributeDescription {
+        private AttributeDescription(String name, Supplier<Object> getter, String description, Class<?> type) {
+            
+        }
     }
 }

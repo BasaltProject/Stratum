@@ -299,4 +299,13 @@ public class Dolphin extends AgeableWaterCreature {
     }
     BlockPos treasurePos;
 
+    public float getAgeScale() {
+        return super.getAgeScale();
+    }
+    public boolean canAttack(LivingEntity target) {
+        return super.canAttack(target);
+    }
+    public int getMaxAirSupply() {
+        return super.getMaxAirSupply();
+    }
 }

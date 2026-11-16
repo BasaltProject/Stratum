@@ -227,4 +227,49 @@ public class ArmorStand extends LivingEntity {
     public Vec3 getLightProbePosition(float partialTickTime) {
         return position().add(0.0, getBbHeight() * 0.5, 0.0);
     }
+    public void refreshDimensions() {
+    }
+    protected void defineSynchedData(SynchedEntityData.Builder entityData) {
+    }
+    protected void addAdditionalSaveData(ValueOutput output) {
+    }
+    protected void readAdditionalSaveData(ValueInput input) {
+    }
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
+        return net.minecraft.world.InteractionResult.PASS;
+    }
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage);
+    }
+    public void handleEntityEvent(byte id) {
+    }
+    protected void tickHeadTurn(float yBodyRotT) {
+    }
+    protected void updateInvisibilityStatus() {
+        }
+    public void setInvisible(boolean invisible) {
+        if (live() instanceof org.bukkit.entity.ArmorStand api) { api.setInvisible(invisible); }
+    }
+    public void kill(ServerLevel level, Entity attributedTo) {
+    }
+    public PushReaction getPistonPushReaction() {
+        return super.getPistonPushReaction();
+    }
+    public LivingEntity.Fallsounds getFallSounds() {
+        return super.getFallSounds();
+    }
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return null;
+    }
+    protected SoundEvent getDeathSound() {
+        return null;
+    }
+    public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
+    }
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        return net.minecraft.world.entity.EntityDimensions.scalable(getBbWidth(), getBbHeight());
+    }
+    public ItemStack getPickResult() {
+        return super.getPickResult();
+    }
 }

@@ -335,5 +335,8 @@ public class CopyOnWriteFSProvider extends FileSystemProvider {
     @FunctionalInterface
     private interface ChannelFactory<C> {
         C open(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException;
-    }
+            default C newChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.filefix.virtualfilesystem.CopyOnWriteFSProvider.ChannelFactory#newChannel");
+        }
+}
 }

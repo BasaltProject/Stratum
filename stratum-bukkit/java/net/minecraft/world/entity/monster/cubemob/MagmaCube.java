@@ -69,4 +69,13 @@ public class MagmaCube extends AbstractCubeMob implements Enemy {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;
     }
+    public float getLightLevelDependentMagicValue() {
+        return super.getLightLevelDependentMagicValue();
+    }
+    public boolean isOnFire() {
+        return super.isOnFire();
+    }
+    public void jumpFromGround() {
+        super.jumpFromGround();
+    }
 }

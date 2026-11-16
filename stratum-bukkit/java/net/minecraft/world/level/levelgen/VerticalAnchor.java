@@ -59,7 +59,10 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return y;
         }
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.Absolute#toString");
+        }
+}
 
     public static record AboveBottom(int offset) implements VerticalAnchor {
         public static final Codec<AboveBottom> CODEC = Codec.intRange(net.minecraft.world.level.dimension.DimensionType.MIN_Y, net.minecraft.world.level.dimension.DimensionType.MAX_Y).fieldOf("above_bottom").xmap(AboveBottom::new, AboveBottom::offset).codec();
@@ -67,7 +70,10 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.getMinGenY() + offset;
         }
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.AboveBottom#toString");
+        }
+}
 
     public static record BelowTop(int offset) implements VerticalAnchor {
         public static final Codec<BelowTop> CODEC = Codec.intRange(net.minecraft.world.level.dimension.DimensionType.MIN_Y, net.minecraft.world.level.dimension.DimensionType.MAX_Y).fieldOf("below_top").xmap(BelowTop::new, BelowTop::offset).codec();
@@ -75,7 +81,10 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.getMinGenY() + heightAccessor.getGenDepth() - 1 - offset;
         }
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.BelowTop#toString");
+        }
+}
 
     public static record RelativeToSeaLevel(int offset) implements VerticalAnchor {
         public static final Codec<RelativeToSeaLevel> CODEC = Codec.intRange(net.minecraft.world.level.dimension.DimensionType.MIN_Y, net.minecraft.world.level.dimension.DimensionType.MAX_Y).fieldOf("relative_to_sea_level").xmap(RelativeToSeaLevel::new, RelativeToSeaLevel::offset).codec();
@@ -83,5 +92,8 @@ public interface VerticalAnchor {
         public int resolveY(WorldGenerationContext heightAccessor) {
             return heightAccessor.seaLevel() + offset;
         }
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.VerticalAnchor.RelativeToSeaLevel#toString");
+        }
+}
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 
-public class ShapedRecipeBuilder extends JsonRecipeBuilder {
+public class ShapedRecipeBuilder extends JsonRecipeBuilder implements RecipeBuilder {
     private final Item result;
     private final int count;
     private final Map<Character, com.google.gson.JsonElement> key = new LinkedHashMap<>();
@@ -110,5 +110,8 @@ public class ShapedRecipeBuilder extends JsonRecipeBuilder {
         if (!notify) {
             json.addProperty("show_notification", false);
         }
+    }
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        super.save(output, id);
     }
 }

@@ -121,4 +121,7 @@ public class Sheep extends Animal implements Shearable {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;
     }
+    public void ate() {
+        super.ate();
+    }
 }

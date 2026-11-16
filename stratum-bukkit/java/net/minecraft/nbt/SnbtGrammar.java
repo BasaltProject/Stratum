@@ -15,6 +15,7 @@ import net.minecraft.util.parsing.packrat.NamedRule;
 import net.minecraft.util.parsing.packrat.ParseState;
 import net.minecraft.util.parsing.packrat.Rule;
 import net.minecraft.util.parsing.packrat.commands.Grammar;
+import net.minecraft.util.parsing.packrat.commands.GreedyPredicateParseRule;
 
 /** The top rule hands the reader to the native-backed TagParser instead of expanding the grammar term by term. */
 public class SnbtGrammar {
@@ -101,8 +102,30 @@ public class SnbtGrammar {
                 case LONG -> ops.createLongList(LongStream.empty());
             };
         }
-    }
+            public <T> T create(DynamicOps<T> ops, List<IntegerLiteral> entries, ParseState<?> state) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.SnbtGrammar.ArrayPrefix#create");
+        }
+        protected Number buildNumber(IntegerLiteral entry, ParseState<?> state) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.SnbtGrammar.ArrayPrefix#buildNumber");
+        }
+}
 
     static record Signed<T>(Sign sign, T value) {
+    }
+    static class SimpleHexLiteralParseRule extends GreedyPredicateParseRule {
+        public SimpleHexLiteralParseRule(int size) {
+            super((int) 0, (net.minecraft.util.parsing.packrat.DelayedException) null);
+        }
+        protected boolean isAccepted(char c) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.SnbtGrammar.SimpleHexLiteralParseRule#isAccepted");
+        }
+    }
+    static record IntegerLiteral(Sign sign, Base base, String digits, IntegerSuffix suffix) {
+        public <T> T create(DynamicOps<T> ops, ParseState<?> state) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.SnbtGrammar.IntegerLiteral#create");
+        }
+        public <T> T create(DynamicOps<T> ops, TypeSuffix type, ParseState<?> state) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.SnbtGrammar.IntegerLiteral#create");
+        }
     }
 }

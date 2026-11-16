@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.TransmuteResult;
 
-public class TransmuteRecipeBuilder extends JsonRecipeBuilder {
+public class TransmuteRecipeBuilder extends JsonRecipeBuilder implements RecipeBuilder {
     private final Ingredient input;
     private final Ingredient material;
     private final Item result;
@@ -75,5 +75,12 @@ public class TransmuteRecipeBuilder extends JsonRecipeBuilder {
         json.add("input", RecipeJson.ingredient(input));
         json.add("material", RecipeJson.ingredient(material));
         json.add("result", RecipeJson.result(result, resultCount));
+    }
+    private TransmuteRecipeBuilder(RecipeCategory category, TransmuteResult result, Ingredient input, Ingredient material) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.TransmuteRecipeBuilder#<init>");
+    }
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        super.save(output, id);
     }
 }

@@ -140,5 +140,8 @@ public record LocationPredicate(Optional<PositionPredicate> position, Optional<H
         public LocationPredicate build() {
             return new LocationPredicate(PositionPredicate.of(x, y, z), biomes, structures, dimension, smokey, light, block, fluid, canSeeSky);
         }
-    }
+            public Builder() {
+            
+        }
+}
 }

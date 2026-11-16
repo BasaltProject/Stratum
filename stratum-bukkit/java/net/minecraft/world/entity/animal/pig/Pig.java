@@ -133,4 +133,7 @@ public class Pig extends Animal implements ItemSteerable {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         return groupData;
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

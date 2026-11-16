@@ -284,4 +284,28 @@ public class Shulker extends AbstractGolem implements Enemy {
                 : getBoundingBox().inflate(followDistance, 4.0, followDistance);
         }
     }
+    protected AABB makeBoundingBox(Vec3 position) {
+        return super.makeBoundingBox(position);
+    }
+    public boolean startRiding(Entity entity, boolean force, boolean sendEventAndTriggers) {
+        return super.startRiding(entity, force, sendEventAndTriggers);
+    }
+    public void stopRiding() {
+        super.stopRiding();
+    }
+    public void move(MoverType moverType, Vec3 delta) {
+        super.move(moverType, delta);
+    }
+    public Vec3 getDeltaMovement() {
+        return super.getDeltaMovement();
+    }
+    public void setDeltaMovement(Vec3 deltaMovement) {
+        super.setDeltaMovement(deltaMovement);
+    }
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
+    }
+    protected InterpolationHandler createInterpolationHandler() {
+        return super.createInterpolationHandler();
+    }
 }

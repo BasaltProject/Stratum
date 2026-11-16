@@ -99,4 +99,8 @@ public class TransientCraftingContainer implements CraftingContainer {
     @Override
     public void fillStackedContents(StackedItemContents contents) {
     }
+    private TransientCraftingContainer(AbstractContainerMenu menu, int width, int height, NonNullList<ItemStack> items) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.TransientCraftingContainer#<init>");
+    }
 }

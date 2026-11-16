@@ -9,6 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
     public static final int CONTAINER_SIZE = 9;
@@ -37,5 +42,23 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
         return new net.minecraft.world.inventory.DispenserMenu(containerId, inventory, this);
+    }
+    public int getRandomSlot(RandomSource random) {
+        return (int) 0;
+    }
+    public ItemStack insertItem(ItemStack itemStack) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.DispenserBlockEntity#insertItem");
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected NonNullList<ItemStack> getItems() {
+        return super.getItems();
+    }
+    protected void setItems(NonNullList<ItemStack> items) {
+        super.setItems(items);
     }
 }

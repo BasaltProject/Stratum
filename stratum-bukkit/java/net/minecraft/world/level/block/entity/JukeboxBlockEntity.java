@@ -12,8 +12,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.JukeboxSongPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.ticks.ContainerSingleItem;
 
-public class JukeboxBlockEntity extends BlockEntity {
+public class JukeboxBlockEntity extends BlockEntity implements ContainerSingleItem.BlockContainerSingleItem {
     public static final String SONG_ITEM_TAG_ID = "RecordItem";
     public static final String TICKS_SINCE_SONG_STARTED_TAG_ID = "ticks_since_song_started";
     public JukeboxBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -51,5 +57,35 @@ public class JukeboxBlockEntity extends BlockEntity {
     public int getComparatorOutput() {
         return net.minecraft.world.item.JukeboxSong.fromStack(getTheItem()).map(net.minecraft.core.Holder::value)
             .map(net.minecraft.world.item.JukeboxSong::comparatorOutput).orElse(0);
+    }
+    public JukeboxSongPlayer getSongPlayer() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.JukeboxBlockEntity#getSongPlayer");
+    }
+    public void onSongChanged() {
+    }
+    public void popOutTheItem() {
+    }
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, JukeboxBlockEntity jukebox) {
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public ItemStack splitTheItem(int count) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.JukeboxBlockEntity#splitTheItem");
+    }
+    public void setTheItem(ItemStack itemStack) {
+    }
+    public void setRemoved() {
+        super.setRemoved();
+    }
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+    }
+    public void setSongItemWithoutPlaying(ItemStack itemStack) {
+    }
+    public void tryForcePlaySong() {
     }
 }

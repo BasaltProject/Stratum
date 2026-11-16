@@ -7,8 +7,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.SingleItemRecipe;
 
-public class SingleItemRecipeBuilder extends JsonRecipeBuilder {
+public class SingleItemRecipeBuilder extends JsonRecipeBuilder implements RecipeBuilder {
     private final Ingredient ingredient;
     private final ItemLike result;
     private final int count;
@@ -50,5 +52,16 @@ public class SingleItemRecipeBuilder extends JsonRecipeBuilder {
         putGroup(json);
         json.add("ingredient", RecipeJson.ingredient(ingredient));
         json.add("result", RecipeJson.result(result, count));
+    }
+    private SingleItemRecipeBuilder(RecipeCategory category, SingleItemRecipe.Factory<?> factory, Ingredient ingredient, ItemStackTemplate result) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.SingleItemRecipeBuilder#<init>");
+    }
+    public SingleItemRecipeBuilder(RecipeCategory category, SingleItemRecipe.Factory<?> factory, Ingredient ingredient, ItemLike result, int count) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.SingleItemRecipeBuilder#<init>");
+    }
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        super.save(output, id);
     }
 }

@@ -40,6 +40,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.basaltmc.stratum.bukkit.WorldNatives;
+import java.util.function.Consumer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.npc.InventoryCarrier;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 
 public class GameTestHelper extends GameTestHelperAssertions {
     public GameTestHelper(GameTestInfo testInfo) {
@@ -455,6 +461,281 @@ public class GameTestHelper extends GameTestHelperAssertions {
                     WorldNatives.setBiome(getLevel().getWorld().getName(), x, y, z, name);
                 }
             }
+        }
+    }
+    public GameTestAssertException assertionException(Component description) {
+        return super.assertionException(description);
+    }
+    public GameTestAssertException assertionException(String descriptionId, Object... arguments) {
+        return super.assertionException(descriptionId, arguments);
+    }
+    public GameTestAssertPosException assertionException(BlockPos pos, Component description) {
+        return super.assertionException(pos, description);
+    }
+    public GameTestAssertPosException assertionException(BlockPos pos, String descriptionId, Object... arguments) {
+        return super.assertionException(pos, descriptionId, arguments);
+    }
+    public ServerLevel getLevel() {
+        return super.getLevel();
+    }
+    public BlockState getBlockState(BlockPos pos) {
+        return super.getBlockState(pos);
+    }
+    public <T extends BlockEntity> T getBlockEntity(BlockPos pos, Class<T> type) {
+        return super.getBlockEntity(pos, type);
+    }
+    public void assertBlockPresent(Block blockType, int x, int y, int z) {
+        super.assertBlockPresent(blockType, x, y, z);
+    }
+    public void assertBlockPresent(Block blockType, BlockPos pos) {
+        super.assertBlockPresent(blockType, pos);
+    }
+    public void assertBlockPresent(Block blockType) {
+        super.assertBlockPresent(blockType);
+    }
+    public void assertBlockNotPresent(Block blockType, int x, int y, int z) {
+        super.assertBlockNotPresent(blockType, x, y, z);
+    }
+    public void assertBlockNotPresent(Block blockType, BlockPos pos) {
+        super.assertBlockNotPresent(blockType, pos);
+    }
+    public void assertBlockTag(TagKey<Block> tag, BlockPos pos) {
+        super.assertBlockTag(tag, pos);
+    }
+    public void succeedWhenBlockPresent(Block block, int x, int y, int z) {
+        super.succeedWhenBlockPresent(block, x, y, z);
+    }
+    public void succeedWhenBlockPresent(Block block, BlockPos pos) {
+        super.succeedWhenBlockPresent(block, pos);
+    }
+    public void assertBlock(BlockPos pos, Predicate<Block> predicate, Function<Block, Component> errorMessage) {
+        super.assertBlock(pos, predicate, errorMessage);
+    }
+    public <T extends Comparable<T>> void assertBlockProperty(BlockPos pos, Property<T> property, T value) {
+        super.assertBlockProperty(pos, property, value);
+    }
+    public <T extends Comparable<T>> void assertBlockProperty(BlockPos pos, Property<T> property, Predicate<T> predicate, Component errorMessage) {
+        super.assertBlockProperty(pos, property, predicate, errorMessage);
+    }
+    public void assertBlockState(BlockPos pos, BlockState expected) {
+        super.assertBlockState(pos, expected);
+    }
+    public void assertBlockState(BlockPos pos, Predicate<BlockState> predicate, Function<BlockState, Component> errorMessage) {
+        super.assertBlockState(pos, predicate, errorMessage);
+    }
+    public <T extends BlockEntity> void assertBlockEntityData(BlockPos pos, Class<T> type, Predicate<T> predicate, Supplier<Component> errorMessage) {
+        super.assertBlockEntityData(pos, type, predicate, errorMessage);
+    }
+    public void assertRedstoneSignal(BlockPos pos, Direction direction, IntPredicate levelPredicate, Supplier<Component> errorMessage) {
+        super.assertRedstoneSignal(pos, direction, levelPredicate, errorMessage);
+    }
+    public void assertEntityPresent(EntityType<?> entityType) {
+        super.assertEntityPresent(entityType);
+    }
+    public void assertEntityPresent(EntityType<?> entityType, int x, int y, int z) {
+        super.assertEntityPresent(entityType, x, y, z);
+    }
+    public void assertEntityPresent(EntityType<?> entityType, BlockPos pos) {
+        super.assertEntityPresent(entityType, pos);
+    }
+    public void assertEntityPresent(EntityType<?> entityType, AABB relativeAABB) {
+        super.assertEntityPresent(entityType, relativeAABB);
+    }
+    public void assertEntityPresent(EntityType<?> entityType, AABB relativeAABB, Component message) {
+        super.assertEntityPresent(entityType, relativeAABB, message);
+    }
+    public void assertEntitiesPresent(EntityType<?> entityType, int expectedEntities) {
+        super.assertEntitiesPresent(entityType, expectedEntities);
+    }
+    public void assertEntitiesPresent(EntityType<?> entityType, BlockPos pos, int numOfExpectedEntities, double distance) {
+        super.assertEntitiesPresent(entityType, pos, numOfExpectedEntities, distance);
+    }
+    public void assertEntityPresent(EntityType<?> entityType, BlockPos pos, double distance) {
+        super.assertEntityPresent(entityType, pos, distance);
+    }
+    public <T extends Entity> List<T> getEntities(EntityType<T> entityType, BlockPos pos, double distance) {
+        return super.getEntities(entityType, pos, distance);
+    }
+    public <T extends Entity> List<T> getEntities(EntityType<T> entityType) {
+        return super.getEntities(entityType);
+    }
+    public void assertEntityInstancePresent(Entity entity, int x, int y, int z) {
+        super.assertEntityInstancePresent(entity, x, y, z);
+    }
+    public void assertEntityInstancePresent(Entity entity, BlockPos pos) {
+        super.assertEntityInstancePresent(entity, pos);
+    }
+    public void assertEntityInstancePresent(Entity entity, BlockPos pos, double inflate) {
+        super.assertEntityInstancePresent(entity, pos, inflate);
+    }
+    public void assertItemEntityCountIs(Item itemType, BlockPos pos, double distance, int count) {
+        super.assertItemEntityCountIs(itemType, pos, distance, count);
+    }
+    public void assertItemEntityPresent(Item itemType, BlockPos pos, double distance) {
+        super.assertItemEntityPresent(itemType, pos, distance);
+    }
+    public void assertItemEntityNotPresent(Item itemType, BlockPos pos, double distance) {
+        super.assertItemEntityNotPresent(itemType, pos, distance);
+    }
+    public void assertItemEntityPresent(Item itemType) {
+        super.assertItemEntityPresent(itemType);
+    }
+    public void assertItemEntityNotPresent(Item itemType) {
+        super.assertItemEntityNotPresent(itemType);
+    }
+    public void assertEntityNotPresent(EntityType<?> entityType) {
+        super.assertEntityNotPresent(entityType);
+    }
+    public void assertEntityNotPresent(EntityType<?> entityType, int x, int y, int z) {
+        super.assertEntityNotPresent(entityType, x, y, z);
+    }
+    public void assertEntityNotPresent(EntityType<?> entityType, BlockPos pos) {
+        super.assertEntityNotPresent(entityType, pos);
+    }
+    public void assertEntityNotPresent(EntityType<?> entityType, AABB relativeAABB) {
+        super.assertEntityNotPresent(entityType, relativeAABB);
+    }
+    public void assertEntityTouching(EntityType<?> entityType, double x, double y, double z) {
+        super.assertEntityTouching(entityType, x, y, z);
+    }
+    public void assertEntityNotTouching(EntityType<?> entityType, double x, double y, double z) {
+        super.assertEntityNotTouching(entityType, x, y, z);
+    }
+    public <E extends Entity, T> void assertEntityData(BlockPos pos, EntityType<E> entityType, Predicate<E> test) {
+        super.assertEntityData(pos, entityType, test);
+    }
+    public <E extends Entity, T> void assertEntityData(BlockPos pos, EntityType<E> entityType, Function<? super E, T> dataAccessor, T data) {
+        super.assertEntityData(pos, entityType, dataAccessor, data);
+    }
+    public <E extends Entity, T> void assertEntityData(AABB box, EntityType<E> entityType, Function<? super E, T> dataAccessor, T data) {
+        super.assertEntityData(box, entityType, dataAccessor, data);
+    }
+    public <E extends LivingEntity> void assertEntityIsHolding(BlockPos pos, EntityType<E> entityType, Item item) {
+        super.assertEntityIsHolding(pos, entityType, item);
+    }
+    public <E extends Entity & InventoryCarrier> void assertEntityInventoryContains(BlockPos pos, EntityType<E> entityType, Item item) {
+        super.assertEntityInventoryContains(pos, entityType, item);
+    }
+    public void assertContainerEmpty(BlockPos pos) {
+        super.assertContainerEmpty(pos);
+    }
+    public void assertContainerContainsSingle(BlockPos pos, Item item) {
+        super.assertContainerContainsSingle(pos, item);
+    }
+    public void assertContainerContains(BlockPos pos, Item item) {
+        super.assertContainerContains(pos, item);
+    }
+    public void assertSameBlockStates(BoundingBox sourceBoundingBox, BlockPos targetBoundingBoxCorner) {
+        super.assertSameBlockStates(sourceBoundingBox, targetBoundingBoxCorner);
+    }
+    public void assertSameBlockState(BlockPos sourcePos, BlockPos targetPos) {
+        super.assertSameBlockState(sourcePos, targetPos);
+    }
+    public void assertAtTickTimeContainerContains(long time, BlockPos pos, Item item) {
+        super.assertAtTickTimeContainerContains(time, pos, item);
+    }
+    public void assertAtTickTimeContainerEmpty(long time, BlockPos pos) {
+        super.assertAtTickTimeContainerEmpty(time, pos);
+    }
+    public <E extends Entity, T> void succeedWhenEntityData(BlockPos pos, EntityType<E> entityType, Function<E, T> dataAccessor, T data) {
+        super.succeedWhenEntityData(pos, entityType, dataAccessor, data);
+    }
+    public <E extends Entity> void assertEntityProperty(E entity, Predicate<E> test, Component description) {
+        super.assertEntityProperty(entity, test, description);
+    }
+    public <E extends Entity, T> void assertEntityProperty(E entity, Function<E, T> test, T expected, Component description) {
+        super.assertEntityProperty(entity, test, expected, description);
+    }
+    public void assertLivingEntityHasMobEffect(LivingEntity entity, Holder<MobEffect> mobEffect, int amplifier) {
+        super.assertLivingEntityHasMobEffect(entity, mobEffect, amplifier);
+    }
+    public void succeedWhenEntityPresent(EntityType<?> entityType, int x, int y, int z) {
+        super.succeedWhenEntityPresent(entityType, x, y, z);
+    }
+    public void succeedWhenEntityPresent(EntityType<?> entityType, BlockPos pos) {
+        super.succeedWhenEntityPresent(entityType, pos);
+    }
+    public void succeedWhenEntityNotPresent(EntityType<?> entityType, int x, int y, int z) {
+        super.succeedWhenEntityNotPresent(entityType, x, y, z);
+    }
+    public void succeedWhenEntityNotPresent(EntityType<?> entityType, BlockPos pos) {
+        super.succeedWhenEntityNotPresent(entityType, pos);
+    }
+    public void succeed() {
+        super.succeed();
+    }
+    public void succeedIf(Runnable asserter) {
+        super.succeedIf(asserter);
+    }
+    public void succeedWhen(Runnable asserter) {
+        super.succeedWhen(asserter);
+    }
+    public void succeedOnTickWhen(int tick, Runnable asserter) {
+        super.succeedOnTickWhen(tick, asserter);
+    }
+    public void runAtTickTime(long time, Runnable asserter) {
+        super.runAtTickTime(time, asserter);
+    }
+    public void runBeforeTestEnd(Runnable asserter) {
+        super.runBeforeTestEnd(asserter);
+    }
+    public void runAfterDelay(long ticksToDelay, Runnable whatToRun) {
+        super.runAfterDelay(ticksToDelay, whatToRun);
+    }
+    public GameTestSequence startSequence() {
+        return super.startSequence();
+    }
+    public BlockPos absolutePos(BlockPos relativePos) {
+        return super.absolutePos(relativePos);
+    }
+    public BlockPos relativePos(BlockPos absolutePos) {
+        return super.relativePos(absolutePos);
+    }
+    public AABB absoluteAABB(AABB relativeAABB) {
+        return super.absoluteAABB(relativeAABB);
+    }
+    public AABB relativeAABB(AABB absoluteAABB) {
+        return super.relativeAABB(absoluteAABB);
+    }
+    public Vec3 absoluteVec(Vec3 relativeVec) {
+        return super.absoluteVec(relativeVec);
+    }
+    public Vec3 relativeVec(Vec3 absoluteVec) {
+        return super.relativeVec(absoluteVec);
+    }
+    public Rotation getTestRotation() {
+        return super.getTestRotation();
+    }
+    public Direction getTestDirection() {
+        return super.getTestDirection();
+    }
+    public Direction getAbsoluteDirection(Direction direction) {
+        return super.getAbsoluteDirection(direction);
+    }
+    public long getTick() {
+        return super.getTick();
+    }
+    public AABB getBounds() {
+        return super.getBounds();
+    }
+    public AABB getBoundsWithPadding() {
+        return super.getBoundsWithPadding();
+    }
+    public AABB getRelativeBounds() {
+        return super.getRelativeBounds();
+    }
+    public void forEveryBlockInStructure(Consumer<BlockPos> forBlock) {
+        super.forEveryBlockInStructure(forBlock);
+    }
+    class TestBlockPlaceContext extends BlockPlaceContext {
+        public TestBlockPlaceContext(Level level, InteractionHand hand, ItemStack itemStackInHand, BlockHitResult hitResult, Direction placeDirection) {
+            super((net.minecraft.world.item.context.UseOnContext) null);
+        }
+        public Direction getNearestLookingDirection() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.gametest.framework.GameTestHelper.TestBlockPlaceContext#getNearestLookingDirection");
+        }
+        public Direction[] getNearestLookingDirections() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.gametest.framework.GameTestHelper.TestBlockPlaceContext#getNearestLookingDirections");
         }
     }
 }

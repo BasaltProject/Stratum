@@ -160,4 +160,16 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
     }
     protected void playConvertedSound() {
         }
+    public TagKey<Item> getPreferredWeaponType() {
+        return super.getPreferredWeaponType();
+    }
+    public boolean canUseNonMeleeWeapon(ItemStack item) {
+        return super.canUseNonMeleeWeapon(item);
+    }
+    public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+        return super.wantsToPickUp(level, itemStack);
+    }
+    public boolean startRiding(Entity entityToRide, boolean force, boolean sendEventAndTriggers) {
+        return super.startRiding(entityToRide, force, sendEventAndTriggers);
+    }
 }

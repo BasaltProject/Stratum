@@ -18,6 +18,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import net.minecraft.core.Holder;
+import net.minecraft.core.NonNullList;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.Prediction;
+import net.minecraft.world.entity.EntityEquipment;
+import net.minecraft.world.item.Item;
 
 /** The player's slots as a container, backed by the live Bukkit player inventory (0-35 storage, 36-39 armor, 40 offhand). */
 public class Inventory implements Container, Nameable {
@@ -460,5 +466,9 @@ public class Inventory implements Container, Nameable {
     }
     public static boolean isUsableForCrafting(ItemStack itemStack) {
         return !itemStack.isDamaged() && !itemStack.isEnchanted() && !itemStack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME);
+    }
+    public Inventory(Player player, EntityEquipment equipment) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.player.Inventory#<init>");
     }
 }

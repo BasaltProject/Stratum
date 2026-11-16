@@ -28,5 +28,8 @@ public record FoodPredicate(MinMaxBounds.Ints level, MinMaxBounds.Doubles satura
         public FoodPredicate build() {
             return new FoodPredicate(level, saturation);
         }
-    }
+            public Builder() {
+            
+        }
+}
 }

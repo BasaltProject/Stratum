@@ -6,6 +6,9 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeAccess;
+import net.minecraft.world.item.crafting.RecipePropertySet;
 
 public class BrewingStandMenu extends AbstractContainerMenu {
     private static final int BOTTLE_SLOT_START = 0;
@@ -72,5 +75,50 @@ public class BrewingStandMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+    public int getTotalFuel() {
+        return (int) 0;
+    }
+    public int getTotalBrewingTicks() {
+        return (int) 0;
+    }
+    static class PotionSlot extends Slot {
+        public PotionSlot(RecipeAccess recipeAccess, Container container, int slot, int x, int y) {
+            super((net.minecraft.world.Container) null, (int) 0, (int) 0, (int) 0);
+        }
+        public boolean mayPlace(ItemStack itemStack) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.PotionSlot#mayPlace");
+        }
+        public int getMaxStackSize() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.PotionSlot#getMaxStackSize");
+        }
+        public void onTake(Player player, ItemStack carried) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.PotionSlot#onTake");
+        }
+        public Identifier getNoItemIcon() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.PotionSlot#getNoItemIcon");
+        }
+    }
+    static class IngredientsSlot extends Slot {
+        public IngredientsSlot(RecipePropertySet propertySet, Container container, int slot, int x, int y) {
+            super((net.minecraft.world.Container) null, (int) 0, (int) 0, (int) 0);
+        }
+        public boolean mayPlace(ItemStack itemStack) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.IngredientsSlot#mayPlace");
+        }
+    }
+    static class FuelSlot extends Slot {
+        public FuelSlot(Container container, int slot, int x, int y) {
+            super((net.minecraft.world.Container) null, (int) 0, (int) 0, (int) 0);
+        }
+        public boolean mayPlace(ItemStack itemStack) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.FuelSlot#mayPlace");
+        }
+        public static boolean mayPlaceItem(ItemStack itemStack) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.FuelSlot#mayPlaceItem");
+        }
+        public Identifier getNoItemIcon() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BrewingStandMenu.FuelSlot#getNoItemIcon");
+        }
     }
 }

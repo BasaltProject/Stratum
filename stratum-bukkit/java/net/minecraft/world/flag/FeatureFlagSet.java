@@ -72,4 +72,8 @@ public class FeatureFlagSet {
     public int hashCode() {
         return flags.hashCode();
     }
+    private FeatureFlagSet(FeatureFlagUniverse universe, long mask) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.flag.FeatureFlagSet#<init>");
+    }
 }

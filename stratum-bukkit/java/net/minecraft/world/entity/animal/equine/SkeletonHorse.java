@@ -77,4 +77,7 @@ public class SkeletonHorse extends AbstractHorse {
     public boolean canUseSlot(EquipmentSlot slot) {
         return super.canUseSlot(slot);
     }
+    public boolean canAgeUp() {
+        return super.canAgeUp();
+    }
 }

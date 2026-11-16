@@ -7,6 +7,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import java.util.List;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.block.entity.BannerPattern;
 
 public class LoomMenu extends AbstractContainerMenu {
     private final Container container;
@@ -83,5 +86,31 @@ public class LoomMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+    public boolean clickMenuButton(Player player, int buttonId) {
+        return super.clickMenuButton(player, buttonId);
+    }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public List<Holder<BannerPattern>> getSelectablePatterns() {
+        return java.util.List.of();
+    }
+    public int getSelectedBannerPatternIndex() {
+        return (int) 0;
+    }
+    public void registerUpdateListener(Runnable slotUpdateListener) {
+    }
+    public Slot getBannerSlot() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.LoomMenu#getBannerSlot");
+    }
+    public Slot getDyeSlot() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.LoomMenu#getDyeSlot");
+    }
+    public Slot getPatternSlot() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.LoomMenu#getPatternSlot");
+    }
+    public Slot getResultSlot() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.LoomMenu#getResultSlot");
     }
 }

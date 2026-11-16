@@ -12,6 +12,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.world.entity.ContainerUser;
+import net.minecraft.world.level.Level;
 
 public class EnderChestBlockEntity extends BlockEntity implements LidBlockEntity {
     public EnderChestBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -32,5 +34,15 @@ public class EnderChestBlockEntity extends BlockEntity implements LidBlockEntity
 
     public void stopOpen(net.minecraft.world.entity.ContainerUser user) {
         org.basaltmc.stratum.bukkit.facade.LidControl.set(this, false);
+    }
+    public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, EnderChestBlockEntity entity) {
+    }
+    public boolean triggerEvent(int b0, int b1) {
+        return super.triggerEvent(b0, b1);
+    }
+    public boolean stillValid(Player player) {
+        return false;
+    }
+    public void recheckOpen() {
     }
 }

@@ -117,4 +117,16 @@ public class WitherBoss extends Monster implements RangedAttackMob {
             return false;
         }
     }
+    public void setCustomName(Component name) {
+        super.setCustomName(name);
+    }
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
+    }
+    public void stopSeenByPlayer(ServerPlayer player) {
+        super.stopSeenByPlayer(player);
+    }
+    public boolean addEffect(MobEffectInstance newEffect, Entity source) {
+        return super.addEffect(newEffect, source);
+    }
 }

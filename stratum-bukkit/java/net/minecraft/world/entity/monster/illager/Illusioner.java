@@ -99,4 +99,7 @@ public class Illusioner extends SpellcasterIllager implements RangedAttackMob {
             return SpellcasterIllager.IllagerSpell.BLINDNESS;
         }
     }
+    public AbstractIllager.IllagerArmPose getArmPose() {
+        return super.getArmPose();
+    }
 }

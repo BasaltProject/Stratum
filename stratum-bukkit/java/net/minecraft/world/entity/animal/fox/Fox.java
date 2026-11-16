@@ -383,7 +383,9 @@ public class Fox extends Animal {
             Fox.this.clearStates();
             super.start();
         }
-    }
+            protected void breed() {
+                }
+}
     class DefendTrustedTargetGoal extends NearestAttackableTargetGoal<LivingEntity> {
         private LivingEntity trustedLastHurtBy;
         private LivingEntity trustedLastHurt;
@@ -672,7 +674,10 @@ public class Fox extends Animal {
             super.start();
             clearStates();
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+}
     public class FoxPounceGoal extends JumpGoal {
         public FoxPounceGoal() {
         }

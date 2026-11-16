@@ -52,5 +52,7 @@ public interface ErrorCollector<S> {
         public int cursor() {
             return cursor;
         }
-    }
+            static class MutableErrorEntry<S> {
+        }
+}
 }

@@ -248,4 +248,13 @@ public class Ghast extends Mob implements Enemy {
             ghast.setCharging(chargeTime > 10);
         }
     }
+    public boolean onClimbable() {
+        return super.onClimbable();
+    }
+    public int getMaxSpawnClusterSize() {
+        return super.getMaxSpawnClusterSize();
+    }
+    public boolean supportQuadLeashAsHolder() {
+        return super.supportQuadLeashAsHolder();
+    }
 }

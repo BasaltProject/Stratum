@@ -272,4 +272,13 @@ public class Camel extends AbstractHorse {
             super.tick();
         }
     }
+    public void travel(Vec3 input) {
+        super.travel(input);
+    }
+    protected Holder<SoundEvent> getEquipSound(EquipmentSlot slot, ItemStack stack, Equippable equippable) {
+        return super.getEquipSound(slot, stack, equippable);
+    }
+    public void openCustomInventoryScreen(Player player) {
+        super.openCustomInventoryScreen(player);
+    }
 }

@@ -76,4 +76,19 @@ public class EnchantmentMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    public int[] costs = null;
+    public int[] enchantClue = null;
+    public int[] levelClue = null;
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public boolean clickMenuButton(Player player, int buttonId) {
+        return super.clickMenuButton(player, buttonId);
+    }
+    public int getGoldCount() {
+        return (int) 0;
+    }
+    public int getEnchantmentSeed() {
+        return (int) 0;
+    }
 }

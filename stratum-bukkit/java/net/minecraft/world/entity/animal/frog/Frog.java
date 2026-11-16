@@ -180,4 +180,16 @@ public class Frog extends Animal {
                 : super.getPathType(context, x, y, z);
         }
     }
+    public int getHeadRotSpeed() {
+        return super.getHeadRotSpeed();
+    }
+    public void spawnChildFromBreeding(ServerLevel level, Animal partner) {
+        super.spawnChildFromBreeding(level, partner);
+    }
+    public boolean isPushedByFluid() {
+        return super.isPushedByFluid();
+    }
+    public LivingEntity getTarget() {
+        return super.getTarget();
+    }
 }

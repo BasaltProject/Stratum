@@ -122,4 +122,10 @@ public class Blaze extends Monster {
             return blaze.getAttributeValue(Attributes.FOLLOW_RANGE);
         }
     }
+    public float getLightLevelDependentMagicValue() {
+        return super.getLightLevelDependentMagicValue();
+    }
+    public boolean isOnFire() {
+        return super.isOnFire();
+    }
 }

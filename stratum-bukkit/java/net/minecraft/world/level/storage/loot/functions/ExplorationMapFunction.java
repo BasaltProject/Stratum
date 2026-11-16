@@ -10,6 +10,8 @@ import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import java.util.Set;
+import net.minecraft.util.context.ContextKey;
 public class ExplorationMapFunction extends LootItemConditionalFunction {
     public static final Holder<MapDecorationType> DEFAULT_DECORATION = MapDecorationTypes.WOODLAND_MANSION;
     public static final byte DEFAULT_ZOOM = 2;
@@ -79,5 +81,8 @@ public class ExplorationMapFunction extends LootItemConditionalFunction {
         public LootItemFunction build() {
             return new ExplorationMapFunction(getCondition(), destination, mapDecoration, zoom, searchRadius, skipKnownStructures);
         }
+    }
+    public Set<ContextKey<?>> getReferencedContextParams() {
+        return java.util.Set.of();
     }
 }

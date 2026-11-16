@@ -23,4 +23,10 @@ public record ColumnPos(int x, int z) {
     public static int getZ(long pos) {
         return (int) (pos >>> 32 & 0xFFFFFFFFL);
     }
+    public String toString() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ColumnPos#toString");
+    }
+    public int hashCode() {
+        return (int) 0;
+    }
 }

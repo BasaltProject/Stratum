@@ -21,6 +21,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.tags.TagKey;
+import net.minecraft.core.registries.ConcurrentHolderGetter;
 
 /** Registry contents are loaded natively, so these tasks only carry the declaration and report an empty load. */
 public abstract class RegistryLoadTask<T> {
@@ -87,4 +88,5 @@ public abstract class RegistryLoadTask<T> {
             }
         }
     }
+    protected ConcurrentHolderGetter<T> concurrentRegistrationGetter = null;
 }

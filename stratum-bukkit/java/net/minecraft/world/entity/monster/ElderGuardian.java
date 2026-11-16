@@ -28,4 +28,7 @@ public class ElderGuardian extends Guardian {
     }
     protected void customServerAiStep(ServerLevel level) {
     }
+    public int getAttackDuration() {
+        return super.getAttackDuration();
+    }
 }

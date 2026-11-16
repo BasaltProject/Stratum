@@ -46,7 +46,9 @@ public class Evoker extends SpellcasterIllager {
     class EvokerCastingSpellGoal extends SpellcasterIllager.SpellcasterCastingSpellGoal {
         private EvokerCastingSpellGoal() {
         }
-    }
+            public void tick() {
+        }
+}
     class EvokerAttackSpellGoal extends SpellcasterIllager.SpellcasterUseSpellGoal {
         private EvokerAttackSpellGoal() {
         }

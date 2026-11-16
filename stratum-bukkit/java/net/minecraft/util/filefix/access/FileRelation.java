@@ -74,4 +74,7 @@ public interface FileRelation {
         return List.of(base.resolve("dimensions/minecraft/overworld"), base.resolve("dimensions/minecraft/the_nether"),
             base.resolve("dimensions/minecraft/the_end"));
     }
+    static List<Path> directoriesInPath(Path path) {
+        return java.util.List.of();
+    }
 }

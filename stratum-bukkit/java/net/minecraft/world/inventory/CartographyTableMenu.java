@@ -85,4 +85,10 @@ public class CartographyTableMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public boolean canTakeItemForPickAll(ItemStack carried, Slot target) {
+        return super.canTakeItemForPickAll(carried, target);
+    }
 }

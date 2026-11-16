@@ -70,4 +70,16 @@ public class PrimedTnt extends Entity implements TraceableEntity {
     public final boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         return false;
     }
+    protected Entity.MovementEmission getMovementEmission() {
+        return super.getMovementEmission();
+    }
+    public void restoreFrom(Entity oldEntity) {
+        super.restoreFrom(oldEntity);
+    }
+    public Entity teleport(TeleportTransition transition) {
+        return super.teleport(transition);
+    }
+    public MoveSimulationType getMoveSimulationType() {
+        return super.getMoveSimulationType();
+    }
 }

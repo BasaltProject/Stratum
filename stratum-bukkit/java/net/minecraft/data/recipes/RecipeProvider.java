@@ -30,6 +30,9 @@ import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.advancements.triggers.BredAnimalsTrigger;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
 
 public abstract class RecipeProvider extends RecipeFamilies {
     protected final BootstrapContext<Advancement> advancementOutput;
@@ -396,5 +399,19 @@ public abstract class RecipeProvider extends RecipeFamilies {
 
     interface FamilyStonecutterRecipeProvider {
         void create(RecipeProvider context, ItemLike result, ItemLike base);
+    }
+    protected RecipeOutput output = null;
+    protected void colorItemWithDye(List<Item> dyes, List<Item> items, String groupName, RecipeCategory category) {
+    }
+    protected void colorWithDye(List<Item> dyes, List<Item> dyedItems, Item uncoloredItem, String groupName, RecipeCategory category) {
+    }
+    protected void waxRecipes(FeatureFlagSet flagSet) {
+    }
+    protected void suspiciousStew(Item item, SuspiciousEffectHolder effectHolder) {
+    }
+    protected void dyedItem(Item target, String group) {
+    }
+    protected void generateRecipes(BlockFamily family, FeatureFlagSet flagSet) {
+        super.generateRecipes(family, flagSet);
     }
 }

@@ -67,7 +67,10 @@ public interface HolderLookup<T> extends HolderGetter<T> {
             default boolean canSerializeIn(HolderOwner<T> owner) {
         return parent().canSerializeIn(owner);
             }
-        }
+                    default boolean canSerialize(HolderOwner<T> owner) {
+                return false;
+            }
+}
 }
 
     interface Provider extends HolderGetter.Provider {

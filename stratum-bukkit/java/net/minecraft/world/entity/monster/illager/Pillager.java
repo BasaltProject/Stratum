@@ -111,4 +111,13 @@ public class Pillager extends AbstractIllager implements CrossbowAttackMob, Inve
     private boolean chargingCrossbow;
     private final SimpleContainer inventory = new SimpleContainer(5);
 
+    public boolean canUseNonMeleeWeapon(ItemStack item) {
+        return super.canUseNonMeleeWeapon(item);
+    }
+    public TagKey<Item> getPreferredWeaponType() {
+        return super.getPreferredWeaponType();
+    }
+    public int getMaxSpawnClusterSize() {
+        return super.getMaxSpawnClusterSize();
+    }
 }

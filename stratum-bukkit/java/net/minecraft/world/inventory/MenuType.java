@@ -54,4 +54,8 @@ public class MenuType<T extends AbstractContainerMenu> implements FeatureElement
     interface MenuSupplier<T extends AbstractContainerMenu> {
         T create(int containerId, Inventory inventory);
     }
+    private MenuType(MenuSupplier<T> constructor, FeatureFlagSet requiredFeatures) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.MenuType#<init>");
+    }
 }

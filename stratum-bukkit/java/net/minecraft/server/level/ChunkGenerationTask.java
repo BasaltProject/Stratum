@@ -4,6 +4,7 @@ package net.minecraft.server.level;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.util.StaticCache2D;
 
 public class ChunkGenerationTask {
     public final ChunkStatus targetStatus;
@@ -34,5 +35,9 @@ public class ChunkGenerationTask {
 
     public GenerationChunkHolder getCenter() {
         return chunkMap.acquireGeneration(pos.pack());
+    }
+    private ChunkGenerationTask(GeneratingChunkMap chunkMap, ChunkStatus targetStatus, ChunkPos pos, StaticCache2D<GenerationChunkHolder> cache) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkGenerationTask#<init>");
     }
 }

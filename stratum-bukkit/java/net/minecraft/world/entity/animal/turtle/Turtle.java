@@ -151,7 +151,10 @@ public class Turtle extends Animal {
         public TurtlePanicGoal(Turtle turtle, double speedModifier) {
             super(turtle, speedModifier);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+}
     static class TurtleTravelGoal extends Goal {
         private final Turtle turtle;
         private final double speedModifier;
@@ -255,7 +258,10 @@ public class Turtle extends Animal {
         }
         protected void breed() {
                 }
-    }
+            public boolean canUse() {
+            return false;
+        }
+}
     static class TurtleLayEggGoal extends MoveToBlockGoal {
         private final Turtle turtle;
         private int layEggCounter;

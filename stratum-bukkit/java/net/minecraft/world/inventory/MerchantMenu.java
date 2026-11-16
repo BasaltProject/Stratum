@@ -175,4 +175,9 @@ public class MerchantMenu extends AbstractContainerMenu {
             }
         }
     }
+    public void updateSellItem() {
+    }
+    public int getFutureTraderXp() {
+        return (int) 0;
+    }
 }

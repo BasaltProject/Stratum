@@ -88,4 +88,7 @@ public final class ClientboundSetEntityDataPacket implements WirePacket, Packet<
     public void handle(ClientGamePacketListener listener) {
         listener.handleSetEntityData(this);
     }
+    private ClientboundSetEntityDataPacket(RegistryFriendlyByteBuf input) {
+        this((int) 0, (List) null); throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket#<init>");
+    }
 }

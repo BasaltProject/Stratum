@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Date;
 
 public class CachedUserNameToIdResolver implements UserNameToIdResolver {
     private final Map<String, NameAndId> byName = new ConcurrentHashMap<>();
@@ -58,4 +59,21 @@ public class CachedUserNameToIdResolver implements UserNameToIdResolver {
     }
 
     public void save() {}
+    static class GameProfileInfo {
+        private GameProfileInfo(NameAndId nameAndId, Date expirationDate) {
+            
+        }
+        public NameAndId nameAndId() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.players.CachedUserNameToIdResolver.GameProfileInfo#nameAndId");
+        }
+        public Date expirationDate() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.players.CachedUserNameToIdResolver.GameProfileInfo#expirationDate");
+        }
+        public void setLastAccess(long currentOperation) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.players.CachedUserNameToIdResolver.GameProfileInfo#setLastAccess");
+        }
+        public long lastAccess() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.players.CachedUserNameToIdResolver.GameProfileInfo#lastAccess");
+        }
+    }
 }

@@ -30,4 +30,7 @@ public class Minecart extends AbstractMinecart {
     }
     protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
     }
+    public void activateMinecart(ServerLevel level, int xt, int yt, int zt, boolean state) {
+        super.activateMinecart(level, xt, yt, zt, state);
+    }
 }

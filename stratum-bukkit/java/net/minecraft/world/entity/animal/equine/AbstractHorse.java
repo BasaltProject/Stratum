@@ -368,4 +368,10 @@ public abstract class AbstractHorse extends Animal implements PlayerRideableJump
     private boolean standing;
     private boolean bred;
     private int standCounter;
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        return super.getDismountLocationForPassenger(passenger);
+    }
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
+        return super.getPassengerAttachmentPoint(passenger, dimensions, scale);
+    }
 }

@@ -143,4 +143,13 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
     protected void playStepSound(BlockPos pos, BlockState blockState) {
         playSound(net.minecraft.sounds.SoundEvents.byId("entity.hoglin.step"), 0.15F, 1.0F);
     }
+    public boolean shouldDropExperience() {
+        return super.shouldDropExperience();
+    }
+    public boolean canFallInLove() {
+        return super.canFallInLove();
+    }
+    public LivingEntity getTarget() {
+        return super.getTarget();
+    }
 }

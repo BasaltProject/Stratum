@@ -80,4 +80,26 @@ public class NoiseStack implements Noise {
 
     protected record Layer(Noise noise, double frequency, float amplitude) {
     }
+    static class Perlin extends NoiseStack {
+        private Perlin(Layer[] layers) {
+            super((net.minecraft.world.level.levelgen.synth.NoiseStack.Layer[]) null);
+        }
+        public float get(double x, double y, double z) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.synth.NoiseStack.Perlin#get");
+        }
+        public void addToVolume(DensityBuffer buffer, DensityVolume volume, double xzScale, double yScale, float amplitude) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.synth.NoiseStack.Perlin#addToVolume");
+        }
+    }
+    static class SmearedPerlin extends NoiseStack {
+        private SmearedPerlin(Layer[] layers) {
+            super((net.minecraft.world.level.levelgen.synth.NoiseStack.Layer[]) null);
+        }
+        public float get(double x, double y, double z) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.synth.NoiseStack.SmearedPerlin#get");
+        }
+        public void addToVolume(DensityBuffer buffer, DensityVolume volume, double xzScale, double yScale, float amplitude) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.synth.NoiseStack.SmearedPerlin#addToVolume");
+        }
+    }
 }

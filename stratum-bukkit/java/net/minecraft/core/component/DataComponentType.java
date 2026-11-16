@@ -124,6 +124,10 @@ public interface DataComponentType<T> {
             public String toString() {
                 return name == null ? "component@" + Integer.toHexString(System.identityHashCode(this)) : name;
             }
-        }
+                    private SimpleType(Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec, boolean ignoreSwapAnimation) {
+                
+                throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentType.Builder.SimpleType#<init>");
+            }
+}
     }
 }

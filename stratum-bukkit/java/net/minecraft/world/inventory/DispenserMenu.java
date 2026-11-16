@@ -54,4 +54,9 @@ public class DispenserMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    protected void add3x3GridSlots(Container container, int left, int top) {
+    }
+    public void removed(Player player) {
+        super.removed(player);
+    }
 }

@@ -76,5 +76,8 @@ public abstract class Property<T extends Comparable<T>> {
         public String valueName() {
             return property.getName(value);
         }
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.state.properties.Property.Value#toString");
+        }
+}
 }

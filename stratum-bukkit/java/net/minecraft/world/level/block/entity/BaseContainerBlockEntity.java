@@ -19,6 +19,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class BaseContainerBlockEntity extends BlockEntity implements Container, MenuProvider, Nameable {
     private static final String kItemsKey = "Items";
@@ -165,4 +171,27 @@ public abstract class BaseContainerBlockEntity extends BlockEntity implements Co
     }
 
     protected abstract AbstractContainerMenu createMenu(int containerId, Inventory inventory);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public boolean canOpen(Player player) {
+        return false;
+    }
+    public static void sendChestLockedNotifications(Vec3 pos, Player player, Component displayName) {
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+    }
+    protected LootContext getLootContext(ServerLevel level) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.BaseContainerBlockEntity#getLootContext");
+    }
 }

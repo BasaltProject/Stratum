@@ -4,8 +4,9 @@ package net.minecraft.world.inventory;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-public class ResultContainer implements Container {
+public class ResultContainer implements Container, RecipeCraftingHolder {
     private ItemStack itemStack = ItemStack.EMPTY;
 
     public ResultContainer() {}
@@ -54,5 +55,10 @@ public class ResultContainer implements Container {
     @Override
     public void clearContent() {
         itemStack = ItemStack.EMPTY;
+    }
+    public void setRecipeUsed(RecipeHolder<?> recipeUsed) {
+    }
+    public RecipeHolder<?> getRecipeUsed() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.ResultContainer#getRecipeUsed");
     }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.ActivityData;
 import net.minecraft.world.entity.schedule.Activity;
+import java.util.function.Predicate;
+import net.minecraft.world.item.ItemStack;
 
 /** Adapter: the native brain of this species owns the activity, the memories and every behavior. */
 public class FrogAi {
@@ -22,5 +24,8 @@ public class FrogAi {
     }
 
     protected static void initMemories(Frog body, RandomSource random) {
+    }
+    public static Predicate<ItemStack> getTemptations() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.frog.FrogAi#getTemptations");
     }
 }

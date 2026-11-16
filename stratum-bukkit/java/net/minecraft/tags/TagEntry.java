@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ExtraCodecs;
 
 public class TagEntry {
     private static final Codec<Reference> kReference = Codec.STRING.comapFlatMap(TagEntry::parseReference, Reference::text);
@@ -101,5 +102,9 @@ public class TagEntry {
         T element(Identifier key, boolean required);
 
         Collection<T> tag(Identifier key);
+    }
+    private TagEntry(ExtraCodecs.TagOrElementLocation elementOrTag, boolean required) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.tags.TagEntry#<init>");
     }
 }

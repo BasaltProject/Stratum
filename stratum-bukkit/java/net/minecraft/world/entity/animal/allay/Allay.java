@@ -202,4 +202,16 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
             return net.minecraft.tags.GameEventTags.ALLAY_CAN_LISTEN;
         }
     }
+    public boolean canPickUpLoot() {
+        return super.canPickUpLoot();
+    }
+    protected Vec3i getPickupReach() {
+        return super.getPickupReach();
+    }
+    public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+        return super.wantsToPickUp(level, itemStack);
+    }
+    public void updateDynamicGameEventListener(BiConsumer<DynamicGameEventListener<?>, ServerLevel> action) {
+        super.updateDynamicGameEventListener(action);
+    }
 }

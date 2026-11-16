@@ -81,5 +81,9 @@ public class PlaceholderLookupProvider implements HolderGetter.Provider {
         public <T> HolderGetter<T> castAsLookup() {
             return (HolderGetter<T>) this;
         }
-    }
+            private UniversalLookup() {
+            
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.PlaceholderLookupProvider.UniversalLookup#<init>");
+        }
+}
 }

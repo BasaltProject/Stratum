@@ -153,4 +153,7 @@ public class Silverfish extends Monster {
             }
         }
     }
+    public void setYBodyRot(float yBodyRot) {
+        super.setYBodyRot(yBodyRot);
+    }
 }

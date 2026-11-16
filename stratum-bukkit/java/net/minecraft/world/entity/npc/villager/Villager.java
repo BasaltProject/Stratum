@@ -258,4 +258,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
     private int numberOfRestocksToday() {
         return live() instanceof org.bukkit.entity.Villager api ? api.getRestocksToday() : 0;
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

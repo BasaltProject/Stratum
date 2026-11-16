@@ -191,4 +191,27 @@ public class BeehiveBlockEntity extends BlockEntity {
     public static int getHoneyLevel(BlockState blockState) {
         return blockState.getValue(net.minecraft.world.level.block.BeehiveBlock.HONEY_LEVEL);
     }
+    public void setChanged() {
+        super.setChanged();
+    }
+    public static void serverTick(Level level, BlockPos blockPos, BlockState state, BeehiveBlockEntity entity) {
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+    }
+    public void registerDebugValues(ServerLevel level, DebugValueSource.Registration registration) {
+        super.registerDebugValues(level, registration);
+    }
 }

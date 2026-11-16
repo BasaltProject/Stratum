@@ -13,6 +13,7 @@ import net.minecraft.world.level.levelgen.densityfunction.DensityBuffer;
 import net.minecraft.world.level.levelgen.densityfunction.DensitySampler;
 import net.minecraft.world.level.levelgen.densityfunction.DensityVolume;
 import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 /** Basalt worlds are generated in one pass, so a blender never has old chunks to blend with. */
 public class Blender {
@@ -131,5 +132,9 @@ public class Blender {
 
     public interface DistanceGetter {
         double getDistance(double x, double y, double z);
+    }
+    private Blender(Long2ObjectOpenHashMap<BlendingData> heightAndBiomeBlendingData, Long2ObjectOpenHashMap<BlendingData> densityBlendingData, CarvingMask. Filter carvingFilter) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.blending.Blender#<init>");
     }
 }

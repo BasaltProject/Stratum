@@ -117,4 +117,8 @@ public class CrudeIncrementalIntIdentityHashBiMap<K> implements IdMap<K> {
         clone.nextId = nextId;
         return clone;
     }
+    private CrudeIncrementalIntIdentityHashBiMap(K[] keys, int[] values, K[] byId, int nextId, int size) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap#<init>");
+    }
 }

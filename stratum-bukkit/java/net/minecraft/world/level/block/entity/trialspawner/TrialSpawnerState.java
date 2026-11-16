@@ -140,4 +140,15 @@ public enum TrialSpawnerState implements StringRepresentable {
     public String getSerializedName() {
         return name().toLowerCase(java.util.Locale.ROOT);
     }
+    static class LightLevel {
+    }
+    static class SpinningMob {
+    }
+    interface ParticleEmission {
+        ParticleEmission NONE = null;
+        ParticleEmission SMALL_FLAMES = null;
+        ParticleEmission FLAMES_AND_SMOKE = null;
+        ParticleEmission SMOKE_INSIDE_AND_TOP_FACE = null;
+        void emit(Level level, RandomSource random, BlockPos blockPos, boolean isOminous);
+    }
 }

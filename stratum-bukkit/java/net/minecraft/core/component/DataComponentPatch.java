@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 
 /** Raw serialized changes (kept as written by whoever decoded them) plus typed changes made through the API. */
 public final class DataComponentPatch {
@@ -258,5 +259,25 @@ public final class DataComponentPatch {
         public DataComponentPatch build() {
             return map.isEmpty() ? EMPTY : new DataComponentPatch(null, new LinkedHashMap<>(map));
         }
+    }
+    Reference2ObjectMap<DataComponentType<?>, Object> map = null;
+    DataComponentPatch(Reference2ObjectMap<DataComponentType<?>, Object> map) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentPatch#<init>");
+    }
+    static <T> T getFromPatchAndPrototype(Reference2ObjectMap<DataComponentType<?>, Object> patch, DataComponentGetter prototype, DataComponentType<? extends T> type) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentPatch#getFromPatchAndPrototype");
+    }
+    static String toString(Reference2ObjectMap<DataComponentType<?>, Object> map) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentPatch#toString");
+    }
+    static record PatchKey(DataComponentType<?> type, boolean removed) {
+        public static final Codec<PatchKey> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.core.component.DataComponentPatch.PatchKey.class, "CODEC");
+        public Codec<?> valueCodec() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentPatch.PatchKey#valueCodec");
+        }
+    }
+    interface CodecGetter {
+        <T> StreamCodec<? super RegistryFriendlyByteBuf, T> apply(DataComponentType<T> type);
     }
 }

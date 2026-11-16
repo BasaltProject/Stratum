@@ -237,7 +237,13 @@ public class Drowned extends Zombie implements RangedAttackMob {
         public DrownedAttackGoal(Drowned drowned, double speedModifier, boolean trackTarget) {
             super(drowned, speedModifier, trackTarget);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+        public boolean canContinueToUse() {
+            return false;
+        }
+}
     static class DrownedMoveControl<T extends Drowned> extends MoveControl<T> {
         public DrownedMoveControl(T drowned) {
             super(drowned);
@@ -267,5 +273,17 @@ public class Drowned extends Zombie implements RangedAttackMob {
                 super.tick();
             }
         }
+    }
+    public boolean isPushedByFluid() {
+        return super.isPushedByFluid();
+    }
+    public boolean isVisuallySwimming() {
+        return super.isVisuallySwimming();
+    }
+    public TagKey<Item> getPreferredWeaponType() {
+        return super.getPreferredWeaponType();
+    }
+    public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+        return super.wantsToPickUp(level, itemStack);
     }
 }

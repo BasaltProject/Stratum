@@ -65,4 +65,7 @@ public record AttributeType<Value>(Codec<Value> valueCodec, Map<AttributeModifie
     public int toInt(Value value) {
         return toInt.applyAsInt(value);
     }
+    public String toString() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.attribute.AttributeType#toString");
+    }
 }

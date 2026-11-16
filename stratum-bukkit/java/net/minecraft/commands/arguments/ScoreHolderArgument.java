@@ -17,6 +17,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.scores.ScoreHolder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 
 public class ScoreHolderArgument implements ArgumentType<ScoreHolderArgument.Result> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*");
@@ -135,4 +137,5 @@ public class ScoreHolderArgument implements ArgumentType<ScoreHolderArgument.Res
     public interface Result {
         Collection<ScoreHolder> getNames(CommandSourceStack sender, Supplier<Collection<ScoreHolder>> wildcard) throws CommandSyntaxException;
     }
+    public static final SuggestionProvider<CommandSourceStack> SUGGEST_SCORE_HOLDERS = null;
 }

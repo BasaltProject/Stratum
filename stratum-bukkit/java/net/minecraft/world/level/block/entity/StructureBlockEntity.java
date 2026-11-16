@@ -349,4 +349,10 @@ public class StructureBlockEntity extends BlockEntity implements BoundingBoxRend
     public static enum UpdateType {
         UPDATE_DATA, SAVE_AREA, LOAD_AREA, SCAN_AREA;
     }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return super.getUpdateTag(registries);
+    }
 }

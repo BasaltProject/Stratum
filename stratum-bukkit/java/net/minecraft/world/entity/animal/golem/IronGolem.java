@@ -118,4 +118,13 @@ public class IronGolem extends AbstractGolem implements NeutralMob {
         return new net.minecraft.world.phys.Vec3(0.0, 0.875F * getEyeHeight(), getBbWidth() * 0.4F);
     }
     private int offerFlowerTick;
+    public boolean canSpawnSprintParticle() {
+        return super.canSpawnSprintParticle();
+    }
+    public boolean canAttack(LivingEntity target) {
+        return super.canAttack(target);
+    }
+    public void die(DamageSource source) {
+        super.die(source);
+    }
 }

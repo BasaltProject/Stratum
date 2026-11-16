@@ -99,4 +99,8 @@ public class ActiveMetricsRecorder implements MetricsRecorder {
     public static void registerGlobalCompletionCallback(Consumer<Path> onFinished) {
         kGlobalCallbacks.add(onFinished);
     }
+    private ActiveMetricsRecorder(MetricsSamplerProvider metricsSamplerProvider, LongSupplier timeSource, Executor ioExecutor, MetricsPersister metricsPersister, Consumer<ProfileResults> onProfilingEnd, Consumer<Path> onReportFinished) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.profiling.metrics.profiling.ActiveMetricsRecorder#<init>");
+    }
 }

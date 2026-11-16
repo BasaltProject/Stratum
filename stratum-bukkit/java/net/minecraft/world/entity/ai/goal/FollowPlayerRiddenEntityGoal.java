@@ -87,4 +87,7 @@ public class FollowPlayerRiddenEntityGoal extends Goal {
         GO_TO_ENTITY,
         GO_IN_ENTITY_DIRECTION
     }
+    static enum FollowEntityGoal {
+        GO_TO_ENTITY, GO_IN_ENTITY_DIRECTION;
+    }
 }

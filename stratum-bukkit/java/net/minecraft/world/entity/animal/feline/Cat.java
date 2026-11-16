@@ -144,7 +144,13 @@ public class Cat extends TamableAnimal {
         public CatAvoidEntityGoal(Cat cat, Class<T> avoidClass, float maxDist, double walkSpeedModifier, double sprintSpeedModifier) {
             super(cat, avoidClass, maxDist, walkSpeedModifier, sprintSpeedModifier);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+        public boolean canContinueToUse() {
+            return false;
+        }
+}
     static class CatTemptGoal extends TemptGoal {
         public CatTemptGoal(Cat mob, double speedModifier, Predicate<ItemStack> items, boolean canScare) {
             super(mob, speedModifier, items, canScare);
@@ -152,7 +158,12 @@ public class Cat extends TamableAnimal {
         protected boolean canScare() {
             return false;
         }
-    }
+            public void tick() {
+        }
+        public boolean canUse() {
+            return false;
+        }
+}
     static class CatRelaxOnOwnerGoal extends Goal {
         private final Cat cat;
         private Player ownerPlayer;
@@ -251,4 +262,13 @@ public class Cat extends TamableAnimal {
         }
     }
 
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
+    public void setTame(boolean isTame, boolean includeSideEffects) {
+        super.setTame(isTame, includeSideEffects);
+    }
+    public boolean isSteppingCarefully() {
+        return super.isSteppingCarefully();
+    }
 }

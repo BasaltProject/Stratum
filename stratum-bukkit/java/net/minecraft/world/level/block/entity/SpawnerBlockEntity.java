@@ -12,8 +12,18 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Spawner;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class SpawnerBlockEntity extends BlockEntity {
+public class SpawnerBlockEntity extends BlockEntity implements Spawner {
     public SpawnerBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("mob_spawner"), worldPosition, blockState);
     }
@@ -47,5 +57,29 @@ public class SpawnerBlockEntity extends BlockEntity {
         tag.put("SpawnData", data);
         tag.remove("SpawnPotentials");
         load(tag);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public static void clientTick(Level level, BlockPos pos, BlockState state, SpawnerBlockEntity entity) {
+    }
+    public static void serverTick(Level level, BlockPos pos, BlockState state, SpawnerBlockEntity entity) {
+    }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return super.getUpdateTag(registries);
+    }
+    public boolean triggerEvent(int b0, int b1) {
+        return super.triggerEvent(b0, b1);
+    }
+    public void setEntityData(TypedEntityData<EntityType<?>> data, RandomSource random) {
+    }
+    public BaseSpawner getSpawner() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SpawnerBlockEntity#getSpawner");
     }
 }

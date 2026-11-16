@@ -5,6 +5,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import java.util.Optional;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
 
 public class BeaconMenu extends AbstractContainerMenu {
     private static final int PAYMENT_SLOT = 0;
@@ -60,5 +63,37 @@ public class BeaconMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+    public void removed(Player player) {
+        super.removed(player);
+    }
+    public void setData(int id, int value) {
+        super.setData(id, value);
+    }
+    public static int encodeEffect(Holder<MobEffect> mobEffect) {
+        return (int) 0;
+    }
+    public static Holder<MobEffect> decodeEffect(int id) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BeaconMenu#decodeEffect");
+    }
+    public Holder<MobEffect> getPrimaryEffect() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BeaconMenu#getPrimaryEffect");
+    }
+    public Holder<MobEffect> getSecondaryEffect() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BeaconMenu#getSecondaryEffect");
+    }
+    public boolean updateEffects(Optional<Holder<MobEffect>> primary, Optional<Holder<MobEffect>> secondary) {
+        return false;
+    }
+    static class PaymentSlot extends Slot {
+        public PaymentSlot(Container container, int slot, int x, int y) {
+            super((net.minecraft.world.Container) null, (int) 0, (int) 0, (int) 0);
+        }
+        public boolean mayPlace(ItemStack itemStack) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BeaconMenu.PaymentSlot#mayPlace");
+        }
+        public int getMaxStackSize() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.BeaconMenu.PaymentSlot#getMaxStackSize");
+        }
     }
 }

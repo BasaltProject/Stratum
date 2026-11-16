@@ -25,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
-public class DecoratedPotBlockEntity extends BlockEntity {
+public class DecoratedPotBlockEntity extends BlockEntity implements ContainerSingleItem.BlockContainerSingleItem, RandomizableContainer {
     public static final String TAG_SHERDS = "sherds";
     public static final String TAG_ITEM = "item";
     public static final int EVENT_POT_WOBBLES = 1;
@@ -73,5 +73,49 @@ public class DecoratedPotBlockEntity extends BlockEntity {
         private WobbleStyle(int duration) {
             this.duration = duration;
         }
+    }
+    protected ResourceKey<LootTable> lootTable;
+    protected long lootTableSeed;
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return super.getUpdateTag(registries);
+    }
+    public static ItemStackTemplate createDecoratedPotTemplate(PotDecorations decorations) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.DecoratedPotBlockEntity#createDecoratedPotTemplate");
+    }
+    public static ItemStack createDecoratedPotInstance(PotDecorations decorations) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.DecoratedPotBlockEntity#createDecoratedPotInstance");
+    }
+    public ResourceKey<LootTable> getLootTable() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.DecoratedPotBlockEntity#getLootTable");
+    }
+    public void setLootTable(ResourceKey<LootTable> lootTable) {
+    }
+    public long getLootTableSeed() {
+        return (long) 0;
+    }
+    public void setLootTableSeed(long lootTableSeed) {
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+    }
+    public ItemStack splitTheItem(int count) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.DecoratedPotBlockEntity#splitTheItem");
+    }
+    public void setTheItem(ItemStack itemStack) {
     }
 }

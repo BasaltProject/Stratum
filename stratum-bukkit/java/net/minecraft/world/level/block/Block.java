@@ -658,7 +658,13 @@ public class Block extends BlockBehaviour implements ItemLike {
         popExperience(level, pos, xpRange.sample(net.minecraft.util.RandomSource.create()));
     }
     static record ShapePairKey(VoxelShape first, VoxelShape second) {
-    }
+            public boolean equals(Object o) {
+            return false;
+        }
+        public int hashCode() {
+            return (int) 0;
+        }
+}
     public @interface UpdateFlags {
     }
 }

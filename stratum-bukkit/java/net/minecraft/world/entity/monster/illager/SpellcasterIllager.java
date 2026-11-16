@@ -170,4 +170,6 @@ public abstract class SpellcasterIllager extends AbstractIllager {
             return values()[Math.floorMod(id, values().length)];
         }
     }
+    public void tick() {
+    }
 }

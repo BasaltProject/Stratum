@@ -58,4 +58,10 @@ public class MinecartCommandBlock extends AbstractMinecart {
             return !isRemoved();
         }
     }
+    public BlockState getDefaultDisplayBlockState() {
+        return super.getDefaultDisplayBlockState();
+    }
+    public void activateMinecart(ServerLevel level, int xt, int yt, int zt, boolean state) {
+        super.activateMinecart(level, xt, yt, zt, state);
+    }
 }

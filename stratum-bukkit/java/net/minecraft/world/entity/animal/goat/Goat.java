@@ -137,4 +137,10 @@ public class Goat extends Animal {
     public static boolean checkGoatSpawnRules(EntityType<? extends Animal> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
         return level.getBlockState(pos.below()).is(net.minecraft.tags.BlockTags.GOATS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos);
     }
+    public float getAgeScale() {
+        return super.getAgeScale();
+    }
+    public void setYHeadRot(float yHeadRot) {
+        super.setYHeadRot(yHeadRot);
+    }
 }

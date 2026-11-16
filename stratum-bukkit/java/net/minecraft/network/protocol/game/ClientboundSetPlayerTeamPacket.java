@@ -144,4 +144,8 @@ public class ClientboundSetPlayerTeamPacket implements WirePacket, Packet<Client
     public Optional<Parameters> getParameters() {
         return parameters;
     }
+    private ClientboundSetPlayerTeamPacket(RegistryFriendlyByteBuf input) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket#<init>");
+    }
 }

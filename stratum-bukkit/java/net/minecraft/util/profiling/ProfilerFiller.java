@@ -84,5 +84,14 @@ public interface ProfilerFiller {
             first.incrementCounter(name, amount);
             second.incrementCounter(name, amount);
         }
-    }
+            public void addZoneText(String text) {
+            ProfilerFiller.super.addZoneText(text);
+        }
+        public void addZoneValue(long value) {
+            ProfilerFiller.super.addZoneValue(value);
+        }
+        public void setZoneColor(int color) {
+            ProfilerFiller.super.setZoneColor(color);
+        }
+}
 }

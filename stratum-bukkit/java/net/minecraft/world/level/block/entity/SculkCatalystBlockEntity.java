@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
-public class SculkCatalystBlockEntity extends BlockEntity {
+public class SculkCatalystBlockEntity extends BlockEntity implements GameEventListener.Provider<SculkCatalystBlockEntity.CatalystListener> {
     public void bloom(int charge) {
         org.bukkit.block.SculkCatalyst catalyst = bukkit(org.bukkit.block.SculkCatalyst.class);
         if (catalyst != null) {
@@ -57,5 +57,16 @@ public class SculkCatalystBlockEntity extends BlockEntity {
         public SculkSpreader getSculkSpreader() {
             return spreader;
         }
+    }
+    public static void serverTick(Level level, BlockPos pos, BlockState state, SculkCatalystBlockEntity entity) {
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public CatalystListener getListener() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkCatalystBlockEntity#getListener");
     }
 }

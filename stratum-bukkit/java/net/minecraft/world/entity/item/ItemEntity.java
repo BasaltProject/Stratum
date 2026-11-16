@@ -144,4 +144,28 @@ public class ItemEntity extends Entity implements TraceableEntity {
     public SoundSource getSoundSource() {
         return SoundSource.AMBIENT;
     }
+    public void restoreFrom(Entity oldEntity) {
+        super.restoreFrom(oldEntity);
+    }
+    public boolean hurtClient(DamageSource source) {
+        return super.hurtClient(source);
+    }
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage);
+    }
+    public void playerTouch(Player player) {
+        super.playerTouch(player);
+    }
+    public Entity teleport(TeleportTransition transition) {
+        return super.teleport(transition);
+    }
+    public float getVisualRotationYInDegrees() {
+        return super.getVisualRotationYInDegrees();
+    }
+    public SlotAccess getSlot(int slot) {
+        return super.getSlot(slot);
+    }
+    public MoveSimulationType getMoveSimulationType() {
+        return super.getMoveSimulationType();
+    }
 }

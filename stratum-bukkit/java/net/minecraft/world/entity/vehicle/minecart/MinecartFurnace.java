@@ -51,4 +51,10 @@ public class MinecartFurnace extends AbstractMinecart {
     }
     protected void setHasFuel(boolean fuel) {
         }
+    protected Vec3 applyNaturalSlowdown(Vec3 deltaMovement) {
+        return super.applyNaturalSlowdown(deltaMovement);
+    }
+    public BlockState getDefaultDisplayBlockState() {
+        return super.getDefaultDisplayBlockState();
+    }
 }

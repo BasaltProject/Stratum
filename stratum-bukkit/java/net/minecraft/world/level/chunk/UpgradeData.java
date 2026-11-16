@@ -41,4 +41,12 @@ public class UpgradeData {
             return;
         }
     }
+    private UpgradeData(LevelHeightAccessor levelHeightAccessor) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.chunk.UpgradeData#<init>");
+    }
+    private UpgradeData(UpgradeData source) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.chunk.UpgradeData#<init>");
+    }
 }

@@ -225,7 +225,10 @@ public class Axolotl extends Animal implements Bucketable {
         public static Variant getRareSpawnVariant(RandomSource random) {
             return Variant.BLUE;
         }
-    }
+            public String getName() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.axolotl.Axolotl.Variant#getName");
+        }
+}
     static class AxolotlMoveControl<T extends Axolotl> extends SmoothSwimmingMoveControl<T> {
         public AxolotlMoveControl(T axolotl) {
             super(axolotl, 85, 10, 0.1F, 0.5F, false);
@@ -251,5 +254,20 @@ public class Axolotl extends Animal implements Bucketable {
     }
     public static enum AxolotlAnimationState {
         PLAYING_DEAD, IN_WATER, ON_GROUND, IN_AIR;
+    }
+    public int getMaxAirSupply() {
+        return super.getMaxAirSupply();
+    }
+    public boolean isPushedByFluid() {
+        return super.isPushedByFluid();
+    }
+    public boolean canBeSeenAsEnemy() {
+        return super.canBeSeenAsEnemy();
+    }
+    public boolean requiresCustomPersistence() {
+        return super.requiresCustomPersistence();
+    }
+    public LivingEntity getTarget() {
+        return super.getTarget();
     }
 }

@@ -13,6 +13,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public abstract class BaseEntityBlock extends Block implements EntityBlock {
     protected BaseEntityBlock(int index) {
@@ -70,5 +74,17 @@ public abstract class BaseEntityBlock extends Block implements EntityBlock {
         }
         fill /= inventory.getSize();
         return (int) Math.floor(fill * 14.0F) + (fill > 0.0F ? 1 : 0);
+    }
+    protected BaseEntityBlock(BlockBehaviour.Properties properties) {
+        super((int) 0);
+    }
+    protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int b0, int b1) {
+        return super.triggerEvent(state, level, pos, b0, b1);
+    }
+    protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return super.getMenuProvider(state, level, pos);
+    }
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, BlockEntityType<E> expected, BlockEntityTicker<? super E> ticker) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.BaseEntityBlock#createTickerHelper");
     }
 }

@@ -14,6 +14,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.basaltmc.stratum.bukkit.facade.ValueIo;
+import java.util.List;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.network.FilteredText;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 public class SignBlockEntity extends BlockEntity {
     private static final String kWaxedKey = "is_waxed";
@@ -114,5 +122,30 @@ public class SignBlockEntity extends BlockEntity {
 
     public net.minecraft.sounds.SoundEvent getSignInteractionFailedSoundEvent() {
         return net.minecraft.sounds.SoundEvents.WAXED_SIGN_INTERACT_FAIL;
+    }
+    public SignTextSlot getSlotPlayerIsFacing(Player player) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SignBlockEntity#getSlotPlayerIsFacing");
+    }
+    public void updateSignText(Player player, SignTextSlot slot, List<FilteredText> lines) {
+    }
+    public boolean executeClickCommandsIfPresent(ServerLevel level, Player player, BlockPos pos, SignTextSlot slot) {
+        return false;
+    }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public boolean playerIsTooFarAwayToEdit(UUID player) {
+        return false;
+    }
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, SignBlockEntity signBlockEntity) {
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
     }
 }

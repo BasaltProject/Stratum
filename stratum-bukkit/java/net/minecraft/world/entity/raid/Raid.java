@@ -216,4 +216,8 @@ public class Raid {
     static enum RaiderType {
         VINDICATOR, EVOKER, PILLAGER, WITCH, RAVAGER;
     }
+    private Raid(boolean started, boolean active, long ticksActive, int raidOmenLevel, int groupsSpawned, int raidCooldownTicks, int postRaidTicks, float totalHealth, int numGroups, RaidStatus status, BlockPos center, Set<UUID> heroesOfTheVillage) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.raid.Raid#<init>");
+    }
 }

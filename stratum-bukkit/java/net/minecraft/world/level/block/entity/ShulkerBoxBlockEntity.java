@@ -9,8 +9,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.ContainerUser;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 
-public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements net.minecraft.world.WorldlyContainer {
+public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer {
     public static final int COLUMNS = 9;
     public static final int ROWS = 3;
     public static final int CONTAINER_SIZE = 27;
@@ -91,5 +101,33 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
 
     public static enum AnimationStatus {
         CLOSED, OPENING, OPENED, CLOSING;
+    }
+    public ShulkerBoxBlockEntity(DyeColor color, BlockPos worldPosition, BlockState blockState) {
+        super((net.minecraft.world.level.block.entity.BlockEntityType) null, (net.minecraft.core.BlockPos) null, (net.minecraft.world.level.block.state.BlockState) null);
+    }
+    public static void tick(Level level, BlockPos pos, BlockState state, ShulkerBoxBlockEntity entity) {
+    }
+    public AABB getBoundingBox(BlockState state) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity#getBoundingBox");
+    }
+    public boolean triggerEvent(int b0, int b1) {
+        return super.triggerEvent(b0, b1);
+    }
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public void loadFromTag(ValueInput input) {
+    }
+    protected NonNullList<ItemStack> getItems() {
+        return super.getItems();
+    }
+    protected void setItems(NonNullList<ItemStack> items) {
+        super.setItems(items);
     }
 }

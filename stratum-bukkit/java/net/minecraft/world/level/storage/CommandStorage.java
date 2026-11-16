@@ -16,6 +16,10 @@ import net.minecraft.resources.Identifier;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import com.mojang.serialization.Codec;
+import java.util.Map;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 /** Command storage kept in the persistent data of the main world, one NBT blob per storage id. */
 public class CommandStorage {
@@ -67,5 +71,26 @@ public class CommandStorage {
             }
         }
         return out.stream();
+    }
+    static class Container extends SavedData {
+        public static final Codec<Container> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.level.storage.CommandStorage.Container.class, "CODEC");
+        private Container(Map<String, CompoundTag> storage) {
+            
+        }
+        private Container() {
+            
+        }
+        public static SavedDataType<Container> type(String namespace) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.CommandStorage.Container#type");
+        }
+        public CompoundTag get(String id) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.CommandStorage.Container#get");
+        }
+        public void put(String id, CompoundTag contents) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.CommandStorage.Container#put");
+        }
+        public Stream<Identifier> getKeys(String namespace) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.CommandStorage.Container#getKeys");
+        }
     }
 }

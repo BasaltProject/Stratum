@@ -31,4 +31,7 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
     protected AbstractContainerMenu createFurnaceMenu(int containerId, Inventory inventory) {
         return new net.minecraft.world.inventory.BlastFurnaceMenu(containerId, inventory, this, dataAccess);
     }
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return super.createMenu(containerId, inventory);
+    }
 }

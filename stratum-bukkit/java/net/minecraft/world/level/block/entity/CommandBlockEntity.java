@@ -84,4 +84,24 @@ public class CommandBlockEntity extends BlockEntity {
         TileNbt.update(this, tag -> tag.putBoolean("conditionMet", result));
         return result;
     }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    public BaseCommandBlock getCommandBlock() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.CommandBlockEntity#getCommandBlock");
+    }
+    public void onModeSwitch() {
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+    }
 }

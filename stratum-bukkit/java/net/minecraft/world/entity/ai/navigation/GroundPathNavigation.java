@@ -7,6 +7,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathFinder;
 
 public class GroundPathNavigation extends PathNavigation {
     private boolean avoidSun;
@@ -78,4 +80,9 @@ public class GroundPathNavigation extends PathNavigation {
     public void setCanPathToTargetsBelowSurface(boolean canPathToTargetsBelowSurface) {
         this.canPathToTargetsBelowSurface = canPathToTargetsBelowSurface;
     }
+    protected boolean canUpdatePath() {
+        return false;
+    }
+    protected void trimPath() {
+        }
 }

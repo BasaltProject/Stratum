@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
 
-public class SculkShriekerBlockEntity extends BlockEntity {
+public class SculkShriekerBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem {
     public SculkShriekerBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(BlockEntityType.named("sculk_shrieker"), worldPosition, blockState);
     }
@@ -76,5 +76,28 @@ public class SculkShriekerBlockEntity extends BlockEntity {
         public boolean requiresAdjacentChunksToBeTicking() {
             return true;
         }
+    }
+    public VibrationSystem.Data getVibrationData() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkShriekerBlockEntity#getVibrationData");
+    }
+    public VibrationSystem.User getVibrationUser() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkShriekerBlockEntity#getVibrationUser");
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public static ServerPlayer tryGetPlayer(Entity sourceEntity) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkShriekerBlockEntity#tryGetPlayer");
+    }
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+    }
+    public void tryRespond(ServerLevel level) {
+    }
+    public VibrationSystem.Listener getListener() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.entity.SculkShriekerBlockEntity#getListener");
     }
 }

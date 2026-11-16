@@ -15,6 +15,10 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.SectionPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.ItemStack;
 
 public class BehaviorUtils {
     private BehaviorUtils() {
@@ -109,5 +113,8 @@ public class BehaviorUtils {
         int centerDistance = level.sectionsToVillage(center);
         return net.minecraft.core.SectionPos.cube(center, radius).filter(s -> level.sectionsToVillage(s) < centerDistance)
             .min(java.util.Comparator.comparingInt(level::sectionsToVillage)).orElse(center);
+    }
+    public static Vec3 getRandomSwimmablePos(PathfinderMob body, int maxHorizontalDistance, int maxVerticalDistance) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.behavior.BehaviorUtils#getRandomSwimmablePos");
     }
 }

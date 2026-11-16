@@ -11,6 +11,12 @@ import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public abstract class RandomizableContainerBlockEntity extends BaseContainerBlockEntity implements RandomizableContainer {
     protected ResourceKey<LootTable> lootTable;
@@ -63,5 +69,35 @@ public abstract class RandomizableContainerBlockEntity extends BaseContainerBloc
     @Override
     protected void setItems(NonNullList<ItemStack> items) {
         writeItems(items);
+    }
+    public boolean isEmpty() {
+        return super.isEmpty();
+    }
+    public ItemStack getItem(int slot) {
+        return super.getItem(slot);
+    }
+    public ItemStack removeItem(int slot, int count) {
+        return super.removeItem(slot, count);
+    }
+    public ItemStack removeItemNoUpdate(int slot) {
+        return super.removeItemNoUpdate(slot);
+    }
+    public void setItem(int slot, ItemStack itemStack) {
+        super.setItem(slot, itemStack);
+    }
+    public boolean canOpen(Player player) {
+        return super.canOpen(player);
+    }
+    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return super.createMenu(containerId, inventory, player);
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
     }
 }

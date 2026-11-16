@@ -224,5 +224,8 @@ public class RegistryDataLoader {
     }
 
     interface LoaderFactory {
-    }
+            default <T> RegistryLoadTask<T> create(RegistryData<T> data, Map<ResourceKey<?>, Exception> loadingErrors) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.resources.RegistryDataLoader.LoaderFactory#create");
+        }
+}
 }

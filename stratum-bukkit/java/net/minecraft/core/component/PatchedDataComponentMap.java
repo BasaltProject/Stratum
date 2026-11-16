@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 
 public final class PatchedDataComponentMap implements DataComponentMap {
     private final DataComponentMap prototype;
@@ -134,5 +135,9 @@ public final class PatchedDataComponentMap implements DataComponentMap {
     @Override
     public String toString() {
         return "{" + keySet() + "}";
+    }
+    private PatchedDataComponentMap(DataComponentMap prototype, Reference2ObjectMap<DataComponentType<?>, Object> patch, boolean copyOnWrite) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.PatchedDataComponentMap#<init>");
     }
 }

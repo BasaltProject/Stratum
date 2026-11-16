@@ -638,7 +638,10 @@ public class StrongholdPieces {
             Direction facing = getOrientation();
             return facing == Direction.NORTH || facing == Direction.EAST;
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int DEPTH = 0;
+}
 
     public static class LeftTurn extends Turn {
         public LeftTurn(int genDepth, RandomSource random, BoundingBox boundingBox, Direction direction) {
@@ -801,7 +804,10 @@ public class StrongholdPieces {
                 }
             }
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int DEPTH = 0;
+}
 
     public static class PrisonHall extends StrongholdPiece {
         public PrisonHall(int genDepth, RandomSource random, BoundingBox boundingBox, Direction direction) {
@@ -852,7 +858,10 @@ public class StrongholdPieces {
             placeBlock(level, lower, 4, 1, 8, chunkBB);
             placeBlock(level, upper, 4, 2, 8, chunkBB);
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int DEPTH = 0;
+}
 
     public static class Library extends StrongholdPiece {
         private boolean isTall;
@@ -982,7 +991,11 @@ public class StrongholdPieces {
                 placeBlock(level, lamp, c[0], c[1], c[2], chunkBB);
             }
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int TALL_HEIGHT = 11;
+        protected static final int DEPTH = 0;
+}
 
     public static class FiveCrossing extends StrongholdPiece {
         private boolean leftLow;
@@ -1080,7 +1093,10 @@ public class StrongholdPieces {
             generateBox(level, chunkBB, 5, 5, 7, 7, 5, 9, doubleSlab, doubleSlab, false);
             placeBlock(level, torch(Direction.SOUTH), 6, 5, 6, chunkBB);
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int DEPTH = 0;
+}
 
     public static class PortalRoom extends StrongholdPiece {
         private boolean hasPlacedSpawner;
@@ -1180,7 +1196,10 @@ public class StrongholdPieces {
                 }
             }
         }
-    }
+            protected static final int WIDTH = 0;
+        protected static final int HEIGHT = 0;
+        protected static final int DEPTH = 0;
+}
 
     static class SmoothStoneSelector extends StructurePiece.BlockSelector {
         public void next(RandomSource random, int worldX, int worldY, int worldZ, boolean isEdge) {

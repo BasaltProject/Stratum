@@ -269,7 +269,14 @@ public class Panda extends Animal {
         public boolean canUse() {
             return panda.canPerformAction() && super.canUse();
         }
-    }
+            public void setTarget(LivingEntity entity) {
+        }
+        public boolean canContinueToUse() {
+            return false;
+        }
+        public void tick() {
+        }
+}
     static class PandaRollGoal extends Goal {
         private final Panda panda;
         public PandaRollGoal(Panda panda) {
@@ -392,10 +399,16 @@ public class Panda extends Animal {
                 super.alertOther(other, hurtByMob);
             }
         }
-    }
+            public boolean canContinueToUse() {
+            return false;
+        }
+}
     static class PandaPanicGoal extends PanicGoal {
         public PandaPanicGoal(Panda mob, double speedModifier) {
             super(mob, speedModifier);
         }
-    }
+            public boolean canContinueToUse() {
+            return false;
+        }
+}
 }

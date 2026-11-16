@@ -62,4 +62,10 @@ public class Activity {
     public String toString() {
         return name;
     }
+    public boolean equals(Object o) {
+        return false;
+    }
+    public int hashCode() {
+        return (int) 0;
+    }
 }

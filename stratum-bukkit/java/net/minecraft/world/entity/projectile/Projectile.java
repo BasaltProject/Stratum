@@ -200,4 +200,13 @@ public abstract class Projectile extends Entity implements TraceableEntity {
     public interface ProjectileFactory<T extends Projectile> {
         T create(ServerLevel level, LivingEntity entity, ItemStack itemStack);
     }
+    public void onAboveBubbleColumn(boolean dragDown, BlockPos pos) {
+        super.onAboveBubbleColumn(dragDown, pos);
+    }
+    public void onInsideBubbleColumn(boolean dragDown) {
+        super.onInsideBubbleColumn(dragDown);
+    }
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage);
+    }
 }

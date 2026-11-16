@@ -12,8 +12,22 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import java.util.List;
+import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.RecipeCraftingHolder;
+import net.minecraft.world.inventory.StackedContentsCompatible;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
-public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntity implements net.minecraft.world.WorldlyContainer {
+public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, StackedContentsCompatible, RecipeCraftingHolder {
     protected static final int SLOT_INPUT = 0;
     protected static final int SLOT_FUEL = 1;
     protected static final int SLOT_RESULT = 2;
@@ -177,5 +191,31 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
         return createFurnaceMenu(containerId, inventory);
+    }
+    protected NonNullList<ItemStack> items;
+    protected AbstractFurnaceBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, RecipeType<? extends AbstractCookingRecipe> recipeType) {
+        super((net.minecraft.world.level.block.entity.BlockEntityType) null, (net.minecraft.core.BlockPos) null, (net.minecraft.world.level.block.state.BlockState) null);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public static void serverTick(ServerLevel level, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity entity) {
+    }
+    protected int getBurnDuration(ServerLevel level, ItemStack fuelItem) {
+        return (int) 0;
+    }
+    protected float getSpeedMultiplier(ServerLevel level, ItemStack fuelItem) {
+        return (float) 0;
+    }
+    public void setItem(int slot, ItemStack itemStack) {
+        super.setItem(slot, itemStack);
+    }
+    public void fillStackedContents(StackedItemContents contents) {
+    }
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
     }
 }

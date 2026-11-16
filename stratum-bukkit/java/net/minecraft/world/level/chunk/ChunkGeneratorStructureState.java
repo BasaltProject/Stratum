@@ -71,4 +71,8 @@ public class ChunkGeneratorStructureState {
     public long getLevelSeed() {
         return levelSeed;
     }
+    private ChunkGeneratorStructureState(RandomState randomState, BiomeSource biomeSource, long levelSeed, ChunkPos origin, long concentricRingsSeed, List<Holder<StructureSet>> possibleStructureSets) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.chunk.ChunkGeneratorStructureState#<init>");
+    }
 }

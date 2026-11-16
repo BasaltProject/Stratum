@@ -10,6 +10,7 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.chunk.ChunkAccess;
 
 public class PathNavigationRegion implements CollisionGetter {
     protected final Level level;
@@ -49,4 +50,8 @@ public class PathNavigationRegion implements CollisionGetter {
     public int getHeight() {
         return level.getHeight();
     }
+    protected int centerX = 0;
+    protected int centerZ = 0;
+    protected ChunkAccess[][] chunks = null;
+    protected boolean allEmpty;
 }

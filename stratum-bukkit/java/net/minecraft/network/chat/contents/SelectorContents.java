@@ -31,4 +31,7 @@ public record SelectorContents(CompilableString<EntitySelector> selector, Option
     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> output) {
         return output.accept(selector.source());
     }
+    public String toString() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.network.chat.contents.SelectorContents#toString");
+    }
 }

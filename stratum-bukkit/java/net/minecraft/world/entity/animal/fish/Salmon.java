@@ -86,4 +86,7 @@ public class Salmon extends AbstractSchoolingFish {
             return name().toLowerCase(java.util.Locale.ROOT);
         }
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

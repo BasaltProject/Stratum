@@ -142,4 +142,8 @@ public class MapItemSavedData extends SavedData {
     }
     static record MapDecorationLocation(Holder<MapDecorationType> type, byte x, byte y, byte rot) {
     }
+    private MapItemSavedData(ResourceKey<Level> dimension, int centerX, int centerZ, byte scale, ByteBuffer colors, boolean trackingPosition, boolean unlimitedTracking, boolean locked, List<MapBanner> banners, List<MapFrame> frames) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.saveddata.maps.MapItemSavedData#<init>");
+    }
 }

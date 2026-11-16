@@ -338,6 +338,10 @@ public final class NmsManifest {
     private void runComplete(Path manifestDir, Path javaRoot, Path scratch) throws IOException {
         Map<CompilationUnitTree, String> sources = new HashMap<>();
         List<CompilationUnitTree> units = loadManifest(manifestDir, scratch, sources);
+        handRoot = javaRoot;
+        loadBlockHooks(javaRoot);
+        Set<String> excluded = Files.exists(manifestDir.resolve("exclude.list"))
+            ? new HashSet<>(Files.readAllLines(manifestDir.resolve("exclude.list"))) : Set.of();
         int touched = 0;
         int added = 0;
         for (CompilationUnitTree cu : units) {
@@ -350,7 +354,7 @@ public final class NmsManifest {
                 }
                 String fqn = pkg.isEmpty() ? ct.getSimpleName().toString() : pkg + "." + ct.getSimpleName();
                 Path file = javaRoot.resolve(fqn.replace('.', '/') + ".java");
-                if (!Files.exists(file)) {
+                if (!Files.exists(file) || excluded.contains(fqn)) {
                     continue;
                 }
                 NmsManifest h = new NmsManifest();
@@ -428,6 +432,27 @@ public final class NmsManifest {
 
     private void completeClass(ClassTree ct, ClassTree hand, NmsManifest h, String fqn, String pkg, String ind,
         List<Object[]> inserts) {
+        String savedSuper = handSuper;
+        boolean savedFinals = handFinals;
+        handSuper = handSuperCall(hand, h);
+        ClassTree savedTree = handTree;
+        NmsManifest savedOwner = handOwner;
+        handTree = hand;
+        handOwner = h;
+        handFinals = hand.getMembers().stream().anyMatch(x -> x instanceof VariableTree v
+            && has(v.getModifiers(), Modifier.FINAL) && !has(v.getModifiers(), Modifier.STATIC) && v.getInitializer() == null);
+        try {
+            completeClass0(ct, hand, h, fqn, pkg, ind, inserts);
+        } finally {
+            handSuper = savedSuper;
+            handFinals = savedFinals;
+            handTree = savedTree;
+            handOwner = savedOwner;
+        }
+    }
+
+    private void completeClass0(ClassTree ct, ClassTree hand, NmsManifest h, String fqn, String pkg, String ind,
+        List<Object[]> inserts) {
         ClassInfo info = index.get(fqn);
         Tree.Kind kind = ct.getKind();
         boolean isInterface = kind == Tree.Kind.INTERFACE || kind == Tree.Kind.ANNOTATION_TYPE;
@@ -477,7 +502,11 @@ public final class NmsManifest {
                 }
                 boolean fin = isInterface || has(v.getModifiers(), Modifier.FINAL);
                 String type = text(v.getType());
-                sb.append(in).append(mods(v.getModifiers(), false)).append(type).append(' ').append(v.getName())
+                String fieldMods = mods(v.getModifiers(), false);
+                if (!isInterface && !has(v.getModifiers(), Modifier.STATIC)) {
+                    fieldMods = fieldMods.replaceAll("\\bfinal ", "");
+                }
+                sb.append(in).append(fieldMods).append(type).append(' ').append(v.getName())
                     .append(fin ? " = " + initOf(v, type, typeVars, fqn, isInterface || has(v.getModifiers(), Modifier.STATIC),
                         kind == Tree.Kind.ENUM) : "").append(";\n");
             } else if (mem instanceof MethodTree mt) {
@@ -655,6 +684,12 @@ public final class NmsManifest {
     private final Map<String, ClassInfo> index = new HashMap<>();
     private boolean forceConcrete;
     private final Set<String> blockHooks = new HashSet<>();
+    private final Map<String, List<String[]>> methodIndex = new HashMap<>();
+    private Path handRoot;
+    private String handSuper;
+    private boolean handFinals;
+    private ClassTree handTree;
+    private NmsManifest handOwner;
 
     private void loadBlockHooks(Path root) throws IOException {
         Pattern method = Pattern.compile("^    (?:protected|public)(?: final)? (?!static)([\\w<>\\[\\], .?]+?) (\\w+)\\((.*)\\) (?:throws [\\w, ]+)?\\{$");
@@ -861,6 +896,18 @@ public final class NmsManifest {
                 indexClass(inner, pkg, fqn + "." + inner.getSimpleName(), imports);
             }
         }
+        boolean ifc = ct.getKind() == Tree.Kind.INTERFACE;
+        List<String[]> methods = new ArrayList<>();
+        for (Tree mem : ct.getMembers()) {
+            if (mem instanceof MethodTree mt && mt.getReturnType() != null) {
+                ModifiersTree mods = mt.getModifiers();
+                boolean abs = has(mods, Modifier.ABSTRACT) || ifc && !has(mods, Modifier.DEFAULT) && !has(mods, Modifier.STATIC);
+                methods.add(new String[] {mt.getName().toString(), String.join(",", erasedParams(mt)),
+                    abs ? "A" : has(mods, Modifier.STATIC) ? "S" : isPrivate(mods) ? "P" : "C",
+                    erasedType(text(mt.getReturnType()), mt.getTypeParameters().stream().map(tp -> tp.getName().toString()).toList())});
+            }
+        }
+        methodIndex.put(fqn, methods);
         boolean explicit = ct.getMembers().stream().anyMatch(x -> x instanceof MethodTree mt && mt.getReturnType() == null);
         if (!explicit) {
             ctors.add("");
@@ -1065,7 +1112,7 @@ public final class NmsManifest {
         for (Tree t : hand.getImplementsClause()) {
             haveImpl.add(h.text(t));
         }
-        List<String> newExt = merge(haveExt, wantExt);
+        List<String> newExt = !iface && !haveExt.isEmpty() ? haveExt : merge(haveExt, wantExt);
         List<String> newImpl = merge(haveImpl, wantImpl);
         String wantTp = ct.getTypeParameters().isEmpty() ? "" : "<" + ct.getTypeParameters().stream()
             .map(this::text).collect(Collectors.joining(", ")) + ">";
@@ -1421,6 +1468,31 @@ public final class NmsManifest {
             sb.append(in).append(header).append(" {\n").append(in).append("    return java.util.Set.of();\n").append(in).append("}\n");
             return;
         }
+        if (!ctor && forceConcrete && name.equals("getUpdatePacket") && mt.getParameters().isEmpty()
+            && text(mt.getReturnType()).equals("ClientboundBlockEntityDataPacket")) {
+            inertNote("block-entity-packet", fqn, name);
+            sb.append(in).append(header).append(" {\n").append(in)
+                .append("    return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);\n")
+                .append(in).append("}\n");
+            return;
+        }
+        if (!ctor && forceConcrete && !isInterface && !isEnum && !isRecord && !has(mt.getModifiers(), Modifier.STATIC)
+            && (inheritsConcrete(info, mt) || handTree != null && handChainHas(handTree, handOwner, mt) != null)) {
+            String ret = text(mt.getReturnType());
+            String qual = handTree != null ? handChainHas(handTree, handOwner, mt) : null;
+            qual = qual == null ? "super" : qual;
+            String args = mt.getParameters().stream().map(x -> x.getName().toString()).collect(Collectors.joining(", "));
+            inertNote("inherited-super", fqn, name);
+            sb.append(in).append(header).append(" {\n").append(in).append("    ").append(ret.equals("void") ? "" : "return ")
+                .append(qual).append(".").append(name).append("(").append(args).append(");\n").append(in).append("}\n");
+            return;
+        }
+        if (!ctor && forceConcrete && defaultBody(text(mt.getReturnType())) != null) {
+            String body = defaultBody(text(mt.getReturnType()));
+            inertNote("complete-default", fqn, name);
+            sb.append(in).append(header).append(" {\n").append(body.isEmpty() ? "" : in + "    " + body + "\n").append(in).append("}\n");
+            return;
+        }
         if (!ctor) {
             sb.append(in).append(header).append(" {\n").append(in)
                 .append("    throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported(\"").append(where).append("\");\n")
@@ -1439,6 +1511,9 @@ public final class NmsManifest {
             call = sigMatch(declared, wanted) ? "" : "this(" + recordDefaults(owner, typeVars) + "); ";
         } else if (!isEnum) {
             call = superCall(info);
+            if (forceConcrete && handSuper != null) {
+                call = handSuper;
+            }
             String pass = isEntityLike(info) ? passThroughSuper(info, mt) : null;
             if (pass != null) {
                 sb.append(in).append(header).append(" {\n").append(in).append("    ").append(pass).append("\n").append(in)
@@ -1447,13 +1522,287 @@ public final class NmsManifest {
             }
         }
         if (ctor && !isRecord && !isEnum) {
-            sb.append(in).append(header).append(" {\n").append(in).append("    ").append(call.trim()).append("\n").append(in)
-                .append("}\n");
+            String tail = forceConcrete && (isPrivate(mt.getModifiers()) || handFinals) ? "\n" + in
+                + "    throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported(\"" + where + "\");" : "";
+            sb.append(in).append(header).append(" {\n").append(in).append("    ").append(call.trim()).append(tail)
+                .append("\n").append(in).append("}\n");
             return;
         }
         sb.append(in).append(header).append(" {\n").append(in).append("    ").append(call).append("throw ")
             .append("org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported(\"").append(where).append("\");\n")
             .append(in).append("}\n");
+    }
+
+
+    private boolean inheritsConcrete(ClassInfo info, MethodTree mt) {
+        List<String> sig = erasedParams(mt);
+        ClassInfo cur = info;
+        for (int i = 0; i < 32 && cur != null && cur.superName != null; i++) {
+            ClassInfo sup = resolve(cur.superName, cur);
+            if (sup == null) {
+                return false;
+            }
+            for (String[] m : methodIndex.getOrDefault(sup.fqn, List.of())) {
+                if (m[0].equals(mt.getName().toString()) && sigMatch(Arrays.asList(m[1].isEmpty() ? new String[0] : m[1].split(",")), sig)) {
+                    if (m[2].equals("C")) {
+                        return m[3].equals(erasedType(text(mt.getReturnType()), mt.getTypeParameters().stream()
+                            .map(tp -> tp.getName().toString()).toList()));
+                    }
+                    if (m[2].equals("A")) {
+                        return false;
+                    }
+                }
+            }
+            cur = sup;
+        }
+        return false;
+    }
+
+    private static final Set<String> kNumeric = Set.of("int", "long", "short", "byte", "float", "double", "char");
+
+    private String defaultBody(String ret) {
+        if (ret.equals("void")) {
+            return "";
+        }
+        if (ret.equals("boolean")) {
+            return "return false;";
+        }
+        if (kNumeric.contains(ret)) {
+            return "return (" + ret + ") 0;";
+        }
+        if (ret.startsWith("Optional<") || ret.startsWith("java.util.Optional<")) {
+            return "return java.util.Optional.empty();";
+        }
+        if (ret.startsWith("List<") || ret.startsWith("java.util.List<")) {
+            return "return java.util.List.of();";
+        }
+        return null;
+    }
+
+    private Path handTypeFile(Tree typeTree, NmsManifest h) {
+        if (typeTree == null) {
+            return null;
+        }
+        String sup = h.text(typeTree).replaceAll("<.*", "").trim();
+        String simple = sup.substring(sup.lastIndexOf('.') + 1);
+        List<String> candidates = new ArrayList<>();
+        if (sup.contains(".")) {
+            candidates.add(sup);
+        }
+        for (ImportTree imp : h.unit.getImports()) {
+            String q = imp.getQualifiedIdentifier().toString();
+            if (q.endsWith("." + simple)) {
+                candidates.add(q);
+            }
+        }
+        String pkg = h.unit.getPackageName() == null ? "" : h.unit.getPackageName().toString();
+        candidates.add(pkg + "." + simple);
+        for (String c : candidates) {
+            Path f = handRoot.resolve(c.replace('.', '/') + ".java");
+            if (Files.exists(f)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    private boolean declaresConcrete(ClassTree sc, String[] want, boolean ifaceOnlyDefault) {
+        String name = want[0];
+        List<String> sig = Arrays.asList(want[1].isEmpty() ? new String[0] : want[1].split(","));
+        String ret = want[2];
+        for (Tree m : sc.getMembers()) {
+            if (m instanceof MethodTree hm && hm.getReturnType() != null && hm.getName().contentEquals(name)
+                && sigMatch(erasedParams(hm), sig)) {
+                ModifiersTree mods = hm.getModifiers();
+                boolean ok = !has(mods, Modifier.ABSTRACT) && !has(mods, Modifier.STATIC) && !isPrivate(mods);
+                if (ifaceOnlyDefault) {
+                    ok &= has(mods, Modifier.DEFAULT);
+                }
+                if (ok && erasedType(text(hm.getReturnType()), hm.getTypeParameters().stream().map(tp -> tp.getName().toString()).toList()).equals(ret)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String handChainHas(ClassTree hand, NmsManifest h, MethodTree mt0) {
+        String[] mt = {mt0.getName().toString(), String.join(",", erasedParams(mt0)),
+            erasedType(text(mt0.getReturnType()), mt0.getTypeParameters().stream().map(tp -> tp.getName().toString()).toList())};
+        ClassTree cur = hand;
+        NmsManifest owner = h;
+        try {
+            for (int i = 0; i < 16 && cur != null; i++) {
+                Path f = handTypeFile(cur.getExtendsClause(), owner);
+                if (f == null) {
+                    break;
+                }
+                NmsManifest p = new NmsManifest();
+                CompilationUnitTree cu = p.parse(List.of(f)).get(0);
+                p.unit = cu;
+                p.source = cu.getSourceFile().getCharContent(true).toString();
+                String simple = f.getFileName().toString().replace(".java", "");
+                ClassTree sc = null;
+                for (Tree t : cu.getTypeDecls()) {
+                    if (t instanceof ClassTree c && c.getSimpleName().contentEquals(simple)) {
+                        sc = c;
+                    }
+                }
+                if (sc == null) {
+                    break;
+                }
+                if (p.declaresConcrete(sc, mt, false)) {
+                    return "super";
+                }
+                for (Tree it : sc.getImplementsClause()) {
+                    Path sf = handTypeFile(it, p);
+                    if (sf != null && handDecl(sf, it, p, mt, true)) {
+                        return "super";
+                    }
+                }
+                cur = sc;
+                owner = p;
+            }
+            for (Tree it : hand.getImplementsClause()) {
+                Path f = handTypeFile(it, h);
+                if (f != null && handDecl(f, it, h, mt, true)) {
+                    return h.text(it).replaceAll("<.*", "").trim() + ".super";
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
+    }
+
+    private boolean handDecl(Path f, Tree typeTree, NmsManifest owner, String[] mt, boolean ifaceOnlyDefault) throws IOException {
+        NmsManifest p = new NmsManifest();
+        CompilationUnitTree cu = p.parse(List.of(f)).get(0);
+        p.unit = cu;
+        p.source = cu.getSourceFile().getCharContent(true).toString();
+        String simple = f.getFileName().toString().replace(".java", "");
+        for (Tree t : cu.getTypeDecls()) {
+            if (t instanceof ClassTree c && c.getSimpleName().contentEquals(simple)) {
+                if (p.declaresConcrete(c, mt, ifaceOnlyDefault)) {
+                    return true;
+                }
+                for (Tree sub : c.getImplementsClause()) {
+                    Path sf = handTypeFile(sub, p);
+                    if (sf != null && sf != f && handDecl(sf, sub, p, mt, true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private String handSuperCall(ClassTree hand, NmsManifest h) {
+        if (hand.getExtendsClause() == null || hand.getKind() != Tree.Kind.CLASS) {
+            return null;
+        }
+        String sup = h.text(hand.getExtendsClause()).replaceAll("<.*", "").trim();
+        String simple = sup.substring(sup.lastIndexOf('.') + 1);
+        Path file = null;
+        Map<String, String> imports = new HashMap<>();
+        for (ImportTree imp : h.unit.getImports()) {
+            String q = imp.getQualifiedIdentifier().toString();
+            imports.put(q.substring(q.lastIndexOf('.') + 1), q);
+        }
+        String pkg = h.unit.getPackageName() == null ? "" : h.unit.getPackageName().toString();
+        List<String> candidates = new ArrayList<>();
+        if (sup.contains(".")) {
+            candidates.add(sup);
+        }
+        if (imports.containsKey(simple)) {
+            candidates.add(imports.get(simple));
+        }
+        candidates.add(pkg + "." + simple);
+        for (String c : candidates) {
+            Path f = handRoot.resolve(c.replace('.', '/') + ".java");
+            if (Files.exists(f)) {
+                file = f;
+                break;
+            }
+        }
+        if (file == null) {
+            return null;
+        }
+        try {
+            NmsManifest p = new NmsManifest();
+            CompilationUnitTree cu = p.parse(List.of(file)).get(0);
+            p.unit = cu;
+            p.source = cu.getSourceFile().getCharContent(true).toString();
+            String spkg = cu.getPackageName() == null ? "" : cu.getPackageName().toString();
+            Map<String, String> simports = new HashMap<>();
+            for (ImportTree imp : cu.getImports()) {
+                String q = imp.getQualifiedIdentifier().toString();
+                simports.put(q.substring(q.lastIndexOf('.') + 1), q);
+            }
+            for (Tree t : cu.getTypeDecls()) {
+                if (!(t instanceof ClassTree sc) || !sc.getSimpleName().contentEquals(simple)) {
+                    continue;
+                }
+                MethodTree best = null;
+                boolean any = false;
+                for (Tree m : sc.getMembers()) {
+                    if (m instanceof MethodTree mt && mt.getReturnType() == null) {
+                        any = true;
+                        if (!isPrivate(mt.getModifiers()) && (best == null || mt.getParameters().size() < best.getParameters().size())) {
+                            best = mt;
+                        }
+                    }
+                }
+                if (!any) {
+                    return "";
+                }
+                if (best == null) {
+                    return null;
+                }
+                List<String> tv = sc.getTypeParameters().stream().map(x -> x.getName().toString()).toList();
+                List<String> args = new ArrayList<>();
+                for (VariableTree prm : best.getParameters()) {
+                    args.add(handNullArg(p.text(prm.getType()), tv, simports, spkg));
+                }
+                return "super(" + String.join(", ", args) + "); ";
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
+    }
+
+    private String handNullArg(String type, List<String> typeVars, Map<String, String> imports, String pkg) {
+        String t = type.trim();
+        boolean varargs = t.endsWith("...");
+        if (varargs) {
+            t = t.substring(0, t.length() - 3) + "[]";
+        }
+        StringBuilder erased = new StringBuilder();
+        int depth = 0;
+        for (char c : t.toCharArray()) {
+            if (c == '<') {
+                depth++;
+            } else if (c == '>') {
+                depth--;
+            } else if (depth == 0) {
+                erased.append(c);
+            }
+        }
+        String e = erased.toString().replace(" ", "");
+        if (kPrimitives.contains(e)) {
+            return e.equals("boolean") ? "false" : "(" + e + ") 0";
+        }
+        String base = e.replace("[]", "");
+        if (typeVars.contains(base) || base.startsWith("?")) {
+            return e.endsWith("[]") ? "null" : "org.basaltmc.stratum.bukkit.facade.NmsStub.nul()";
+        }
+        String head = base.contains(".") ? base.substring(0, base.indexOf('.')) : base;
+        String q = imports.containsKey(head) ? imports.get(head) + base.substring(head.length())
+            : base.contains(".") && Character.isLowerCase(base.charAt(0)) ? base
+            : Files.exists(handRoot.resolve((pkg + "." + head).replace('.', '/') + ".java")) ? pkg + "." + base
+            : base.startsWith("java") ? base : "java.lang." + base;
+        return "(" + q + e.substring(base.length()) + ") null";
     }
 
     private String codecConstant(ClassTree owner, String returnType) {

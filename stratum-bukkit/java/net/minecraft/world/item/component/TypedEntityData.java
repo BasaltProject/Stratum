@@ -14,6 +14,11 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public final class TypedEntityData<IdType> implements TooltipProvider {
     private static final String kTypeKey = "id";
@@ -94,5 +99,10 @@ public final class TypedEntityData<IdType> implements TooltipProvider {
         entity.load(merged);
         entity.setChanged();
         return true;
+    }
+    public void loadInto(Entity entity) {
+    }
+    public boolean loadInto(SpawnData spawnData, DefaultedRegistry<IdType> registry) {
+        return false;
     }
 }

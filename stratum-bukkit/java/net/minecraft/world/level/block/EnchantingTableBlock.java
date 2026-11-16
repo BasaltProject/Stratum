@@ -14,6 +14,16 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import java.util.List;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class EnchantingTableBlock extends BaseEntityBlock {
     public static final java.util.List<BlockPos> BOOKSHELF_OFFSETS = java.util.stream.IntStream.rangeClosed(-2, 2).boxed()
@@ -39,5 +49,29 @@ public class EnchantingTableBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+    protected EnchantingTableBlock(BlockBehaviour.Properties properties) {
+        super((int) 0);
+    }
+    protected boolean useShapeForLightOcclusion(BlockState state) {
+        return super.useShapeForLightOcclusion(state);
+    }
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return super.getShape(state, level, pos, context);
+    }
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        super.animateTick(state, level, pos, random);
+    }
+    public BlockEntity newBlockEntity(BlockPos worldPosition, BlockState blockState) {
+        return super.newBlockEntity(worldPosition, blockState);
+    }
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+        return super.getTicker(level, blockState, type);
+    }
+    protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return super.getMenuProvider(state, level, pos);
+    }
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+        return super.isPathfindable(state, type);
     }
 }

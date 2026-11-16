@@ -162,4 +162,10 @@ public class TropicalFish extends AbstractSchoolingFish {
             super(leader);
         }
     }
+    public boolean isMaxGroupSizeReached(int groupSize) {
+        return super.isMaxGroupSizeReached(groupSize);
+    }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

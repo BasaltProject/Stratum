@@ -83,4 +83,6 @@ public class ItemCooldowns {
     protected void onCooldownEnded(Identifier cooldownGroup) {
         return;
     }
+    static record CooldownInstance(int startTime, int endTime) {
+    }
 }

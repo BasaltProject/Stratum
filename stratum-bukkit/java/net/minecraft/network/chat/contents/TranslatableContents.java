@@ -10,6 +10,9 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import org.basaltmc.stratum.bukkit.facade.ChatJson;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.ResolutionContext;
 
 public class TranslatableContents implements ComponentContents {
     public static final Object[] NO_ARGS = new Object[0];
@@ -134,5 +137,8 @@ public class TranslatableContents implements ComponentContents {
 
     public Object[] getArgs() {
         return args;
+    }
+    public MutableComponent resolve(ResolutionContext context, int recursionDepth) throws CommandSyntaxException {
+        return ComponentContents.super.resolve(context, recursionDepth);
     }
 }

@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 
-public class ShapelessRecipeBuilder extends JsonRecipeBuilder {
+public class ShapelessRecipeBuilder extends JsonRecipeBuilder implements RecipeBuilder {
     private final Item result;
     private final int count;
     private final JsonArray ingredients = new JsonArray();
@@ -91,5 +91,12 @@ public class ShapelessRecipeBuilder extends JsonRecipeBuilder {
         putGroup(json);
         json.add("ingredients", ingredients);
         json.add("result", RecipeJson.result(result, count));
+    }
+    private ShapelessRecipeBuilder(HolderGetter<Item> items, RecipeCategory category, ItemStackTemplate result) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.ShapelessRecipeBuilder#<init>");
+    }
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        super.save(output, id);
     }
 }

@@ -89,4 +89,25 @@ public class Breeze extends Monster {
     protected Entity.MovementEmission getMovementEmission() {
         return super.getMovementEmission();
     }
+    public ProjectileDeflection deflection(Projectile projectile) {
+        return super.deflection(projectile);
+    }
+    public boolean canAttack(LivingEntity target) {
+        return super.canAttack(target);
+    }
+    public int getHeadRotSpeed() {
+        return super.getHeadRotSpeed();
+    }
+    public double getFluidJumpThreshold() {
+        return super.getFluidJumpThreshold();
+    }
+    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+        return super.causeFallDamage(fallDistance, damageModifier, damageSource);
+    }
+    public LivingEntity getTarget() {
+        return super.getTarget();
+    }
+    public void registerDebugValues(ServerLevel level, DebugValueSource.Registration registration) {
+        super.registerDebugValues(level, registration);
+    }
 }

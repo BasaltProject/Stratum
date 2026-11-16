@@ -87,4 +87,28 @@ public class JigsawBlockEntity extends BlockEntity {
             return Component.translatable("jigsaw_block.joint." + getSerializedName());
         }
     }
+    public static final Codec<ResourceKey<StructureTemplatePool>> POOL_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.level.block.entity.JigsawBlockEntity.class, "POOL_CODEC");
+    public static final Identifier EMPTY_ID = null;
+    public static final String TARGET = "target";
+    public static final String POOL = "pool";
+    public static final String JOINT = "joint";
+    public static final String PLACEMENT_PRIORITY = "placement_priority";
+    public static final String SELECTION_PRIORITY = "selection_priority";
+    public static final String NAME = "name";
+    public static final String FINAL_STATE = "final_state";
+    public static final String DEFAULT_FINAL_STATE = "minecraft:air";
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return super.getUpdateTag(registries);
+    }
+    public void generate(ServerLevel level, int levels, boolean keepJigsaws) {
+    }
 }

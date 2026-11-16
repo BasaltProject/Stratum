@@ -18,6 +18,33 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import java.util.function.Supplier;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.stats.Stat;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.LidBlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
     public static final int EVENT_SET_OPEN_COUNT = 1;
@@ -114,5 +141,68 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
                 : new net.minecraft.world.CompoundContainer(other, own);
         }
         return own;
+    }
+    protected ChestBlock(Supplier<BlockEntityType<? extends ChestBlockEntity>> blockEntityType, SoundEvent openSound, SoundEvent closeSound, BlockBehaviour.Properties properties) {
+        super((int) 0);
+    }
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
+    }
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return super.getShape(state, level, pos, context);
+    }
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context);
+    }
+    protected FluidState getFluidState(BlockState state) {
+        return super.getFluidState(state);
+    }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+    }
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return super.useWithoutItem(state, level, pos, player, hitResult);
+    }
+    protected Stat<Identifier> getOpenChestStat() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.ChestBlock#getOpenChestStat");
+    }
+    protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return super.getMenuProvider(state, level, pos);
+    }
+    public static DoubleBlockCombiner.Combiner<ChestBlockEntity, Float2FloatFunction> opennessCombiner(LidBlockEntity entity) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.ChestBlock#opennessCombiner");
+    }
+    public BlockEntity newBlockEntity(BlockPos worldPosition, BlockState blockState) {
+        return super.newBlockEntity(worldPosition, blockState);
+    }
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+        return super.getTicker(level, blockState, type);
+    }
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return super.hasAnalogOutputSignal(state);
+    }
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+        return super.getAnalogOutputSignal(state, level, pos, direction);
+    }
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return super.rotate(state, rotation);
+    }
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return super.mirror(state, mirror);
+    }
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+    }
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+        return super.isPathfindable(state, type);
+    }
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+    }
+    public SoundEvent getOpenChestSound() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.ChestBlock#getOpenChestSound");
+    }
+    public SoundEvent getCloseChestSound() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.ChestBlock#getCloseChestSound");
     }
 }

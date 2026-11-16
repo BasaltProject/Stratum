@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.pathfinder.PathFinder;
 
 public class AmphibiousPathNavigation extends PathNavigation {
     public AmphibiousPathNavigation(Mob mob, Level level) {
@@ -33,5 +34,17 @@ public class AmphibiousPathNavigation extends PathNavigation {
     @Override
     public boolean canNavigateGround() {
         return true;
+    }
+    protected Vec3 getTempMobPos() {
+        return super.getTempMobPos();
+    }
+    protected double getGroundY(Vec3 target) {
+        return 0;
+    }
+    protected boolean canMoveDirectly(Vec3 startPos, Vec3 stopPos) {
+        return false;
+    }
+    public void setCanFloat(boolean canFloat) {
+        super.setCanFloat(canFloat);
     }
 }

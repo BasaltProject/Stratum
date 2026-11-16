@@ -46,5 +46,8 @@ public class ServerMetricsSamplersProvider implements MetricsSamplerProvider {
         public double loadForCpu(int i) {
             return 0.0D;
         }
-    }
+            public CpuStats() {
+            
+        }
+}
 }

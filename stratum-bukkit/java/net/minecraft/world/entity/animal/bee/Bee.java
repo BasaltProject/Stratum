@@ -504,7 +504,13 @@ public class Bee extends Animal implements NeutralMob {
         public BeeAttackGoal(PathfinderMob mob, double speedModifier, boolean trackTarget) {
             super(mob, speedModifier, trackTarget);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+        public boolean canContinueToUse() {
+            return false;
+        }
+}
     class BeeEnterHiveGoal extends BaseBeeGoal {
         private BeeEnterHiveGoal() {
         }
@@ -535,7 +541,10 @@ public class Bee extends Animal implements NeutralMob {
         public boolean canBeeContinueToUse() {
             return false;
         }
-    }
+            private ValidateFlowerGoal() {
+            super();
+        }
+}
     class ValidateHiveGoal extends BaseBeeGoal {
         public void start() {
             if (hivePos != null && !isHiveValid()) {
@@ -548,7 +557,10 @@ public class Bee extends Animal implements NeutralMob {
         public boolean canBeeContinueToUse() {
             return false;
         }
-    }
+            private ValidateHiveGoal() {
+            super();
+        }
+}
     private int cropsGrownSincePollination;
 
 }

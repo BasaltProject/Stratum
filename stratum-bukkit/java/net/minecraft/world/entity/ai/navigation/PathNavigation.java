@@ -13,6 +13,10 @@ import net.minecraft.world.level.PathNavigationRegion;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
+import java.util.stream.Stream;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.pathfinder.NodeEvaluator;
+import net.minecraft.world.level.pathfinder.PathType;
 
 public abstract class PathNavigation {
     protected final Mob mob;
@@ -230,5 +234,37 @@ public abstract class PathNavigation {
 
     public boolean canCutCorner(net.minecraft.world.level.pathfinder.PathType pathType) {
         return pathType != net.minecraft.world.level.pathfinder.PathType.FIRE && pathType != net.minecraft.world.level.pathfinder.PathType.DAMAGING && pathType != net.minecraft.world.level.pathfinder.PathType.WALKABLE_DOOR;
+    }
+    protected int lastStuckCheck;
+    protected Vec3 lastStuckCheckPos;
+    protected Vec3i timeoutCachedNode;
+    protected long timeoutTimer;
+    protected long lastTimeoutCheck;
+    protected double timeoutLimit;
+    protected float maxDistanceToWaypoint;
+    protected long timeLastRecompute;
+    public Path createPath(Stream<BlockPos> positions, int reachRange) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.navigation.PathNavigation#createPath");
+    }
+    protected double getGroundY(Vec3 target) {
+        return (double) 0;
+    }
+    protected void followThePath() {
+    }
+    protected void doStuckDetection(Vec3 mobPos) {
+    }
+    protected void trimPath() {
+    }
+    protected boolean canMoveDirectly(Vec3 startPos, Vec3 stopPos) {
+        return false;
+    }
+    protected static boolean isClearForMovementBetween(Mob mob, Vec3 startPos, Vec3 stopPos, boolean blockedByFluids) {
+        return false;
+    }
+    public NodeEvaluator getNodeEvaluator() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.navigation.PathNavigation#getNodeEvaluator");
+    }
+    public boolean isStuck() {
+        return false;
     }
 }

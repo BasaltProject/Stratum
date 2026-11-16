@@ -117,4 +117,7 @@ public class Chicken extends Animal {
             api.setIsChickenJockey(isChickenJockey);
         }
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

@@ -14,8 +14,19 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class BeaconBlockEntity extends BlockEntity implements net.minecraft.world.MenuProvider, net.minecraft.world.Nameable, BeaconBeamOwner {
+public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Nameable, BeaconBeamOwner {
     public static final int DATA_LEVELS = 0;
     public static final int DATA_PRIMARY = 1;
     public static final int DATA_SECONDARY = 2;
@@ -92,5 +103,38 @@ public class BeaconBlockEntity extends BlockEntity implements net.minecraft.worl
     }
     public static void playSound(Level level, BlockPos pos, net.minecraft.sounds.SoundEvent event) {
         level.playSound((net.minecraft.world.entity.Entity) null, pos, event, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+    }
+    public static final List<List<Holder<MobEffect>>> BEACON_EFFECTS = null;
+    public static void tick(Level level, BlockPos pos, BlockState selfState, BeaconBlockEntity entity) {
+    }
+    public void setRemoved() {
+        super.setRemoved();
+    }
+    public static boolean validateEffects(Holder<MobEffect> primary, Holder<MobEffect> secondary, int levels) {
+        return false;
+    }
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return super.getUpdateTag(registries);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void applyImplicitComponents(DataComponentGetter components) {
+        super.applyImplicitComponents(components);
+    }
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+    }
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+    }
+    public void setLevel(Level level) {
+        super.setLevel(level);
     }
 }

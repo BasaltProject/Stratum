@@ -155,4 +155,13 @@ public class Armadillo extends Animal {
             return this == ROLLING ? 10 : this == UNROLLING ? 30 : this == SCARED ? 50 : 0;
         }
     }
+    public float getAgeScale() {
+        return super.getAgeScale();
+    }
+    public boolean canFallInLove() {
+        return super.canFallInLove();
+    }
+    protected BodyRotationControl createBodyControl() {
+        return super.createBodyControl();
+    }
 }

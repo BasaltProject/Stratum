@@ -103,4 +103,13 @@ public class Spider extends Monster {
             return mob.getLightLevelDependentMagicValue() < 0.5F && super.canUse();
         }
     }
+    public boolean onClimbable() {
+        return super.onClimbable();
+    }
+    public void makeStuckInBlock(BlockState state, Vec3 speedMultiplier) {
+        super.makeStuckInBlock(state, speedMultiplier);
+    }
+    public Vec3 getVehicleAttachmentPoint(Entity vehicle) {
+        return super.getVehicleAttachmentPoint(vehicle);
+    }
 }

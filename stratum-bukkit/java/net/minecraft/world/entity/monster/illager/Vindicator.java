@@ -74,10 +74,28 @@ public class Vindicator extends AbstractIllager {
             super(mob, 6, d -> d == net.minecraft.world.Difficulty.NORMAL || d == net.minecraft.world.Difficulty.HARD);
             setFlags(java.util.EnumSet.of(Goal.Flag.MOVE));
         }
-    }
+            public boolean canContinueToUse() {
+            return false;
+        }
+        public boolean canUse() {
+            return false;
+        }
+        public void start() {
+            
+        }
+}
     static class VindicatorJohnnyAttackGoal extends NearestAttackableTargetGoal<LivingEntity> {
         public VindicatorJohnnyAttackGoal(Vindicator mob) {
             super(mob, LivingEntity.class, 0, true, true, (target, level) -> target.attackable());
         }
+            public boolean canUse() {
+            return false;
+        }
+        public void start() {
+            
+        }
+}
+    public void setCustomName(Component name) {
+        super.setCustomName(name);
     }
 }

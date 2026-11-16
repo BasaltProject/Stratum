@@ -220,4 +220,13 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
     public void setLeashData(Leashable.LeashData leashData) {
         this.leashData = leashData;
     }
+    public Vec3 getRelativePortalPosition(Direction.Axis axis, BlockUtil.FoundRectangle portalArea) {
+        return super.getRelativePortalPosition(axis, portalArea);
+    }
+    protected InterpolationHandler createInterpolationHandler() {
+        return super.createInterpolationHandler();
+    }
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+    }
 }

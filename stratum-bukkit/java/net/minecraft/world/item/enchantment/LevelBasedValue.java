@@ -97,7 +97,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return value;
         }
-    }
+            public MapCodec<Constant> codec() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.item.enchantment.LevelBasedValue.Constant#codec");
+        }
+}
 
     public static record Lookup(List<Float> values, LevelBasedValue fallback) implements LevelBasedValue {
         public static final MapCodec<Lookup> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.Lookup.class, "CODEC");
@@ -116,7 +119,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
-    }
+            public MapCodec<Lookup> codec() {
+            return CODEC;
+        }
+}
 
     public static record Linear(float base, float perLevelAboveFirst) implements LevelBasedValue {
         public static final MapCodec<Linear> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.Linear.class, "CODEC");
@@ -132,7 +138,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
-    }
+            public MapCodec<Linear> codec() {
+            return CODEC;
+        }
+}
 
     public static record Clamped(LevelBasedValue value, float min, float max) implements LevelBasedValue {
         public static final MapCodec<Clamped> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.Clamped.class, "CODEC");
@@ -149,7 +158,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
-    }
+            public MapCodec<Clamped> codec() {
+            return CODEC;
+        }
+}
 
     public static record Fraction(LevelBasedValue numerator, LevelBasedValue denominator) implements LevelBasedValue {
         public static final MapCodec<Fraction> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.Fraction.class, "CODEC");
@@ -165,7 +177,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
-    }
+            public MapCodec<Fraction> codec() {
+            return CODEC;
+        }
+}
 
     public static record Exponent(LevelBasedValue base, LevelBasedValue power) implements LevelBasedValue {
         public static final MapCodec<Exponent> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.Exponent.class, "CODEC");
@@ -181,7 +196,10 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
-    }
+            public MapCodec<Exponent> codec() {
+            return CODEC;
+        }
+}
 
     public static record LevelsSquared(float added) implements LevelBasedValue {
         public static final MapCodec<LevelsSquared> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.item.enchantment.LevelBasedValue.LevelsSquared.class, "CODEC");
@@ -196,5 +214,13 @@ public interface LevelBasedValue {
         public float calculate(int level) {
             return run(this, level);
         }
+            public MapCodec<LevelsSquared> codec() {
+            return CODEC;
+        }
+}
+    Codec<LevelBasedValue> DISPATCH_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.item.enchantment.LevelBasedValue.class, "DISPATCH_CODEC");
+    Codec<LevelBasedValue> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.item.enchantment.LevelBasedValue.class, "CODEC");
+    default MapCodec<? extends LevelBasedValue> codec() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.item.enchantment.LevelBasedValue#codec");
     }
 }

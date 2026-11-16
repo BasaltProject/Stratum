@@ -11,6 +11,8 @@ import net.minecraft.world.scores.ScoreboardSaveData;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.RenderType;
+import java.util.List;
+import net.minecraft.network.protocol.Packet;
 
 /** The vanilla scoreboard view over the native main board: every change is written through to it. */
 public class ServerScoreboard extends Scoreboard {
@@ -165,5 +167,28 @@ public class ServerScoreboard extends Scoreboard {
     }
 
     public void stopTrackingObjective(Objective objective, net.minecraft.server.level.ServerPlayer player) {
+    }
+    protected void onScoreLockChanged(ScoreHolder owner, Objective objective) {
+        super.onScoreLockChanged(owner, objective);
+    }
+    public boolean addPlayerToTeam(String player, PlayerTeam team) {
+        return super.addPlayerToTeam(player, team);
+    }
+    public void removePlayerFromTeam(String player, PlayerTeam team) {
+        super.removePlayerFromTeam(player, team);
+    }
+    protected void setDirty() {
+    }
+    public void storeToSaveDataIfDirty(ScoreboardSaveData saveData) {
+    }
+    public void startTrackingObjective(Objective objective) {
+    }
+    public List<Packet<?>> getStopTrackingPackets(Objective objective) {
+        return java.util.List.of();
+    }
+    public void stopTrackingObjective(Objective objective) {
+    }
+    public int getObjectiveDisplaySlotCount(Objective objective) {
+        return (int) 0;
     }
 }

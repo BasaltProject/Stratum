@@ -179,4 +179,28 @@ public class Strider extends Animal implements ItemSteerable {
                 && level.getBlockState(pos.above()).isPathfindable(net.minecraft.world.level.pathfinder.PathComputationType.LAND);
         }
     }
+    protected Holder<SoundEvent> getEquipSound(EquipmentSlot slot, ItemStack stack, Equippable equippable) {
+        return super.getEquipSound(slot, stack, equippable);
+    }
+    public boolean canStandOnFluid(FluidState fluid) {
+        return super.canStandOnFluid(fluid);
+    }
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
+        return super.getPassengerAttachmentPoint(passenger, dimensions, scale);
+    }
+    public LivingEntity getControllingPassenger() {
+        return super.getControllingPassenger();
+    }
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        return super.getDismountLocationForPassenger(passenger);
+    }
+    protected Vec3 getRiddenInput(Player controller, Vec3 selfInput) {
+        return super.getRiddenInput(controller, selfInput);
+    }
+    public VoxelShape getLiquidCollisionShape() {
+        return super.getLiquidCollisionShape();
+    }
+    public boolean isOnFire() {
+        return super.isOnFire();
+    }
 }

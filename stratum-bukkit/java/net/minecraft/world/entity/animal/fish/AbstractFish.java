@@ -78,12 +78,21 @@ public abstract class AbstractFish extends WaterAnimal implements Bucketable {
         public FishSwimGoal(AbstractFish fish) {
             super(fish, (double) 0, (int) 0);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+}
     static class FishMoveControl<T extends AbstractFish> extends MoveControl<T> {
         public FishMoveControl(T fish) {
             super(fish);
         }
         public void tick() {
         }
+    }
+    public boolean requiresCustomPersistence() {
+        return super.requiresCustomPersistence();
+    }
+    public int getMaxSpawnClusterSize() {
+        return super.getMaxSpawnClusterSize();
     }
 }

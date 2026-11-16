@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.basaltmc.stratum.bukkit.facade.NativeCraftingRecipe;
 import org.basaltmc.stratum.bukkit.recipe.Recipes;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 
 public abstract class AbstractCraftingMenu extends RecipeBookMenu {
     private final int width;
@@ -104,5 +105,12 @@ public abstract class AbstractCraftingMenu extends RecipeBookMenu {
 
     public int getSize() {
         return width * height + 1;
+    }
+    protected void beginPlacingRecipe() {
+    }
+    protected void finishPlacingRecipe(ServerLevel level, RecipeHolder<CraftingRecipe> recipe) {
+    }
+    protected Player owner() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractCraftingMenu#owner");
     }
 }

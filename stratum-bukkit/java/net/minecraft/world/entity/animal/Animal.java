@@ -108,4 +108,9 @@ public abstract class Animal extends AgeableMob {
     }
     public void handleEntityEvent(byte id) {
     }
+    protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
+        }
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        return super.getDismountLocationForPassenger(passenger);
+    }
 }

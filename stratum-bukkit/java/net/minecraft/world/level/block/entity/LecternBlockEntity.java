@@ -12,8 +12,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class LecternBlockEntity extends BlockEntity implements net.minecraft.world.Clearable, net.minecraft.world.MenuProvider {
+public class LecternBlockEntity extends BlockEntity implements Clearable, MenuProvider {
     public static final int DATA_PAGE = 0;
     public static final int NUM_DATA = 1;
     public static final int SLOT_BOOK = 0;
@@ -85,5 +89,14 @@ public class LecternBlockEntity extends BlockEntity implements net.minecraft.wor
         int pages = pageCount(getBook());
         float progress = pages > 1 ? (float) getPage() / ((float) pages - 1.0F) : 1.0F;
         return net.minecraft.util.Mth.floor(progress * 14.0F) + (hasBook() ? 1 : 0);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
     }
 }

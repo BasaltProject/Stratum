@@ -132,4 +132,22 @@ public class Sniffer extends Animal {
             return ordinal();
         }
     }
+    public void onPathfindingStart() {
+        super.onPathfindingStart();
+    }
+    public void onPathfindingDone() {
+        super.onPathfindingDone();
+    }
+    public int getBabyStartAge() {
+        return super.getBabyStartAge();
+    }
+    public void jumpFromGround() {
+        super.jumpFromGround();
+    }
+    public void spawnChildFromBreeding(ServerLevel level, Animal partner) {
+        super.spawnChildFromBreeding(level, partner);
+    }
+    public void die(DamageSource source) {
+        super.die(source);
+    }
 }

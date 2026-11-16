@@ -178,4 +178,33 @@ public class TagValueOutput implements ValueOutput {
             return "Failed to merge value '" + value + "' to an object: " + error.message();
         }
     }
+    private TagValueOutput(ProblemReporter problemReporter, DynamicOps<Tag> ops, CompoundTag output) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput#<init>");
+    }
+    static class ListWrapper implements ValueOutput.ValueOutputList {
+        private ListWrapper(String fieldName, ProblemReporter problemReporter, DynamicOps<Tag> ops, ListTag output) {
+            
+        }
+        public ValueOutput addChild() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput.ListWrapper#addChild");
+        }
+        public void discardLast() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput.ListWrapper#discardLast");
+        }
+        public boolean isEmpty() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput.ListWrapper#isEmpty");
+        }
+    }
+    static class TypedListWrapper<T> implements ValueOutput.TypedOutputList<T> {
+        private TypedListWrapper(ProblemReporter problemReporter, String name, DynamicOps<Tag> ops, Codec<T> codec, ListTag output) {
+            
+        }
+        public void add(T value) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput.TypedListWrapper#add");
+        }
+        public boolean isEmpty() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueOutput.TypedListWrapper#isEmpty");
+        }
+    }
 }

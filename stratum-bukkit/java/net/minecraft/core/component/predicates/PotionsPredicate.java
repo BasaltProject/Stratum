@@ -15,6 +15,8 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.basaltmc.stratum.bukkit.facade.HolderSets;
 import org.basaltmc.stratum.bukkit.facade.ReflectiveCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 public record PotionsPredicate(Optional<HolderSet<Potion>> potions, Optional<CollectionPredicate<MobEffectInstance, MobEffectsPredicate>> effects) implements SingleComponentItemPredicate<PotionContents> {
     public static final Codec<PotionsPredicate> CODEC = RecordCodecBuilder.create(i -> i.group(
         ReflectiveCodecs.holderSet(Potion.class).optionalFieldOf("potions").forGetter(PotionsPredicate::potions),
@@ -35,4 +37,5 @@ public record PotionsPredicate(Optional<HolderSet<Potion>> potions, Optional<Col
     public static PotionsPredicate ofPotion(Holder<Potion> potion) {
         return ofPotions(HolderSet.direct(potion));
     }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PotionsPredicate> STREAM_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.streamCodec(net.minecraft.core.component.predicates.PotionsPredicate.class, "STREAM_CODEC");
 }

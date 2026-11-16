@@ -156,4 +156,7 @@ public interface EasingType {
             return x2 < 0.0F || x2 > 1.0F ? DataResult.error(() -> "x2 must be in range [0; 1]") : DataResult.success(this);
         }
     }
+    static EasingType registerSimple(String id, EasingType easing) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.EasingType#registerSimple");
+    }
 }

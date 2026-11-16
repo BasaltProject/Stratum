@@ -79,4 +79,8 @@ public abstract class EventLoopGroupHolder {
     public Class<? extends ServerChannel> serverChannelCls() {
         return serverChannelCls;
     }
+    private EventLoopGroupHolder(String type, Class<? extends Channel> channelCls, Class<? extends ServerChannel> serverChannelCls) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.network.EventLoopGroupHolder#<init>");
+    }
 }

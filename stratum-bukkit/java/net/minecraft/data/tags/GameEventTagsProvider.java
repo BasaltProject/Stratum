@@ -18,4 +18,5 @@ public class GameEventTagsProvider extends TagsProvider<GameEvent> {
     protected void addTags(HolderLookup.Provider registries) {
         addNativeTags();
     }
+    static final List<ResourceKey<GameEvent>> VIBRATIONS_EXCEPT_FLAP = null;
 }

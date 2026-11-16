@@ -63,4 +63,19 @@ public class MinecartTNT extends AbstractMinecart {
     protected boolean shouldSourceDestroy(DamageSource source) {
         return false;
     }
+    public BlockState getDefaultDisplayBlockState() {
+        return super.getDefaultDisplayBlockState();
+    }
+    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+        return super.causeFallDamage(fallDistance, damageModifier, damageSource);
+    }
+    public void activateMinecart(ServerLevel level, int xt, int yt, int zt, boolean state) {
+        super.activateMinecart(level, xt, yt, zt, state);
+    }
+    public float getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState block, FluidState fluid, float resistance) {
+        return super.getBlockExplosionResistance(explosion, level, pos, block, fluid, resistance);
+    }
+    public boolean shouldBlockExplode(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, float power) {
+        return super.shouldBlockExplode(explosion, level, pos, state, power);
+    }
 }

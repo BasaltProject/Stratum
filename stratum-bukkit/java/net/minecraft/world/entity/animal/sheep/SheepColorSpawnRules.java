@@ -35,4 +35,9 @@ public class SheepColorSpawnRules {
             : biome.is(BiomeTags.SPAWNS_COLD_VARIANT_FARM_ANIMALS) ? kCold : kTemperate;
         return source.get(random);
     }
+    static record SheepColorSpawnConfiguration(SheepColorProvider colors) {
+    }
+    interface SheepColorProvider {
+        DyeColor get(RandomSource random);
+    }
 }

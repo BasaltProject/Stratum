@@ -154,4 +154,23 @@ public final class WeightedList<E> {
             return new WeightedList<>(result);
         }
     }
+    static class Flat<E> implements Selector<E> {
+        private Flat(List<Weighted<E>> entries, int totalWeight) {
+            
+        }
+        public E get(int selection) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.random.WeightedList.Flat#get");
+        }
+    }
+    static class Compact<E> implements Selector<E> {
+        private Compact(List<Weighted<E>> entries) {
+            
+        }
+        public E get(int selection) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.random.WeightedList.Compact#get");
+        }
+    }
+    interface Selector<E> {
+        E get(int selection);
+    }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 public class FilledProfileResults implements ProfileResults {
     private final Map<String, ? extends ProfilerPathEntry> entries;
     private final long startTimeNano;
@@ -94,6 +95,17 @@ public class FilledProfileResults implements ProfileResults {
             if (!"unspecified".equals(field.name)) {
                 append(out, depth + 1, path + ProfileResults.PATH_SEPARATOR + field.name);
             }
+        }
+    }
+    protected String getProfilerResults(long timespan, int tickspan) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.profiling.FilledProfileResults#getProfilerResults");
+    }
+    public int getTickDuration() {
+        return ProfileResults.super.getTickDuration();
+    }
+    static class CounterCollector {
+        public void addValue(Iterator<String> path, long value) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.profiling.FilledProfileResults.CounterCollector#addValue");
         }
     }
 }

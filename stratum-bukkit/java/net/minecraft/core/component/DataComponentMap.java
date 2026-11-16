@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 
 public interface DataComponentMap extends Iterable<TypedDataComponent<?>>, DataComponentGetter {
     DataComponentMap EMPTY = new Builder.SimpleMap(Map.of());
@@ -146,6 +147,9 @@ public interface DataComponentMap extends Iterable<TypedDataComponent<?>>, DataC
             public String toString() {
                 return map.toString();
             }
-        }
+                    public Iterator<TypedDataComponent<?>> iterator() {
+                throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.core.component.DataComponentMap.Builder.SimpleMap#iterator");
+            }
+}
     }
 }

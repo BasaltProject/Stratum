@@ -116,4 +116,10 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
     private boolean villagerDataFinalized;
     private int villagerXp;
 
+    public float getVoicePitch() {
+        return super.getVoicePitch();
+    }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

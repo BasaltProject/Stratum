@@ -425,4 +425,12 @@ public class Brain<E extends LivingEntity> {
 
         <U> void accept(MemoryModuleType<U> type, U value, long timeToLive);
     }
+    protected Brain(Collection<? extends MemoryModuleType<?>> memoryTypes, Collection<? extends SensorType<? extends Sensor<? super E>>> sensorTypes, List<ActivityData<E>> activities, MemoryMap memories, RandomSource randomSource) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.Brain#<init>");
+    }
+    public Brain() {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.ai.Brain#<init>");
+    }
 }

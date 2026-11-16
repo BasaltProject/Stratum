@@ -7,6 +7,12 @@ import net.minecraft.advancements.predicates.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.phys.Vec3;
+import java.util.Optional;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BannerPattern;
 public record EntityEquipmentPredicate(Optional<ItemPredicate> head, Optional<ItemPredicate> chest, Optional<ItemPredicate> legs, Optional<ItemPredicate> feet, Optional<ItemPredicate> body, Optional<ItemPredicate> mainhand, Optional<ItemPredicate> offhand) implements EntitySubPredicate {
     public static final Codec<EntityEquipmentPredicate> CODEC = RecordCodecBuilder.create(i -> i.group(
         ItemPredicate.CODEC.optionalFieldOf("head").forGetter(EntityEquipmentPredicate::head),
@@ -89,5 +95,8 @@ public record EntityEquipmentPredicate(Optional<ItemPredicate> head, Optional<It
         public EntityEquipmentPredicate build() {
             return new EntityEquipmentPredicate(head, chest, legs, feet, body, mainhand, offhand);
         }
+    }
+    public static EntityEquipmentPredicate captainPredicate(HolderGetter<Item> items, HolderGetter<BannerPattern> patternGetter) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityEquipmentPredicate#captainPredicate");
     }
 }

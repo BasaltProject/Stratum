@@ -128,7 +128,11 @@ public class PrepareSpawnTask implements ConfigurationTask {
             }
             return loading.isDone() ? new Ready(level, position, angle) : null;
         }
-    }
+            private Preparing(ServerLevel spawnLevel, CompletableFuture<Vec3> spawnPosition, Vec2 spawnAngle) {
+            
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.network.config.PrepareSpawnTask.Preparing#<init>");
+        }
+}
 
     final class Ready implements State {
         private final ServerLevel level;

@@ -11,6 +11,8 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import java.util.Set;
+import net.minecraft.util.context.ContextKey;
 public class EnchantWithLevelsFunction extends LootItemConditionalFunction {
     public static final MapCodec<EnchantWithLevelsFunction> MAP_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.level.storage.loot.functions.EnchantWithLevelsFunction.class, "MAP_CODEC");
     private final Holder<ContextIntProvider> levels;
@@ -68,5 +70,8 @@ public class EnchantWithLevelsFunction extends LootItemConditionalFunction {
         public LootItemFunction build() {
             return new EnchantWithLevelsFunction(getCondition(), levels, options, includeAdditionalCostComponent);
         }
+    }
+    public Set<ContextKey<?>> getReferencedContextParams() {
+        return java.util.Set.of();
     }
 }

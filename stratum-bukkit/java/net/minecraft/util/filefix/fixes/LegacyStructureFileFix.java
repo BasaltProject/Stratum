@@ -229,4 +229,17 @@ public class LegacyStructureFileFix extends FileFix {
             return before;
         }
     }
+    static record DimensionFixEntry(ResourceKey<Level> dimensionKey, List<FileAccess<SavedDataNbt>> structureFileAccess, FileAccess<ChunkNbt> chunkFileAccess, Long2ObjectOpenHashMap<LegacyStructureData> structures) {
+    }
+    static class IncrementalFutureSequence {
+        public IncrementalFutureSequence(int maxConcurrency) {
+            
+        }
+        public int push(CompletableFuture<?> future) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.filefix.fixes.LegacyStructureFileFix.IncrementalFutureSequence#push");
+        }
+        public int waitForAll() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.filefix.fixes.LegacyStructureFileFix.IncrementalFutureSequence#waitForAll");
+        }
+    }
 }

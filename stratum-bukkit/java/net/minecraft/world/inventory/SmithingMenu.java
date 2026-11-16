@@ -6,6 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.CombinerNative;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.Level;
 
 public class SmithingMenu extends ItemCombinerMenu {
     public static final int TEMPLATE_SLOT = 0;
@@ -67,5 +69,18 @@ public class SmithingMenu extends ItemCombinerMenu {
     @Override
     public boolean canTakeItemForPickAll(ItemStack carried, Slot target) {
         return target.container != resultSlots && super.canTakeItemForPickAll(carried, target);
+    }
+    private SmithingMenu(int containerId, Inventory inventory, ContainerLevelAccess access, Level level) {
+        super((net.minecraft.world.inventory.MenuType) null, (int) 0, (net.minecraft.world.entity.player.Inventory) null, (net.minecraft.world.inventory.ContainerLevelAccess) null, (net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.SmithingMenu#<init>");
+    }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public boolean canMoveIntoInputSlots(ItemStack stack) {
+        return super.canMoveIntoInputSlots(stack);
+    }
+    public boolean hasRecipeError() {
+        return false;
     }
 }

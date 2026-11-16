@@ -86,4 +86,10 @@ public class ZombieNautilus extends AbstractNautilus {
     protected boolean canBeABaby() {
         return false;
     }
+    protected EquipmentSlot sunProtectionSlot() {
+        return super.sunProtectionSlot();
+    }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

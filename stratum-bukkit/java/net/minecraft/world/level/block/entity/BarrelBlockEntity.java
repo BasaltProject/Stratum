@@ -9,6 +9,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
+import java.util.List;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.ContainerUser;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
     protected BarrelBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
@@ -46,5 +52,22 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
     @Override
     public void stopOpen(net.minecraft.world.entity.ContainerUser user) {
         org.basaltmc.stratum.bukkit.facade.LidControl.set(this, false);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected NonNullList<ItemStack> getItems() {
+        return super.getItems();
+    }
+    protected void setItems(NonNullList<ItemStack> items) {
+        super.setItems(items);
+    }
+    public List<ContainerUser> getEntitiesWithContainerOpen() {
+        return super.getEntitiesWithContainerOpen();
+    }
+    public void recheckOpen() {
     }
 }

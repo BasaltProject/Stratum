@@ -274,4 +274,133 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
     public void setPauseWhenEmptySeconds(int seconds) {
         org.basaltmc.stratum.bukkit.WorldEnvNatives.setSetting("pause_when_empty_seconds", String.valueOf(seconds));
     }
+    protected boolean initServer() throws IOException {
+        return super.initServer();
+    }
+    public boolean isEnforceWhitelist() {
+        return super.isEnforceWhitelist();
+    }
+    public void setEnforceWhitelist(boolean enforceWhitelist) {
+        super.setEnforceWhitelist(enforceWhitelist);
+    }
+    public boolean isUsingWhitelist() {
+        return super.isUsingWhitelist();
+    }
+    public void setUsingWhitelist(boolean usingWhitelist) {
+        super.setUsingWhitelist(usingWhitelist);
+    }
+    protected void tickServer(BooleanSupplier haveTime) {
+        super.tickServer(haveTime);
+    }
+    public boolean saveAllChunks(boolean silent, boolean flush, boolean force) {
+        return super.saveAllChunks(silent, flush, force);
+    }
+    public void sendLowDiskSpaceWarning() {
+        super.sendLowDiskSpaceWarning();
+    }
+    protected void forceDifficulty() {
+        super.forceDifficulty();
+    }
+    public SystemReport fillServerSystemReport(SystemReport systemReport) {
+        return super.fillServerSystemReport(systemReport);
+    }
+    public void dumpServerProperties(Path path) throws IOException {
+        super.dumpServerProperties(path);
+    }
+    protected void onServerExit() {
+        super.onServerExit();
+    }
+    protected void tickConnection() {
+        super.tickConnection();
+    }
+    public boolean isDedicatedServer() {
+        return super.isDedicatedServer();
+    }
+    public int getRateLimitPacketsPerSecond() {
+        return super.getRateLimitPacketsPerSecond();
+    }
+    public int getCommandSpamThresholdSeconds() {
+        return super.getCommandSpamThresholdSeconds();
+    }
+    public int getChatSpamThresholdSeconds() {
+        return super.getChatSpamThresholdSeconds();
+    }
+    public boolean useNativeTransport() {
+        return super.useNativeTransport();
+    }
+    public DedicatedPlayerList getPlayerList() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.dedicated.DedicatedServer#getPlayerList");
+    }
+    public boolean isPublished() {
+        return super.isPublished();
+    }
+    public boolean isUnderSpawnProtection(ServerLevel level, BlockPos pos, Player player) {
+        return super.isUnderSpawnProtection(level, pos, player);
+    }
+    public LevelBasedPermissionSet operatorUserPermissions() {
+        return super.operatorUserPermissions();
+    }
+    public PermissionSet getFunctionCompilationPermissions() {
+        return super.getFunctionCompilationPermissions();
+    }
+    public void setPlayerIdleTimeout(int playerIdleTimeout) {
+        super.setPlayerIdleTimeout(playerIdleTimeout);
+    }
+    public String getMotd() {
+        return super.getMotd();
+    }
+    public void setMotd(String motd) {
+        super.setMotd(motd);
+    }
+    public boolean shouldRconBroadcast() {
+        return super.shouldRconBroadcast();
+    }
+    public boolean shouldInformAdmins() {
+        return super.shouldInformAdmins();
+    }
+    public int getAbsoluteMaxWorldSize() {
+        return super.getAbsoluteMaxWorldSize();
+    }
+    public int getCompressionThreshold() {
+        return super.getCompressionThreshold();
+    }
+    public boolean logIPs() {
+        return super.logIPs();
+    }
+    public int getMaxChainedNeighborUpdates() {
+        return super.getMaxChainedNeighborUpdates();
+    }
+    protected void stopServer() {
+        super.stopServer();
+    }
+    public boolean isSingleplayerOwner(NameAndId nameAndId) {
+        return super.isSingleplayerOwner(nameAndId);
+    }
+    public boolean forceSynchronousWrites() {
+        return super.forceSynchronousWrites();
+    }
+    public TextFilter createTextFilterForPlayer(ServerPlayer player) {
+        return super.createTextFilterForPlayer(player);
+    }
+    public Optional<MinecraftServer.ServerResourcePackInfo> getServerResourcePack() {
+        return super.getServerResourcePack();
+    }
+    protected void endMetricsRecordingTick() {
+        super.endMetricsRecordingTick();
+    }
+    protected SampleLogger getTickTimeLogger() {
+        return super.getTickTimeLogger();
+    }
+    public boolean isTickTimeLoggingEnabled() {
+        return super.isTickTimeLoggingEnabled();
+    }
+    public ServerLinks serverLinks() {
+        return super.serverLinks();
+    }
+    public int pauseWhenEmptySeconds() {
+        return super.pauseWhenEmptySeconds();
+    }
+    public Map<String, String> getCodeOfConducts() {
+        return super.getCodeOfConducts();
+    }
 }

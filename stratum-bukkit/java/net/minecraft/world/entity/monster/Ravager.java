@@ -80,4 +80,10 @@ public class Ravager extends Raider {
     public boolean canBeLeader() {
         return false;
     }
+    public boolean hasLineOfSight(Entity target) {
+        return super.hasLineOfSight(target);
+    }
+    protected AABB getAttackBoundingBox(double horizontalExpansion) {
+        return super.getAttackBoundingBox(horizontalExpansion);
+    }
 }

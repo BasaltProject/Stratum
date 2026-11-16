@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.Registry;
 public final class CriteriaTriggers {
     private static final Map<Identifier, CriterionTrigger<?>> kByName = new LinkedHashMap<>();
     private static final Map<CriterionTrigger<?>, Identifier> kById = new java.util.IdentityHashMap<>();
@@ -86,4 +87,7 @@ public final class CriteriaTriggers {
     public static final RecipeCraftedTrigger CRAFTER_RECIPE_CRAFTED = register("crafter_recipe_crafted", new RecipeCraftedTrigger());
     public static final FallAfterExplosionTrigger FALL_AFTER_EXPLOSION = register("fall_after_explosion", new FallAfterExplosionTrigger());
     private CriteriaTriggers() {}
+    public static CriterionTrigger<?> bootstrap(Registry<CriterionTrigger<?>> registry) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.triggers.CriteriaTriggers#bootstrap");
+    }
 }

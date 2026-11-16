@@ -7,6 +7,8 @@ import net.minecraft.advancements.predicates.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.phys.Vec3;
+import java.util.Optional;
+import net.minecraft.world.entity.Entity;
 public record EntityFlagsPredicate(Optional<Boolean> isOnGround, Optional<Boolean> isOnFire, Optional<Boolean> isCrouching, Optional<Boolean> isSprinting, Optional<Boolean> isSwimming, Optional<Boolean> isFlying, Optional<Boolean> isBaby, Optional<Boolean> isInWater, Optional<Boolean> isFallFlying) implements EntitySubPredicate {
     public static final Codec<EntityFlagsPredicate> CODEC = RecordCodecBuilder.create(i -> i.group(
         Codec.BOOL.optionalFieldOf("is_on_ground").forGetter(EntityFlagsPredicate::isOnGround),
@@ -99,5 +101,32 @@ public record EntityFlagsPredicate(Optional<Boolean> isOnGround, Optional<Boolea
         public EntityFlagsPredicate build() {
             return new EntityFlagsPredicate(isOnGround, isOnFire, isCrouching, isSprinting, isSwimming, isFlying, isBaby, isInWater, isFallFlying);
         }
-    }
+            public Builder setOnGround(Boolean onGround) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setOnGround");
+        }
+        public Builder setOnFire(Boolean onFire) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setOnFire");
+        }
+        public Builder setCrouching(Boolean crouching) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setCrouching");
+        }
+        public Builder setSprinting(Boolean sprinting) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setSprinting");
+        }
+        public Builder setSwimming(Boolean swimming) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setSwimming");
+        }
+        public Builder setIsFlying(Boolean flying) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setIsFlying");
+        }
+        public Builder setIsBaby(Boolean baby) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setIsBaby");
+        }
+        public Builder setIsInWater(Boolean inWater) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setIsInWater");
+        }
+        public Builder setIsFallFlying(Boolean fallFlying) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntityFlagsPredicate.Builder#setIsFallFlying");
+        }
+}
 }

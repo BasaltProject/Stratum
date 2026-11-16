@@ -16,6 +16,11 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStackTemplate;
 public record Advancement(Optional<Identifier> parent, Optional<DisplayInfo> display, AdvancementRewards rewards, Map<String, Criterion<?>> criteria, AdvancementRequirements requirements, boolean sendsTelemetryEvent, Optional<Component> name) {
     private static final Codec<Map<String, Criterion<?>>> kCriteria = Codec.unboundedMap(Codec.STRING, Criterion.CODEC)
         .validate(criteria -> criteria.isEmpty() ? DataResult.error(() -> "Advancement criteria cannot be empty") : DataResult.success(criteria));
@@ -118,5 +123,25 @@ public record Advancement(Optional<Identifier> parent, Optional<DisplayInfo> dis
         public AdvancementHolder build(Identifier id) {
             return new AdvancementHolder(id, build());
         }
+            public Builder() {
+            
+        }
+        public Builder rootDisplay(ItemStackTemplate icon, Component title, Component description, Identifier background, AdvancementType frame, boolean showToast, boolean announceChat, boolean hidden) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.Advancement.Builder#rootDisplay");
+        }
+        public Builder rootDisplay(Item icon, Component title, Component description, Identifier background, AdvancementType frame, boolean showToast, boolean announceChat, boolean hidden) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.Advancement.Builder#rootDisplay");
+        }
+        public Builder display(ItemStackTemplate icon, Component title, Component description, AdvancementType frame, boolean showToast, boolean announceChat, boolean hidden) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.Advancement.Builder#display");
+        }
+        public Builder display(Item icon, Component title, Component description, AdvancementType frame, boolean showToast, boolean announceChat, boolean hidden) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.Advancement.Builder#display");
+        }
+        public AdvancementHolder save(BootstrapContext<Advancement> output, String name) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.Advancement.Builder#save");
+        }
+}
+    public void validate(ProblemReporter reporter, HolderGetter.Provider lootData) {
     }
 }

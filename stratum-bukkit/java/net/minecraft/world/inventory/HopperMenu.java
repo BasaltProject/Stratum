@@ -55,4 +55,7 @@ public class HopperMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    public void removed(Player player) {
+        super.removed(player);
+    }
 }

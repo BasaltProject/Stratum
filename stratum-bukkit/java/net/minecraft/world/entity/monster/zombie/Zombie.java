@@ -183,4 +183,13 @@ public class Zombie extends Monster {
             return 1.14;
         }
     }
+    public boolean killedEntity(ServerLevel level, LivingEntity entity, DamageSource source) {
+        return super.killedEntity(level, entity, source);
+    }
+    public boolean canHoldItem(ItemStack itemStack) {
+        return super.canHoldItem(itemStack);
+    }
+    public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+        return super.wantsToPickUp(level, itemStack);
+    }
 }

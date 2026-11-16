@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 /** The raids of one world, read from the native raid system. */
 public class Raids extends SavedData {
@@ -66,5 +67,15 @@ public class Raids extends SavedData {
             }
         }
         return out;
+    }
+    private Raids(List<RaidWithId> raids, int nextId, int tick) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.raid.Raids#<init>");
+    }
+    static record RaidWithId(int id, Raid raid) {
+        public static final Codec<RaidWithId> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.codec(net.minecraft.world.entity.raid.Raids.RaidWithId.class, "CODEC");
+        public static RaidWithId from(Int2ObjectMap.Entry<Raid> entry) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.raid.Raids.RaidWithId#from");
+        }
     }
 }

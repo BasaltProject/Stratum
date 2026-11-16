@@ -95,7 +95,20 @@ public interface ProblemReporter {
         public String getTreeReport() {
             return getReport();
         }
-    }
+            static record Entry(Collector source, Problem problem) {
+        }
+        static record ProblemTreeNode(PathElement element, List<Problem> problems, Map<PathElement, ProblemTreeNode> children) {
+            public ProblemTreeNode(PathElement pathElement) {
+                this((PathElement) null, (List) null, (Map) null); throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.ProblemReporter.Collector.ProblemTreeNode#<init>");
+            }
+            public ProblemTreeNode child(PathElement id) {
+                throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.ProblemReporter.Collector.ProblemTreeNode#child");
+            }
+            public List<String> getLines() {
+                throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.ProblemReporter.Collector.ProblemTreeNode#getLines");
+            }
+        }
+}
 
     record FieldPathElement(String name) implements PathElement {
         @Override

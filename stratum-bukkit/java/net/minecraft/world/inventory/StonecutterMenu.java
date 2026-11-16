@@ -7,6 +7,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.crafting.SelectableRecipe;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 public class StonecutterMenu extends AbstractContainerMenu {
     public static final int INPUT_SLOT = 0;
@@ -83,5 +85,31 @@ public class StonecutterMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+    public int getSelectedRecipeIndex() {
+        return (int) 0;
+    }
+    public SelectableRecipe.SingleInputSet<StonecutterRecipe> getVisibleRecipes() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.StonecutterMenu#getVisibleRecipes");
+    }
+    public int getNumberOfVisibleRecipes() {
+        return (int) 0;
+    }
+    public boolean hasInputItem() {
+        return false;
+    }
+    public boolean clickMenuButton(Player player, int buttonId) {
+        return super.clickMenuButton(player, buttonId);
+    }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public MenuType<?> getType() {
+        return super.getType();
+    }
+    public void registerUpdateListener(Runnable slotUpdateListener) {
+    }
+    public boolean canTakeItemForPickAll(ItemStack carried, Slot target) {
+        return super.canTakeItemForPickAll(carried, target);
     }
 }

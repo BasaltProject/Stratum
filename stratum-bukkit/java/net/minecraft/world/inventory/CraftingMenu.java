@@ -6,6 +6,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class CraftingMenu extends AbstractCraftingMenu {
     public static final int RESULT_SLOT = 0;
@@ -90,5 +94,22 @@ public class CraftingMenu extends AbstractCraftingMenu {
     @Override
     public List<Slot> getInputGridSlots() {
         return slots.subList(CRAFT_SLOT_START, CRAFT_SLOT_END);
+    }
+    protected static void slotChangedCraftingGrid(AbstractContainerMenu menu, ServerLevel level, Player player, CraftingContainer container, ResultContainer resultSlots, RecipeHolder<CraftingRecipe> recipeHint) {
+    }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
+    public void beginPlacingRecipe() {
+        super.beginPlacingRecipe();
+    }
+    public void finishPlacingRecipe(ServerLevel level, RecipeHolder<CraftingRecipe> recipe) {
+        super.finishPlacingRecipe(level, recipe);
+    }
+    public RecipeBookType getRecipeBookType() {
+        return super.getRecipeBookType();
+    }
+    protected Player owner() {
+        return super.owner();
     }
 }

@@ -20,6 +20,23 @@ import org.bukkit.SoundCategory;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignTextSlot;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public abstract class SignBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -110,5 +127,43 @@ public abstract class SignBlock extends BaseEntityBlock implements SimpleWaterlo
         }
         viewer.openSign(sign, sign.getInteractableSideFor(viewer));
         return InteractionResult.SUCCESS;
+    }
+    protected SignBlock(WoodType type, BlockBehaviour.Properties properties) {
+        super((int) 0);
+    }
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
+    }
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return super.getShape(state, level, pos, context);
+    }
+    public boolean isPossibleToRespawnInThis(BlockState state) {
+        return super.isPossibleToRespawnInThis(state);
+    }
+    public BlockEntity newBlockEntity(BlockPos worldPosition, BlockState blockState) {
+        return super.newBlockEntity(worldPosition, blockState);
+    }
+    public float getYRotationDegrees(BlockState state) {
+        return (float) 0;
+    }
+    public Vec3 getSignHitboxCenterPosition(BlockState state) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.SignBlock#getSignHitboxCenterPosition");
+    }
+    protected FluidState getFluidState(BlockState state) {
+        return super.getFluidState(state);
+    }
+    public WoodType type() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.SignBlock#type");
+    }
+    public static WoodType getWoodType(Block block) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.SignBlock#getWoodType");
+    }
+    public void openTextEdit(Player player, SignBlockEntity sign, SignTextSlot slot) {
+    }
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> type) {
+        return super.getTicker(level, blockState, type);
+    }
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity by, ItemStack itemStack) {
+        super.setPlacedBy(level, pos, state, by, itemStack);
     }
 }

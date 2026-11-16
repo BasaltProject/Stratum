@@ -4,6 +4,8 @@ package net.minecraft.world.level.levelgen.synth;
 import net.minecraft.util.Interval;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.densityfunction.DensityBuffer;
+import net.minecraft.world.level.levelgen.densityfunction.DensityVolume;
 
 @Deprecated
 public class SmearedPerlinNoise extends PerlinNoise {
@@ -41,5 +43,8 @@ public class SmearedPerlinNoise extends PerlinNoise {
     private double computeFudgeY(double originalY, double relativeY) {
         double limit = originalY >= 0.0 && originalY < relativeY ? originalY : relativeY;
         return Mth.floor(limit / fudgeYScale + kShiftUpEpsilon) * fudgeYScale;
+    }
+    public void addToVolume(DensityBuffer buffer, DensityVolume volume, double xzScale, double yScale, float amplitude) {
+        super.addToVolume(buffer, volume, xzScale, yScale, amplitude);
     }
 }

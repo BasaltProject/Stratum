@@ -19,8 +19,14 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import java.util.List;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class HopperBlockEntity extends RandomizableContainerBlockEntity implements net.minecraft.world.level.block.entity.Hopper {
+public class HopperBlockEntity extends RandomizableContainerBlockEntity implements Hopper {
     public static final int MOVE_ITEM_SPEED = 8;
     public static final int HOPPER_CONTAINER_SIZE = 5;
     protected HopperBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
@@ -220,5 +226,30 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
         CompoundTag tag = nbt();
         tag.putInt(kCooldownKey, ticks);
         load(tag);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public ItemStack removeItem(int slot, int count) {
+        return super.removeItem(slot, count);
+    }
+    public void setItem(int slot, ItemStack itemStack) {
+        super.setItem(slot, itemStack);
+    }
+    public void setBlockState(BlockState blockState) {
+        super.setBlockState(blockState);
+    }
+    public static void pushItemsTick(Level level, BlockPos pos, BlockState state, HopperBlockEntity entity) {
+    }
+    protected NonNullList<ItemStack> getItems() {
+        return super.getItems();
+    }
+    protected void setItems(NonNullList<ItemStack> items) {
+        super.setItems(items);
+    }
+    public static void entityInside(Level level, BlockPos pos, BlockState blockState, Entity entity, HopperBlockEntity hopper) {
     }
 }

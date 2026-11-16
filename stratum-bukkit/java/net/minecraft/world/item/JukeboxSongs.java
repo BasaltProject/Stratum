@@ -36,6 +36,7 @@ import net.minecraft.tags.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.data.worldgen.BootstrapContext;
 public interface JukeboxSongs {
     ResourceKey<JukeboxSong> THIRTEEN = create("13");
     ResourceKey<JukeboxSong> CAT = create("cat");
@@ -62,5 +63,7 @@ public interface JukeboxSongs {
 
     private static ResourceKey<JukeboxSong> create(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, Identifier.withDefaultNamespace(name));
+    }
+    static void bootstrap(BootstrapContext<JukeboxSong> context) {
     }
 }

@@ -135,4 +135,32 @@ public class NullOps implements DynamicOps<Unit> {
     public String toString() {
         return "Null";
     }
+    static final class NullMapBuilder extends RecordBuilder.AbstractUniversalBuilder<Unit, Unit> {
+        public NullMapBuilder(DynamicOps<Unit> ops) {
+            super((com.mojang.serialization.DynamicOps) null);
+        }
+        protected Unit initBuilder() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullMapBuilder#initBuilder");
+        }
+        protected Unit append(Unit key, Unit value, Unit builder) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullMapBuilder#append");
+        }
+        protected DataResult<Unit> build(Unit builder, Unit prefix) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullMapBuilder#build");
+        }
+    }
+    static final class NullListBuilder extends AbstractListBuilder<Unit, Unit> {
+        public NullListBuilder(DynamicOps<Unit> ops) {
+            super((com.mojang.serialization.DynamicOps) null);
+        }
+        protected Unit initBuilder() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullListBuilder#initBuilder");
+        }
+        protected Unit append(Unit builder, Unit value) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullListBuilder#append");
+        }
+        protected DataResult<Unit> build(Unit builder, Unit prefix) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.NullOps.NullListBuilder#build");
+        }
+    }
 }

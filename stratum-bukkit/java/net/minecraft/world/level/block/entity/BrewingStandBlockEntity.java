@@ -12,8 +12,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.component.BrewingFuel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements net.minecraft.world.WorldlyContainer {
+public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int DATA_TOTAL_BREW_TIME = 2;
     public static final int DATA_TOTAL_FUEL_USES = 3;
     public static final int BREWING_TIME_SECONDS = 20;
@@ -79,5 +85,23 @@ public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
         return new net.minecraft.world.inventory.BrewingStandMenu(containerId, inventory, this, new net.minecraft.world.inventory.SimpleContainerData(2));
+    }
+    protected ContainerData dataAccess = null;
+    protected int getUses(ServerLevel level, BrewingFuel brewingFuel) {
+        return (int) 0;
+    }
+    protected float getSpeedMultiplier(ServerLevel level, BrewingFuel brewingFuel) {
+        return (float) 0;
+    }
+    public static void serverTick(ServerLevel level, BlockPos pos, BlockState selfState, BrewingStandBlockEntity entity) {
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    public boolean canPlaceItem(int slot, ItemStack itemStack) {
+        return super.canPlaceItem(slot, itemStack);
     }
 }

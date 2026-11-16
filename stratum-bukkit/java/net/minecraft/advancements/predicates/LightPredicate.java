@@ -22,5 +22,8 @@ public record LightPredicate(MinMaxBounds.Ints composite) {
         public LightPredicate build() {
             return new LightPredicate(composite);
         }
-    }
+            public Builder() {
+            
+        }
+}
 }

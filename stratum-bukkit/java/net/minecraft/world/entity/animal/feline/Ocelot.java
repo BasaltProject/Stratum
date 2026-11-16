@@ -106,7 +106,13 @@ public class Ocelot extends Animal {
         public OcelotAvoidEntityGoal(Ocelot ocelot, Class<T> avoidClass, float maxDist, double walkSpeedModifier, double sprintSpeedModifier) {
             super(ocelot, avoidClass, maxDist, walkSpeedModifier, sprintSpeedModifier);
         }
-    }
+            public boolean canUse() {
+            return false;
+        }
+        public boolean canContinueToUse() {
+            return false;
+        }
+}
     static class OcelotTemptGoal extends TemptGoal {
         public OcelotTemptGoal(Ocelot ocelot, double speedModifier, Predicate<ItemStack> items, boolean canScare) {
             super(ocelot, speedModifier, items, canScare);
@@ -114,5 +120,8 @@ public class Ocelot extends Animal {
         protected boolean canScare() {
             return false;
         }
+    }
+    public boolean isSteppingCarefully() {
+        return super.isSteppingCarefully();
     }
 }

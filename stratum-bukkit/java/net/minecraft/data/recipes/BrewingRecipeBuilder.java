@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.PotionIngredient;
 
 public class BrewingRecipeBuilder implements RecipeBuilder {
     private final Item inputItem;
@@ -80,5 +82,9 @@ public class BrewingRecipeBuilder implements RecipeBuilder {
         json.add("reagent", reagentJson);
         json.add("output", output);
         RecipeJson.emit(recipeOutput, id.identifier(), json);
+    }
+    private BrewingRecipeBuilder(PotionIngredient input, PotionIngredient reagent, ItemStackTemplate output) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.BrewingRecipeBuilder#<init>");
     }
 }

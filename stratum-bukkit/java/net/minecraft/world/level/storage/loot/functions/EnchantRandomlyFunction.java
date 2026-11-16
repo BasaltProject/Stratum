@@ -9,6 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import java.util.Set;
+import net.minecraft.util.context.ContextKey;
 public class EnchantRandomlyFunction extends LootItemConditionalFunction {
     public static final MapCodec<EnchantRandomlyFunction> MAP_CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction.class, "MAP_CODEC");
     private final Optional<HolderSet<Enchantment>> options;
@@ -69,5 +71,8 @@ public class EnchantRandomlyFunction extends LootItemConditionalFunction {
         public LootItemFunction build() {
             return new EnchantRandomlyFunction(getCondition(), options, onlyCompatible, includeAdditionalCostComponent);
         }
+    }
+    public Set<ContextKey<?>> getReferencedContextParams() {
+        return java.util.Set.of();
     }
 }

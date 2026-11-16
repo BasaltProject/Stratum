@@ -78,4 +78,7 @@ public class Pufferfish extends AbstractFish {
             }
         }
     }
+    public void playerTouch(Player player) {
+        super.playerTouch(player);
+    }
 }

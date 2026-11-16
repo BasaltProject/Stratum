@@ -42,4 +42,8 @@ public class SmithingTrimRecipeBuilder {
         pattern.unwrapKey().ifPresent(key -> json.addProperty("pattern", key.identifier().toString()));
         RecipeJson.emit(output, id.identifier(), json);
     }
+    public SmithingTrimRecipeBuilder(RecipeCategory category, Ingredient template, Ingredient base, Ingredient addition, Holder<TrimPattern> pattern) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.SmithingTrimRecipeBuilder#<init>");
+    }
 }

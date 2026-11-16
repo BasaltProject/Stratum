@@ -147,5 +147,8 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
     }
 
     static record WorldDimensionData(JsonObject generatorSettings, String levelType) {
-    }
+            public WorldDimensions create(HolderLookup.Provider registries) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.dedicated.DedicatedServerProperties.WorldDimensionData#create");
+        }
+}
 }

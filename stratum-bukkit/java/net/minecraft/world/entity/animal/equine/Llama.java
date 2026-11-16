@@ -216,4 +216,13 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
             return super.getFollowDistance() * 0.25;
         }
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
+    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+        return super.causeFallDamage(fallDistance, damageModifier, damageSource);
+    }
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale) {
+        return super.getPassengerAttachmentPoint(passenger, dimensions, scale);
+    }
 }

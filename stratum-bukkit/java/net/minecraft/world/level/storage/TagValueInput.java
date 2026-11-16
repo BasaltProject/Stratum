@@ -274,4 +274,50 @@ public class TagValueInput implements ValueInput {
             return "Expected list '" + name + "' to contain at index " + index + " value of type " + expected.getName() + ", but got " + actual.getName();
         }
     }
+    private TagValueInput(ProblemReporter problemReporter, ValueInputContextHelper context, CompoundTag input) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput#<init>");
+    }
+    static class ListWrapper implements ValueInput.ValueInputList {
+        private ListWrapper(ProblemReporter problemReporter, String name, ValueInputContextHelper context, ListTag list) {
+            
+        }
+        public boolean isEmpty() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.ListWrapper#isEmpty");
+        }
+        public Stream<ValueInput> stream() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.ListWrapper#stream");
+        }
+        public Iterator<ValueInput> iterator() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.ListWrapper#iterator");
+        }
+    }
+    static class TypedListWrapper<T> implements ValueInput.TypedInputList<T> {
+        private TypedListWrapper(ProblemReporter problemReporter, String name, ValueInputContextHelper context, Codec<T> codec, ListTag list) {
+            
+        }
+        public boolean isEmpty() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.TypedListWrapper#isEmpty");
+        }
+        public Stream<T> stream() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.TypedListWrapper#stream");
+        }
+        public Iterator<T> iterator() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.TypedListWrapper#iterator");
+        }
+    }
+    static class CompoundListWrapper implements ValueInput.ValueInputList {
+        public CompoundListWrapper(ProblemReporter problemReporter, ValueInputContextHelper context, List<CompoundTag> list) {
+            
+        }
+        public boolean isEmpty() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.CompoundListWrapper#isEmpty");
+        }
+        public Stream<ValueInput> stream() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.CompoundListWrapper#stream");
+        }
+        public Iterator<ValueInput> iterator() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.storage.TagValueInput.CompoundListWrapper#iterator");
+        }
+    }
 }

@@ -6,4 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 public record RecipeSerializer<T extends Recipe<?>>(MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
     public RecipeSerializer {
     }
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.item.crafting.RecipeSerializer#streamCodec");
+    }
 }

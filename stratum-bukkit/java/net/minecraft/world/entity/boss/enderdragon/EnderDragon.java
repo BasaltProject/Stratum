@@ -155,4 +155,25 @@ public class EnderDragon extends Mob implements Enemy {
     private EnderDragonFight dragonFight;
     private BlockPos fightOrigin = BlockPos.ZERO;
 
+    public void onFlap() {
+        super.onFlap();
+    }
+    public boolean hurt(ServerLevel level, EnderDragonPart part, DamageSource source, float damage) {
+        return false;
+    }
+    public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
+        super.knockback(power, xd, zd, source, damage, comesFromEffect);
+    }
+    public void kill(ServerLevel level) {
+        super.kill(level);
+    }
+    public boolean addEffect(MobEffectInstance newEffect, Entity source) {
+        return super.addEffect(newEffect, source);
+    }
+    public boolean canUsePortal(boolean ignorePassenger) {
+        return super.canUsePortal(ignorePassenger);
+    }
+    public boolean canAttack(LivingEntity target) {
+        return super.canAttack(target);
+    }
 }

@@ -60,4 +60,7 @@ public abstract class VehicleEntity extends Entity {
         return 10;
     }
     protected abstract Item getDropItem();
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage);
+    }
 }

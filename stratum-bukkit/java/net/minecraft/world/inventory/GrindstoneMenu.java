@@ -86,4 +86,7 @@ public class GrindstoneMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+    }
 }

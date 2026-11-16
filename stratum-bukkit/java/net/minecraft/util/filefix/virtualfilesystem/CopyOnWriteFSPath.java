@@ -13,6 +13,7 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.util.filefix.virtualfilesystem.exception.CowFSNoSuchFileException;
 
 public final class CopyOnWriteFSPath implements Path {
     private final CopyOnWriteFileSystem fileSystem;
@@ -229,5 +230,12 @@ public final class CopyOnWriteFSPath implements Path {
     @Override
     public String toString() {
         return (absolute ? "/" : "") + String.join("/", names);
+    }
+    private CopyOnWriteFSPath(Path path, CopyOnWriteFileSystem fs, boolean isAbsolute) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.filefix.virtualfilesystem.CopyOnWriteFSPath#<init>");
+    }
+    public CopyOnWriteFSPath resolve(String first, String... more) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.util.filefix.virtualfilesystem.CopyOnWriteFSPath#resolve");
     }
 }

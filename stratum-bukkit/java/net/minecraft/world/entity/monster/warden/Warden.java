@@ -233,4 +233,19 @@ public class Warden extends Monster implements VibrationSystem {
             }
         }
     }
+    public float getSecondsToDisableBlocking() {
+        return super.getSecondsToDisableBlocking();
+    }
+    public void updateDynamicGameEventListener(BiConsumer<DynamicGameEventListener<?>, ServerLevel> action) {
+        super.updateDynamicGameEventListener(action);
+    }
+    public boolean canAttack(LivingEntity target) {
+        return super.canAttack(target);
+    }
+    public LivingEntity getTarget() {
+        return super.getTarget();
+    }
+    public boolean isPushable() {
+        return super.isPushable();
+    }
 }

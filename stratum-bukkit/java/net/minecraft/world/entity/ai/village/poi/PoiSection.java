@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.SectionPos;
+import net.minecraft.util.debug.DebugPoiInfo;
 
 public class PoiSection {
     private final Short2ObjectMap<PoiRecord> records = new Short2ObjectOpenHashMap<>();
@@ -111,5 +112,8 @@ public class PoiSection {
         public PoiSection unpack(Runnable setDirty) {
             return new PoiSection(setDirty, isValid, records.stream().map(packed -> packed.unpack(setDirty)).toList());
         }
+    }
+    public Optional<DebugPoiInfo> getDebugPoiInfo(BlockPos pos) {
+        return java.util.Optional.empty();
     }
 }

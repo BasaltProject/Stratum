@@ -62,5 +62,8 @@ public record DamageSourcePredicate(List<TagPredicate<DamageType>> tags, Optiona
         public DamageSourcePredicate build() {
             return new DamageSourcePredicate(List.copyOf(tags), directEntity, sourceEntity, isDirect);
         }
-    }
+            public Builder isDirect(boolean direct) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.DamageSourcePredicate.Builder#isDirect");
+        }
+}
 }

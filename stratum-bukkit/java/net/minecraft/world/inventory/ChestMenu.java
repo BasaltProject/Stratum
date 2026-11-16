@@ -96,4 +96,7 @@ public class ChestMenu extends AbstractContainerMenu {
         }
         return original;
     }
+    public void removed(Player player) {
+        super.removed(player);
+    }
 }

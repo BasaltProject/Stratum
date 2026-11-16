@@ -7,6 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class ComparatorBlockEntity extends BlockEntity {
     public ComparatorBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -23,5 +25,11 @@ public class ComparatorBlockEntity extends BlockEntity {
 
     public void setOutputSignal(int outputSignal) {
         TileNbt.update(this, tag -> tag.putInt("OutputSignal", outputSignal));
+    }
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
     }
 }

@@ -57,4 +57,7 @@ public class InvertableSetOptionState {
     static enum Limitation {
         NONE, SINGLE, MULTIPLE;
     }
+    public InvertableSetOptionState() {
+        
+    }
 }

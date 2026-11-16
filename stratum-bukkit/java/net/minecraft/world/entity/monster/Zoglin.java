@@ -103,4 +103,7 @@ public class Zoglin extends Monster implements HoglinBase {
     }
     protected void readAdditionalSaveData(ValueInput input) {
     }
+    public LivingEntity getTarget() {
+        return super.getTarget();
+    }
 }

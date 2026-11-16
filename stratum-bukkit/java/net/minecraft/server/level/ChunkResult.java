@@ -35,7 +35,16 @@ public interface ChunkResult<T> {
         public T orElseThrow(java.util.function.Supplier<? extends RuntimeException> supplier) {
             return value;
         }
-    }
+            public String getError() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Success#getError");
+        }
+        public ChunkResult<T> ifSuccess(Consumer<T> consumer) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Success#ifSuccess");
+        }
+        public <R> ChunkResult<R> map(Function<T, R> map) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Success#map");
+        }
+}
 
     record Fail<T>(String message) implements ChunkResult<T> {
         @Override
@@ -52,7 +61,16 @@ public interface ChunkResult<T> {
         public T orElseThrow(java.util.function.Supplier<? extends RuntimeException> supplier) {
             throw supplier.get();
         }
-    }
+            public String getError() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Fail#getError");
+        }
+        public ChunkResult<T> ifSuccess(Consumer<T> consumer) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Fail#ifSuccess");
+        }
+        public <R> ChunkResult<R> map(Function<T, R> map) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.ChunkResult.Fail#map");
+        }
+}
 
     static <T> ChunkResult<T> error(Supplier<String> errorSupplier) {
         return new Fail<>(errorSupplier.get());

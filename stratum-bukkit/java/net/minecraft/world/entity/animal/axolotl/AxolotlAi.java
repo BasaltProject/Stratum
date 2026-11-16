@@ -17,4 +17,16 @@ public class AxolotlAi {
 
     public static void updateActivity(Axolotl body) {
     }
+    protected static ActivityData<Axolotl> initPlayDeadActivity() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.axolotl.AxolotlAi#initPlayDeadActivity");
+    }
+    protected static ActivityData<Axolotl> initFightActivity() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.axolotl.AxolotlAi#initFightActivity");
+    }
+    protected static ActivityData<Axolotl> initCoreActivity() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.axolotl.AxolotlAi#initCoreActivity");
+    }
+    protected static ActivityData<Axolotl> initIdleActivity() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.entity.animal.axolotl.AxolotlAi#initIdleActivity");
+    }
 }

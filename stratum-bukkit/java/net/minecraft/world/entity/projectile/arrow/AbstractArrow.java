@@ -227,4 +227,19 @@ public abstract class AbstractArrow extends Projectile {
             return ordinal < 0 || ordinal >= values().length ? values()[0] : values()[ordinal];
         }
     }
+    public void shoot(double xd, double yd, double zd, float pow, float uncertainty) {
+        super.shoot(xd, yd, zd, pow, uncertainty);
+    }
+    public void move(MoverType moverType, Vec3 delta) {
+        super.move(moverType, delta);
+    }
+    public ItemStack getWeaponItem() {
+        return super.getWeaponItem();
+    }
+    protected boolean canHitEntity(Entity entity) {
+        return false;
+    }
+    protected Entity.MovementEmission getMovementEmission() {
+        return super.getMovementEmission();
+    }
 }

@@ -114,7 +114,10 @@ public class TagLoader<T> {
         return lookups;
     }
     public static record EntryWithSource(TagEntry entry, String source) {
-    }
+            public String toString() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.tags.TagLoader.EntryWithSource#toString");
+        }
+}
     static record SortingEntry(List<EntryWithSource> entries) implements DependencySorter.Entry<Identifier> {
         public void visitRequiredDependencies(Consumer<Identifier> output) {
             entries.forEach(entry -> entry.entry().visitRequiredDependencies(output));

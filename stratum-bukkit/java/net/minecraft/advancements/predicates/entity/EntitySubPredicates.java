@@ -3,6 +3,7 @@ package net.minecraft.advancements.predicates.entity;
 import com.mojang.serialization.Codec;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.minecraft.core.Registry;
 public class EntitySubPredicates {
     private static final Map<String, Codec<? extends EntitySubPredicate>> kByName = new LinkedHashMap<>();
     private static final Map<Codec<? extends EntitySubPredicate>, String> kByCodec = new java.util.IdentityHashMap<>();
@@ -42,5 +43,8 @@ public class EntitySubPredicates {
     }
     public static String nameOf(Codec<? extends EntitySubPredicate> codec) {
         return kByCodec.get(codec);
+    }
+    public static Codec<? extends EntitySubPredicate> bootstrap(Registry<Codec<? extends EntitySubPredicate>> registry) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.entity.EntitySubPredicates#bootstrap");
     }
 }

@@ -3,7 +3,7 @@ package net.minecraft.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-public class StaticCache2D<T> {
+public class StaticCache2D<T extends Object> {
     private final int minX;
     private final int minZ;
     private final int sizeX;
@@ -43,10 +43,10 @@ public class StaticCache2D<T> {
     public String toString() {
         return "StaticCache2D[" + minX + ", " + minZ + ", " + (minX + sizeX) + ", " + (minZ + sizeZ) + "]";
     }
-    public interface Initializer<T> {
+    public interface Initializer<T extends Object> {
         T get(int x, int z);
     }
-    public interface MappingFunction<T, U> {
+    public interface MappingFunction<T extends Object, U extends Object> {
         U apply(T value, int x, int z);
     }
 }

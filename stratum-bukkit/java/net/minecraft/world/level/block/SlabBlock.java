@@ -54,4 +54,10 @@ public class SlabBlock extends Block implements SimpleWaterloggedBlock {
     protected boolean isPathfindable(BlockState state, PathComputationType type) {
         return super.isPathfindable(state, type);
     }
+    public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState state, FluidState fluidState) {
+        return SimpleWaterloggedBlock.super.placeLiquid(level, pos, state, fluidState);
+    }
+    public boolean canPlaceLiquid(LivingEntity user, BlockGetter level, BlockPos pos, BlockState state, Fluid type) {
+        return SimpleWaterloggedBlock.super.canPlaceLiquid(user, level, pos, state, type);
+    }
 }

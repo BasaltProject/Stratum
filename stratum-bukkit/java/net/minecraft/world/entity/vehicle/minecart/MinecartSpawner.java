@@ -35,4 +35,7 @@ public class MinecartSpawner extends AbstractMinecart {
     public BaseSpawner getSpawner() {
         return spawner;
     }
+    public BlockState getDefaultDisplayBlockState() {
+        return super.getDefaultDisplayBlockState();
+    }
 }

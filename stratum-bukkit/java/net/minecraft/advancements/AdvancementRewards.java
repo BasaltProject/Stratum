@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.storage.loot.LootTable;
 import org.basaltmc.stratum.bukkit.facade.ReflectiveCodecs;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerPlayer;
 public record AdvancementRewards(int experience, HolderSet<LootTable> loot, List<ResourceKey<Recipe<?>>> recipes, Optional<CacheableFunction> function) {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static final Codec<List<ResourceKey<Recipe<?>>>> kRecipes = Identifier.CODEC.listOf()
@@ -43,5 +45,19 @@ public record AdvancementRewards(int experience, HolderSet<LootTable> loot, List
         public AdvancementRewards build() {
             return new AdvancementRewards(experience, HolderSet.empty(), List.of(), function.map(CacheableFunction::new));
         }
+            public static Builder loot(Holder<LootTable> id) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.AdvancementRewards.Builder#loot");
+        }
+        public Builder addLootTable(Holder<LootTable> id) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.AdvancementRewards.Builder#addLootTable");
+        }
+        public static Builder recipe(ResourceKey<Recipe<?>> id) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.AdvancementRewards.Builder#recipe");
+        }
+        public Builder addRecipe(ResourceKey<Recipe<?>> id) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.AdvancementRewards.Builder#addRecipe");
+        }
+}
+    public void grant(ServerPlayer player) {
     }
 }

@@ -31,4 +31,7 @@ public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
     protected AbstractContainerMenu createFurnaceMenu(int containerId, Inventory inventory) {
         return new net.minecraft.world.inventory.SmokerMenu(containerId, inventory, this, dataAccess);
     }
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return super.createMenu(containerId, inventory);
+    }
 }

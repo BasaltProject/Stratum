@@ -325,4 +325,110 @@ public class WorldBorder extends SavedData {
                 border.getLerpTarget());
         }
     }
+    class MovingBorderExtent implements BorderExtent {
+        private MovingBorderExtent(double from, double to, long duration, long gameTime) {
+            
+        }
+        public double getMinX(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getMinX");
+        }
+        public double getMinZ(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getMinZ");
+        }
+        public double getMaxX(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getMaxX");
+        }
+        public double getMaxZ(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getMaxZ");
+        }
+        public double getSize() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getSize");
+        }
+        public double getPreviousSize() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getPreviousSize");
+        }
+        public double getLerpSpeed() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getLerpSpeed");
+        }
+        public long getLerpTime() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getLerpTime");
+        }
+        public double getLerpTarget() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getLerpTarget");
+        }
+        public BorderStatus getStatus() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getStatus");
+        }
+        public void onCenterChange() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#onCenterChange");
+        }
+        public void onAbsoluteMaxSizeChange() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#onAbsoluteMaxSizeChange");
+        }
+        public BorderExtent update() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#update");
+        }
+        public VoxelShape getCollisionShape() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.MovingBorderExtent#getCollisionShape");
+        }
+    }
+    class StaticBorderExtent implements BorderExtent {
+        public StaticBorderExtent(double size) {
+            
+        }
+        public double getMinX(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getMinX");
+        }
+        public double getMaxX(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getMaxX");
+        }
+        public double getMinZ(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getMinZ");
+        }
+        public double getMaxZ(float deltaPartialTick) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getMaxZ");
+        }
+        public double getSize() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getSize");
+        }
+        public BorderStatus getStatus() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getStatus");
+        }
+        public double getLerpSpeed() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getLerpSpeed");
+        }
+        public long getLerpTime() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getLerpTime");
+        }
+        public double getLerpTarget() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getLerpTarget");
+        }
+        public void onAbsoluteMaxSizeChange() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#onAbsoluteMaxSizeChange");
+        }
+        public void onCenterChange() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#onCenterChange");
+        }
+        public BorderExtent update() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#update");
+        }
+        public VoxelShape getCollisionShape() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.border.WorldBorder.StaticBorderExtent#getCollisionShape");
+        }
+    }
+    interface BorderExtent {
+        double getMinX(float deltaPartialTick);
+        double getMaxX(float deltaPartialTick);
+        double getMinZ(float deltaPartialTick);
+        double getMaxZ(float deltaPartialTick);
+        double getSize();
+        double getLerpSpeed();
+        long getLerpTime();
+        double getLerpTarget();
+        BorderStatus getStatus();
+        void onAbsoluteMaxSizeChange();
+        void onCenterChange();
+        BorderExtent update();
+        VoxelShape getCollisionShape();
+    }
 }

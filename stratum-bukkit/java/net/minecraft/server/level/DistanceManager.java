@@ -9,6 +9,8 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.util.TriState;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.TicketStorage;
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
+import java.util.Set;
 
 public abstract class DistanceManager {
     protected final java.util.Set<ChunkHolder> chunksToUpdateFutures = new java.util.HashSet<>();
@@ -122,5 +124,41 @@ public abstract class DistanceManager {
 
     public boolean hasTickets() {
         return world != null && !world.getPluginChunkTickets().isEmpty();
+    }
+    class FixedPlayerDistanceChunkTracker extends ChunkTracker {
+        protected final Long2ByteMap chunks = null;
+        protected final int maxDistance = 0;
+        protected FixedPlayerDistanceChunkTracker(int maxDistance) {
+            super((int) 0, (int) 0, (int) 0);
+        }
+        protected int getLevel(long node) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.FixedPlayerDistanceChunkTracker#getLevel");
+        }
+        protected void setLevel(long node, int level) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.FixedPlayerDistanceChunkTracker#setLevel");
+        }
+        protected void onLevelChange(long node, int oldLevel, int level) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.FixedPlayerDistanceChunkTracker#onLevelChange");
+        }
+        protected int getLevelFromSource(long to) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.FixedPlayerDistanceChunkTracker#getLevelFromSource");
+        }
+        public void runAllUpdates() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.FixedPlayerDistanceChunkTracker#runAllUpdates");
+        }
+    }
+    class PlayerTicketTracker extends FixedPlayerDistanceChunkTracker {
+        protected PlayerTicketTracker(int maxDistance) {
+            super((int) 0);
+        }
+        protected void onLevelChange(long node, int oldLevel, int level) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.PlayerTicketTracker#onLevelChange");
+        }
+        public void updateViewDistance(int viewDistance) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.PlayerTicketTracker#updateViewDistance");
+        }
+        public void runAllUpdates() {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.level.DistanceManager.PlayerTicketTracker#runAllUpdates");
+        }
     }
 }

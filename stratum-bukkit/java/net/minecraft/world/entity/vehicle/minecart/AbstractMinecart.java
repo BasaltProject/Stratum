@@ -184,4 +184,37 @@ public abstract class AbstractMinecart extends VehicleEntity {
     public boolean isFurnace() {
         return false;
     }
+    public Vec3 getRelativePortalPosition(Direction.Axis axis, BlockUtil.FoundRectangle portalArea) {
+        return super.getRelativePortalPosition(axis, portalArea);
+    }
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        return super.getDismountLocationForPassenger(passenger);
+    }
+    public void lerpPositionAndRotationStep(int stepsToTarget, double targetX, double targetY, double targetZ, double targetYRot, double targetXRot) {
+        super.lerpPositionAndRotationStep(stepsToTarget, targetX, targetY, targetZ, targetYRot, targetXRot);
+    }
+    public void applyGravity() {
+        super.applyGravity();
+    }
+    public void reapplyPosition() {
+        super.reapplyPosition();
+    }
+    public boolean updateFluidInteraction() {
+        return super.updateFluidInteraction();
+    }
+    public Vec3 getKnownMovement() {
+        return super.getKnownMovement();
+    }
+    protected InterpolationHandler createInterpolationHandler() {
+        return super.createInterpolationHandler();
+    }
+    public void onInterpolationStart(InterpolationHandler interpolation) {
+        super.onInterpolationStart(interpolation);
+    }
+    public void lerpMotion(Vec3 movement) {
+        super.lerpMotion(movement);
+    }
+    public void move(MoverType moverType, Vec3 delta) {
+        super.move(moverType, delta);
+    }
 }

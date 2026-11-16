@@ -82,4 +82,16 @@ public class Creeper extends Monster {
             api.setIgnited(true);
         }
     }
+    public int getMaxFallDistance() {
+        return super.getMaxFallDistance();
+    }
+    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+        return super.causeFallDamage(fallDistance, damageModifier, damageSource);
+    }
+    public void setTarget(LivingEntity target) {
+        super.setTarget(target);
+    }
+    public boolean killedEntity(ServerLevel level, LivingEntity entity, DamageSource source) {
+        return super.killedEntity(level, entity, source);
+    }
 }

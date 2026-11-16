@@ -143,5 +143,8 @@ public class GameTestSequence {
             }
             throw new GameTestAssertException(Component.translatable("test.error.sequence.condition_already_triggered", triggerTime), tick);
         }
-    }
+            public Condition() {
+            
+        }
+}
 }

@@ -54,4 +54,7 @@ public class Cow extends AbstractCow {
     protected <T> boolean applyImplicitComponent(DataComponentType<T> type, T value) {
         return false;
     }
+    public <T> T get(DataComponentType<? extends T> type) {
+        return super.get(type);
+    }
 }

@@ -61,5 +61,11 @@ public record DamagePredicate(MinMaxBounds.Doubles dealtDamage, MinMaxBounds.Dou
         public DamagePredicate build() {
             return new DamagePredicate(dealtDamage, takenDamage, sourceEntity, blocked, type);
         }
-    }
+            public Builder() {
+            
+        }
+        public Builder sourceEntity(EntityPredicate sourceEntity) {
+            throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.advancements.predicates.DamagePredicate.Builder#sourceEntity");
+        }
+}
 }

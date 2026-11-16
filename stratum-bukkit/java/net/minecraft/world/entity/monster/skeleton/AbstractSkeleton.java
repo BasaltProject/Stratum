@@ -71,4 +71,16 @@ public abstract class AbstractSkeleton extends Monster implements RangedAttackMo
     public boolean isShaking() {
         return isFullyFrozen();
     }
+    public boolean canUseNonMeleeWeapon(ItemStack item) {
+        return super.canUseNonMeleeWeapon(item);
+    }
+    public TagKey<Item> getPreferredWeaponType() {
+        return super.getPreferredWeaponType();
+    }
+    public void onEquipItem(EquipmentSlot slot, ItemStack oldStack, ItemStack stack) {
+        super.onEquipItem(slot, oldStack, stack);
+    }
+    public boolean wantsToPickUp(ServerLevel level, ItemStack itemStack) {
+        return super.wantsToPickUp(level, itemStack);
+    }
 }

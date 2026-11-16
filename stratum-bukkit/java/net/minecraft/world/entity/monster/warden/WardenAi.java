@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.ActivityData;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.schedule.Activity;
 import org.basaltmc.stratum.bukkit.NativeBrain;
+import net.minecraft.world.entity.LivingEntity;
 
 /** Adapter: the native brain of this species owns the activity, the memories and every behavior. */
 public class WardenAi {
@@ -32,5 +33,7 @@ public class WardenAi {
     }
 
     public static void updateActivity(Brain<Warden> brain) {
+    }
+    public static void setDigCooldown(LivingEntity body) {
     }
 }

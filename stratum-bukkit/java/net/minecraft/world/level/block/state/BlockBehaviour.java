@@ -262,6 +262,17 @@ public abstract class BlockBehaviour implements FeatureElement {
             NoteBlockInstrument[] all = NoteBlockInstrument.values();
             return all[info == null || info.length < 8 ? 0 : (int) info[7]];
         }
+        static final class Cache {
+            public final VoxelShape collisionShape = null;
+            public final boolean largeCollisionShape = false;
+            public final boolean isCollisionShapeFullBlock = false;
+            private Cache(BlockState state) {
+                
+            }
+            public boolean isFaceSturdy(Direction direction, SupportType supportType) {
+                throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase.Cache#isFaceSturdy");
+            }
+        }
 }
     protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[] {Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     protected boolean hasCollision;

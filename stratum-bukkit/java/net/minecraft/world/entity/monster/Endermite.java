@@ -51,4 +51,7 @@ public class Endermite extends Monster {
     public static boolean checkEndermiteSpawnRules(EntityType<Endermite> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
         return true;
     }
+    public void setYBodyRot(float yBodyRot) {
+        super.setYBodyRot(yBodyRot);
+    }
 }

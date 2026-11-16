@@ -10,6 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import com.mojang.datafixers.util.Either;
 
 public class EntityPositionSource implements PositionSource {
     public static final MapCodec<EntityPositionSource> CODEC = org.basaltmc.stratum.bukkit.facade.LazyCodecs.mapCodec(net.minecraft.world.level.gameevent.EntityPositionSource.class, "CODEC");
@@ -55,5 +56,9 @@ public class EntityPositionSource implements PositionSource {
         public StreamCodec<ByteBuf, EntityPositionSource> streamCodec() {
             return STREAM_CODEC;
         }
+    }
+    private EntityPositionSource(Either<Entity, Either<UUID, Integer>> entityOrUuidOrId, float yOffset) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.gameevent.EntityPositionSource#<init>");
     }
 }

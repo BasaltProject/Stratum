@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.basaltmc.stratum.bukkit.facade.TileNbt;
+import net.minecraft.core.Direction;
 
 public class TheEndPortalBlockEntity extends BlockEntity {
     public TheEndPortalBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -19,5 +20,8 @@ public class TheEndPortalBlockEntity extends BlockEntity {
 
     public TheEndPortalBlockEntity(ServerLevel level, BlockPos pos, CompoundTag nbt) {
         super(level, pos, nbt);
+    }
+    public boolean shouldRenderFace(Direction direction) {
+        return false;
     }
 }

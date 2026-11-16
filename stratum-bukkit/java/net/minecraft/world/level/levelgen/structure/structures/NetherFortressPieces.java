@@ -932,7 +932,10 @@ public class NetherFortressPieces {
             bricks(level, cb, 0, 6, 0, 4, 6, 4);
             footings(level, cb, 0, 0, 4, 4);
         }
-    }
+            protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
+            super.addAdditionalSaveData(context, tag);
+        }
+}
 
     public static class CastleSmallCorridorLeftTurnPiece extends CastleTurn {
         public CastleSmallCorridorLeftTurnPiece(int genDepth, RandomSource random, BoundingBox boundingBox,
@@ -972,7 +975,10 @@ public class NetherFortressPieces {
             bricks(level, cb, 0, 6, 0, 4, 6, 4);
             footings(level, cb, 0, 0, 4, 4);
         }
-    }
+            protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
+            super.addAdditionalSaveData(context, tag);
+        }
+}
 
     public static class CastleCorridorStairsPiece extends NetherBridgePiece {
         public CastleCorridorStairsPiece(int genDepth, BoundingBox boundingBox, Direction direction) {

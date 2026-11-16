@@ -75,4 +75,10 @@ public abstract class Monster extends PathfinderMob implements Enemy {
     public boolean isPreventingPlayerRest(ServerLevel level, Player player) {
         return true;
     }
+    public LivingEntity.Fallsounds getFallSounds() {
+        return super.getFallSounds();
+    }
+    public ItemStack getProjectile(ItemStack heldWeapon) {
+        return super.getProjectile(heldWeapon);
+    }
 }

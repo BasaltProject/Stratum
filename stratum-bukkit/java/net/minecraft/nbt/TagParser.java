@@ -10,6 +10,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.util.parsing.packrat.commands.Grammar;
 
 public class TagParser<T> {
     public static final SimpleCommandExceptionType ERROR_TRAILING_DATA =
@@ -330,5 +331,9 @@ public class TagParser<T> {
             }
             return StringTag.valueOf(text);
         }
+    }
+    private TagParser(DynamicOps<T> ops, Grammar<T> grammar) {
+        
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.nbt.TagParser#<init>");
     }
 }

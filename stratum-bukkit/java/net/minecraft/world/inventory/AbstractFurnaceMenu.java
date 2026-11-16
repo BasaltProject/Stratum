@@ -6,6 +6,12 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipePropertySet;
+import net.minecraft.world.level.Level;
 
 public abstract class AbstractFurnaceMenu extends AbstractContainerMenu {
     public static final int INGREDIENT_SLOT = 0;
@@ -97,5 +103,25 @@ public abstract class AbstractFurnaceMenu extends AbstractContainerMenu {
             slot.setChanged();
         }
         return original;
+    }
+    protected Level level = null;
+    protected AbstractFurnaceMenu(MenuType<?> menuType, ResourceKey<RecipePropertySet> allowedInputs, RecipeBookType recipeBookType, int containerId, Inventory inventory) {
+        super((net.minecraft.world.inventory.MenuType) null, (int) 0);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractFurnaceMenu#<init>");
+    }
+    protected AbstractFurnaceMenu(MenuType<?> menuType, ResourceKey<RecipePropertySet> allowedInputs, RecipeBookType recipeBookType, int containerId, Inventory inventory, Container container, ContainerData data) {
+        super((net.minecraft.world.inventory.MenuType) null, (int) 0);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractFurnaceMenu#<init>");
+    }
+    public void fillCraftSlotsStackedContents(StackedItemContents stackedContents) {
+    }
+    public Slot getResultSlot() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractFurnaceMenu#getResultSlot");
+    }
+    public RecipeBookType getRecipeBookType() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractFurnaceMenu#getRecipeBookType");
+    }
+    public RecipeBookMenu.PostPlaceAction handlePlacement(boolean useMaxItems, boolean allowDroppingItemsToClear, RecipeHolder<?> recipe, ServerLevel level, Inventory inventory) {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.inventory.AbstractFurnaceMenu#handlePlacement");
     }
 }

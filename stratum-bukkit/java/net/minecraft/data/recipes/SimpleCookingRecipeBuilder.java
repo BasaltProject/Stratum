@@ -8,8 +8,10 @@ import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 
-public class SimpleCookingRecipeBuilder extends JsonRecipeBuilder {
+public class SimpleCookingRecipeBuilder extends JsonRecipeBuilder implements RecipeBuilder {
     private final String kind;
     private final Ingredient ingredient;
     private final CookingBookCategory cookingCategory;
@@ -83,5 +85,16 @@ public class SimpleCookingRecipeBuilder extends JsonRecipeBuilder {
         putGroup(json);
         json.add("ingredient", RecipeJson.ingredient(ingredient));
         json.add("result", RecipeJson.result(result, 1));
+    }
+    private SimpleCookingRecipeBuilder(RecipeCategory craftingCategory, CookingBookCategory cookingCategory, ItemStackTemplate result, Ingredient ingredient, float experience, int cookingTime, AbstractCookingRecipe.Factory<?> factory) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.SimpleCookingRecipeBuilder#<init>");
+    }
+    private SimpleCookingRecipeBuilder(RecipeCategory craftingCategory, CookingBookCategory cookingCategory, ItemLike result, Ingredient ingredient, float experience, int cookingTime, AbstractCookingRecipe.Factory<?> factory) {
+        super((net.minecraft.data.recipes.RecipeCategory) null);
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.data.recipes.SimpleCookingRecipeBuilder#<init>");
+    }
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        super.save(output, id);
     }
 }

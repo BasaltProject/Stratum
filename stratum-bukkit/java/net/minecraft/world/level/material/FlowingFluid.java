@@ -112,7 +112,13 @@ public class FlowingFluid extends Fluid {
         return state.getShape(level, pos);
     }
     static record BlockStatePairKey(BlockState first, BlockState second, Direction direction) {
-    }
+            public boolean equals(Object o) {
+            return false;
+        }
+        public int hashCode() {
+            return (int) 0;
+        }
+}
     protected class SpreadContext {
         private final BlockGetter level;
         private final BlockPos origin;

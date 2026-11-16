@@ -24,4 +24,7 @@ public record PlacedFeature(Holder feature, List placement) {
     public Stream<Holder<Feature>> getFeatures() {
         return Stream.of((Holder<Feature>) feature);
     }
+    public String toString() {
+        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.world.level.levelgen.placement.PlacedFeature#toString");
+    }
 }
