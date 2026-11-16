@@ -216,7 +216,11 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public World getWorld() {
-        return BasaltServer.instance().world(text(1));
+        String name = text(1);
+        if (name == null || name.isEmpty()) {
+            return BasaltServer.instance().getWorlds().get(0);
+        }
+        return BasaltServer.instance().world(name);
     }
 
     @Override
