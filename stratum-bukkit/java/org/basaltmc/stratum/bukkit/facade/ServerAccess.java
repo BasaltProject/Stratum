@@ -76,6 +76,14 @@ public final class ServerAccess {
                 return biomes();
             case "dimension_type":
                 return dimensionTypes();
+            case "recipe_book_category":
+                net.minecraft.world.item.crafting.RecipeBookCategories.bootstrap(BuiltInRegistries.RECIPE_BOOK_CATEGORY);
+                return BuiltInRegistries.RECIPE_BOOK_CATEGORY;
+            case "damage_type":
+                return syncedEntries(key, id -> new net.minecraft.world.damagesource.DamageType(id.getPath(),
+                    net.minecraft.world.damagesource.DamageScaling.NEVER, 0.0F));
+            case "world_clock":
+                return syncedEntries(key, id -> new net.minecraft.world.clock.WorldClock());
             case "worldgen/configured_feature":
                 return features(key, false);
             case "worldgen/placed_feature":
@@ -88,6 +96,17 @@ public final class ServerAccess {
     @SuppressWarnings("unchecked")
     private static ResourceKey<? extends Registry<Object>> castKey(ResourceKey<? extends Registry<?>> key) {
         return (ResourceKey<? extends Registry<Object>>) key;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static MappedRegistry<?> syncedEntries(ResourceKey<? extends Registry<?>> key,
+                                                   java.util.function.Function<Identifier, Object> value) {
+        MappedRegistry registry = new MappedRegistry<>(castKey(key));
+        for (String id : org.basaltmc.stratum.bukkit.WorldNatives.registryIds(key.identifier().getPath())) {
+            Identifier parsed = Identifier.parse(id);
+            registry.register(parsed, value.apply(parsed));
+        }
+        return registry;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

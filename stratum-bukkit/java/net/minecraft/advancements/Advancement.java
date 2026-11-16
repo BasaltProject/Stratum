@@ -29,12 +29,12 @@ public record Advancement(Optional<Identifier> parent, Optional<DisplayInfo> dis
         .apply(i, (parent, display, rewards, criteria, requirements, telemetry) -> new Advancement(parent, display, rewards, criteria,
             requirements.orElseGet(() -> AdvancementRequirements.allOf(criteria.keySet())), telemetry)))
         .validate(Advancement::validate);
-    public static final StreamCodec<RegistryFriendlyByteBuf, Advancement> STREAM_CODEC = StreamCodec.of(
-        (buffer, advancement) -> {
-            throw new UnsupportedOperationException("Advancements are sent by the native server");
-        }, buffer -> {
-            throw new UnsupportedOperationException("Advancements are sent by the native server");
-        });
+    public static final StreamCodec<RegistryFriendlyByteBuf, Advancement> STREAM_CODEC = StreamCodec.composite(
+        Identifier.STREAM_CODEC.apply(ByteBufCodecs::optional), Advancement::parent,
+        DisplayInfo.STREAM_CODEC.apply(ByteBufCodecs::optional), Advancement::display,
+        AdvancementRequirements.STREAM_CODEC, Advancement::requirements,
+        ByteBufCodecs.BOOL, Advancement::sendsTelemetryEvent,
+        (parent, display, requirements, telemetry) -> new Advancement(parent, display, AdvancementRewards.EMPTY, Map.of(), requirements, telemetry));
     public Advancement(Optional<Identifier> parent, Optional<DisplayInfo> display, AdvancementRewards rewards, Map<String, Criterion<?>> criteria, AdvancementRequirements requirements, boolean sendsTelemetryEvent) {
         this(parent, display, rewards, new LinkedHashMap<>(criteria), requirements, sendsTelemetryEvent, display.map(Advancement::decorateName));
     }

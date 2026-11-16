@@ -89,6 +89,11 @@ public class ArgumentTypeInfos {
         add(46, ResourceArgument.class, new ResourceArgument.Info<>());
         add(47, ResourceKeyArgument.class, new ResourceKeyArgument.Info<>());
         add(61, UuidArgument.class, SingletonArgumentInfo.contextFree(UuidArgument::uuid));
+        for (int id = 0; id < kById.length; id++) {
+            if (kById[id] == null && id <= 61) {
+                kById[id] = new OpaqueArgumentInfo(id == 48);
+            }
+        }
     }
 
     private static void add(int id, Class<?> type, ArgumentTypeInfo<?, ?> info) {

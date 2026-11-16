@@ -156,6 +156,10 @@ public final class StreamSpecs {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static StreamCodec directCodec(Class<?> owner) {
+        StreamCodec direct = forClass(owner, "DIRECT_STREAM_CODEC");
+        if (direct != null) {
+            return direct;
+        }
         return StreamCodec.of(
             (buf, value) -> {
                 throw new io.netty.handler.codec.EncoderException("Direct holders of " + owner.getName() + " are not supported by the Basalt facade");
@@ -222,6 +226,7 @@ public final class StreamSpecs {
         return switch (token) {
             case "bool" -> ByteBufCodecs.BOOL;
             case "varint" -> ByteBufCodecs.VAR_INT;
+            case "optvarint" -> ByteBufCodecs.OPTIONAL_VAR_INT;
             case "int" -> ByteBufCodecs.INT;
             case "long" -> ByteBufCodecs.LONG;
             case "float" -> ByteBufCodecs.FLOAT;

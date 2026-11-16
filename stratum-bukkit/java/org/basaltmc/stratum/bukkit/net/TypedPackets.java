@@ -15,10 +15,12 @@ import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import org.basaltmc.stratum.bukkit.facade.ServerAccess;
 
-/** Decodes play packets into facade objects for pipelines whose handlers expect typed packets. */
+/** Decodes packets of every protocol phase into facade objects for pipelines whose handlers expect typed packets. */
 final class TypedPackets {
     private static final int kMaxTracked = 4096;
     private static final Map<Packet<?>, byte[][]> tracked = Collections.synchronizedMap(new IdentityHashMap<>());
+    private static final boolean kDebug = System.getenv("BASALT_TYPED_DEBUG") != null;
+    private static final java.util.Set<String> failed = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private static ProtocolInfo<ClientGamePacketListener> clientboundInfo;
     private static ProtocolInfo<ServerGamePacketListener> serverboundInfo;
 
@@ -52,12 +54,25 @@ final class TypedPackets {
         return serverboundInfo;
     }
 
-    private static StreamCodec<ByteBuf, Packet<? super ClientGamePacketListener>> clientbound() {
-        return clientboundInfo().codec();
+    private static final int kPlay = 4;
+
+    static ProtocolInfo<?> infoOf(boolean toServer, int phase) {
+        return switch (phase) {
+            case 0 -> toServer ? net.minecraft.network.protocol.handshake.HandshakeProtocols.SERVERBOUND : null;
+            case 1 -> toServer ? net.minecraft.network.protocol.status.StatusProtocols.SERVERBOUND
+                : net.minecraft.network.protocol.status.StatusProtocols.CLIENTBOUND;
+            case 2 -> toServer ? net.minecraft.network.protocol.login.LoginProtocols.SERVERBOUND
+                : net.minecraft.network.protocol.login.LoginProtocols.CLIENTBOUND;
+            case 3 -> toServer ? net.minecraft.network.protocol.configuration.ConfigurationProtocols.SERVERBOUND
+                : net.minecraft.network.protocol.configuration.ConfigurationProtocols.CLIENTBOUND;
+            default -> toServer ? serverboundInfo() : clientboundInfo();
+        };
     }
 
-    private static StreamCodec<ByteBuf, Packet<? super ServerGamePacketListener>> serverbound() {
-        return serverboundInfo().codec();
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static StreamCodec<ByteBuf, Packet<?>> codecOf(boolean toServer, int phase) {
+        ProtocolInfo<?> info = infoOf(toServer, phase);
+        return info == null ? null : (StreamCodec) info.codec();
     }
 
     private static byte[] frame(int id, byte[] body) {
@@ -70,12 +85,22 @@ final class TypedPackets {
         return bytes;
     }
 
-    private static byte[] encode(Packet<?> packet) {
-        WirePacket wire = PacketEncoding.toWire(packet);
+    /** The full frame (id and body) of a facade packet in the given protocol phase. */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static byte[] encode(Packet<?> packet, int phase) {
         ByteBuf out = Unpooled.buffer();
         try {
-            ChannelBridge.writeVarInt(out, wire.packetId());
-            wire.write(out);
+            if (phase == kPlay) {
+                WirePacket wire = PacketEncoding.toWire(packet);
+                ChannelBridge.writeVarInt(out, wire.packetId());
+                wire.write(out);
+            } else {
+                StreamCodec codec = codecOf(packet.type().flow() == net.minecraft.network.protocol.PacketFlow.SERVERBOUND, phase);
+                if (codec == null) {
+                    throw new IllegalArgumentException("No protocol for " + packet.type().id() + " in phase " + phase);
+                }
+                codec.encode(out, packet);
+            }
             byte[] bytes = new byte[out.readableBytes()];
             out.readBytes(bytes);
             return bytes;
@@ -85,18 +110,30 @@ final class TypedPackets {
     }
 
     /** The typed form of a native packet body, or null when the facade cannot represent it. */
-    static Packet<?> decode(boolean toServer, int id, byte[] body) {
+    static Packet<?> decode(boolean toServer, int phase, int id, byte[] body) {
         byte[] whole = frame(id, body);
         ByteBuf in = Unpooled.wrappedBuffer(whole);
         try {
-            Packet<?> packet = toServer ? serverbound().decode(in) : clientbound().decode(in);
-            byte[] baseline = encode(packet);
+            StreamCodec<ByteBuf, Packet<?>> codec = codecOf(toServer, phase);
+            if (codec == null) {
+                return null;
+            }
+            Packet<?> packet = codec.decode(in);
+            byte[] baseline = encode(packet, phase);
+            if (kDebug && !java.util.Arrays.equals(baseline, whole) && failed.add("m" + phase + (toServer ? "s" : "c") + id)) {
+                System.err.println("typed round trip differs for phase " + phase + " id " + id + " " + packet.getClass().getSimpleName()
+                    + " len " + whole.length + " vs " + baseline.length);
+            }
             if (tracked.size() > kMaxTracked) {
                 tracked.clear();
             }
             tracked.put(packet, new byte[][] {whole, baseline});
             return packet;
         } catch (RuntimeException | LinkageError unsupported) {
+            if (kDebug && failed.add(phase + (toServer ? "s" : "c") + id)) {
+                System.err.println("typed decode failed for phase " + phase + (toServer ? " serverbound " : " clientbound ") + id + ": " + unsupported);
+                unsupported.printStackTrace();
+            }
             return null;
         } finally {
             in.release();
@@ -104,8 +141,8 @@ final class TypedPackets {
     }
 
     /** The frame to send for a packet: the original bytes while no listener changed it, else its fresh encoding. */
-    static byte[] frameOf(Packet<?> packet) {
-        byte[] fresh = encode(packet);
+    static byte[] frameOf(Packet<?> packet, int phase) {
+        byte[] fresh = encode(packet, phase);
         byte[][] known = tracked.remove(packet);
         return known != null && java.util.Arrays.equals(known[1], fresh) ? known[0] : fresh;
     }

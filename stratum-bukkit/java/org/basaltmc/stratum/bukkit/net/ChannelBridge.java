@@ -24,7 +24,6 @@ import org.basaltmc.stratum.bukkit.Natives;
 
 public final class ChannelBridge {
     private static final int kHandshake = 0;
-    private static final int kPlay = 4;
     private static final int kServerProtocol = 777;
     private static final long kInboundTimeoutSeconds = 5;
 
@@ -108,6 +107,7 @@ public final class ChannelBridge {
         volatile Pending pending;
         volatile boolean claimed;
         volatile int phase;
+        volatile int markerPhase = -1;
 
         Link(BasaltChannel channel) {
             this.channel = channel;
@@ -229,6 +229,35 @@ public final class ChannelBridge {
         return link.channel.pipeline().get("protocol_lib_inbound_interceptor") != null;
     }
 
+    /** Keeps the codec markers that protocol-aware plugins read in step with the phase of the connection. */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static void markPhase(Link link, int phase) {
+        link.phase = phase;
+        if (link.markerPhase == phase || !typed(link)) {
+            return;
+        }
+        synchronized (link) {
+            if (link.markerPhase == phase) {
+                return;
+            }
+            link.markerPhase = phase;
+            io.netty.channel.ChannelPipeline pipeline = link.channel.pipeline();
+            net.minecraft.network.ProtocolInfo<?> clientbound = TypedPackets.infoOf(false, phase);
+            net.minecraft.network.ProtocolInfo<?> serverbound = TypedPackets.infoOf(true, phase);
+            if (clientbound == null) {
+                clientbound = TypedPackets.infoOf(false, 1);
+            }
+            if (pipeline.get("basalt_encoder_marker") != null) {
+                pipeline.remove("basalt_encoder_marker");
+            }
+            if (pipeline.get("basalt_decoder_marker") != null) {
+                pipeline.remove("basalt_decoder_marker");
+            }
+            pipeline.addFirst("basalt_encoder_marker", new net.minecraft.network.PacketEncoder(clientbound));
+            pipeline.addLast("basalt_decoder_marker", new net.minecraft.network.PacketDecoder(serverbound));
+        }
+    }
+
     static void deliver(Link link, byte[] whole) {
         Pending pending = link.pending;
         if (pending == null) {
@@ -263,12 +292,12 @@ public final class ChannelBridge {
                 }
                 byte[] whole = new byte[buffer.readableBytes()];
                 buffer.readBytes(whole);
-                if (link.phase == kPlay && typed(link)) {
+                if (typed(link)) {
                     int id = readVarInt(whole);
                     int skip = varIntLength(id);
                     if (id >= 0) {
                         byte[] body = java.util.Arrays.copyOfRange(whole, skip, whole.length);
-                        net.minecraft.network.protocol.Packet<?> packet = TypedPackets.decode(true, id, body);
+                        net.minecraft.network.protocol.Packet<?> packet = TypedPackets.decode(true, link.phase, id, body);
                         if (packet != null) {
                             ctx.fireChannelRead(packet);
                             return;
@@ -292,7 +321,7 @@ public final class ChannelBridge {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object message) {
             if (message instanceof net.minecraft.network.protocol.Packet<?> packet) {
-                deliver(link, TypedPackets.frameOf(packet));
+                deliver(link, TypedPackets.frameOf(packet, link.phase));
             } else {
                 ctx.fireChannelRead(message);
             }
@@ -352,7 +381,7 @@ public final class ChannelBridge {
             fresh.channel.pipeline().addLast("splitter", new ChannelInboundHandlerAdapter());
             fresh.channel.pipeline().addLast("decoder", new FromWire(fresh));
             fresh.channel.pipeline().addLast("prepender", new ToWire(fresh));
-            fresh.channel.pipeline().addLast("encoder", new WirePacketEncoder());
+            fresh.channel.pipeline().addLast("encoder", new WirePacketEncoder(() -> fresh.phase));
             fresh.channel.pipeline().addLast("basalt_terminal", new Terminal(fresh));
             fresh.channel.pipeline().addLast("packet_handler", fresh.connection);
             links.put(connection, made);
@@ -367,10 +396,7 @@ public final class ChannelBridge {
                 links.remove(connection);
                 return null;
             }
-            if (typed(made)) {
-                made.channel.pipeline().addFirst("basalt_encoder_marker", new net.minecraft.network.PacketEncoder<>(TypedPackets.clientboundInfo()));
-                made.channel.pipeline().addLast("basalt_decoder_marker", new net.minecraft.network.PacketDecoder<>(TypedPackets.serverboundInfo()));
-            }
+            markPhase(made, kHandshake);
             synchronized (connections) {
                 connections.add(made.connection);
             }
@@ -380,7 +406,10 @@ public final class ChannelBridge {
 
     /** Attach an already logged-in connection when the channel API is first used. */
     public static void ensureOpen(long connection, String address, int port) {
-        open(connection, address, port);
+        Link link = open(connection, address, port);
+        if (link != null && link.phase == kHandshake) {
+            markPhase(link, 4);
+        }
     }
 
     static byte[] patchHandshake(byte[] body) {
@@ -420,7 +449,7 @@ public final class ChannelBridge {
             return body;
         }
         byte[] shown = phase == kHandshake && id == 0 ? patchHandshake(body) : body;
-        link.phase = phase;
+        markPhase(link, phase);
         Pending pending = new Pending();
         Future<?> done = link.channel.eventLoop().submit(() -> {
             link.pending = pending;
@@ -473,12 +502,12 @@ public final class ChannelBridge {
         if (link == null) {
             return false;
         }
-        link.phase = phase;
+        markPhase(link, phase);
         link.channel.eventLoop().execute(() -> {
             long started = System.nanoTime();
             try {
                 io.netty.channel.Channel target = link.connection.getChannel() == null ? link.channel : link.connection.getChannel();
-                Object typed = phase == kPlay && typed(link) ? TypedPackets.decode(false, id, body) : null;
+                Object typed = typed(link) ? TypedPackets.decode(false, phase, id, body) : null;
                 target.writeAndFlush(typed != null ? typed : PacketCodec.fromNative(id, body));
             } catch (Throwable t) {
                 Natives.log(2, "Bukkit", "A packet listener failed on an outbound packet: " + t);

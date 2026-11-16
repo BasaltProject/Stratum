@@ -4,6 +4,17 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.protocol.Packet;
 public final class WirePacketEncoder extends MessageToMessageEncoder<Packet<?>> {
+    private static final int kPlay = 4;
+    private final java.util.function.IntSupplier phase;
+
+    public WirePacketEncoder() {
+        this(() -> kPlay);
+    }
+
+    public WirePacketEncoder(java.util.function.IntSupplier phase) {
+        this.phase = phase;
+    }
+
     protected void encode(ChannelHandlerContext context, Packet<?> packet, java.util.List<Object> out) {
         if (packet instanceof WirePacket wire)
             out.add(PacketCodec.frame(wire));
@@ -21,6 +32,6 @@ public final class WirePacketEncoder extends MessageToMessageEncoder<Packet<?>> 
             }
             out.addAll(frames);
         } else
-            out.add(PacketCodec.frame(PacketEncoding.toWire(packet)));
+            out.add(Unpooled.wrappedBuffer(TypedPackets.frameOf(packet, phase.getAsInt())));
     }
 }
