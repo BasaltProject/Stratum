@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class Armadillo extends Animal {
+    private int scuteTime;
     public static final float BABY_SCALE = 0.6F;
     public static final float MAX_HEAD_ROTATION_EXTENT = 32.5F;
     public static final int SCARE_CHECK_INTERVAL = 80;

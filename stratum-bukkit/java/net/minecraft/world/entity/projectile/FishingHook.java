@@ -19,6 +19,10 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 public class FishingHook extends Projectile {
+    private int life;
+    public void setHookedEntity(Entity entity) {
+        this.hookedInEntity = entity;
+    }
     private Entity hookedInEntity;
     private FishingHook(EntityType<? extends FishingHook> type, Level level, int luck, int lureSpeed) {
         super(type, level);

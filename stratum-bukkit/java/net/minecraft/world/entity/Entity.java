@@ -99,6 +99,15 @@ import net.minecraft.world.scores.Team;
 import org.joml.Quaternionf;
 
 public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHolder, DataComponentGetter, ItemOwner, SlotProvider, DebugValueSource, TypedInstance<EntityType<?>> {
+    public long activatedTick;
+    public boolean onGround;
+    public com.google.common.collect.ImmutableList<Entity> passengers = com.google.common.collect.ImmutableList.of();
+    public int portalCooldown;
+    public boolean valid;
+    protected org.bukkit.craftbukkit.entity.CraftEntity bukkitEntity;
+    public float getBukkitYaw() {
+        return getYRot();
+    }
     public static final net.minecraft.network.syncher.EntityDataAccessor<Byte> DATA_SHARED_FLAGS_ID =
         net.minecraft.network.syncher.EntityDataSerializers.BYTE.createAccessor(0);
     public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(1);
@@ -303,6 +312,12 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     }
 
     public CraftEntity getBukkitEntity() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+        if (pending != null && this instanceof net.minecraft.server.level.ServerPlayer) {
+            return null;
+        }
         if (pending != null) {
             throw Unsupported.hit("net.minecraft.world.entity.Entity.getBukkitEntity");
         }

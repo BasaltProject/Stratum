@@ -195,6 +195,8 @@ public abstract class Display extends Entity {
         }
     }
     public static class TextDisplay extends Display {
+        public void setText(net.minecraft.network.chat.Component text) {
+        }
     public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.network.chat.Component> DATA_TEXT_ID = net.minecraft.network.syncher.EntityDataSerializers.COMPONENT.createAccessor(23);
     public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_LINE_WIDTH_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(24);
     public static final net.minecraft.network.syncher.EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(25);

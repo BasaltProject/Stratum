@@ -13,6 +13,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 public class EnderDragonFight extends SavedData {
+    public final net.minecraft.server.level.ServerBossEvent dragonEvent = new net.minecraft.server.level.ServerBossEvent(java.util.UUID.randomUUID(), net.minecraft.network.chat.Component.empty(), net.minecraft.world.BossEvent.BossBarColor.PINK, net.minecraft.world.BossEvent.BossBarOverlay.PROGRESS);
     public static final int TIME_BETWEEN_PLAYER_SCANS = 20;
     public static final int ARENA_TICKET_LEVEL = 9;
     public static final int DRAGON_SPAWN_Y = 128;

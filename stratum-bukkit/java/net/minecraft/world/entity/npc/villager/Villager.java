@@ -40,6 +40,8 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class Villager extends AbstractVillager implements VillagerDataHolder, ReputationEventHandler {
+    public void releaseAllPois() {
+    }
     private GossipContainer gossips = new GossipContainer();
 
     public static final int BREEDING_FOOD_THRESHOLD = 12;

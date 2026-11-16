@@ -41,6 +41,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 public class Rabbit extends Animal {
+    public void setVariant(Variant variant) {
+    }
     public static final double STROLL_SPEED_MOD = 0.6;
     public static final double BREED_SPEED_MOD = 0.8;
     public static final double FOLLOW_SPEED_MOD = 1.0;

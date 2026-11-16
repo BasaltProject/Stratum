@@ -48,6 +48,10 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 public abstract class Mob extends LivingEntity implements Targeting, EquipmentUser, Leashable {
+    public boolean setTarget(LivingEntity target, org.bukkit.event.entity.EntityTargetEvent.TargetReason reason, boolean fireEvent) {
+        setTarget(target);
+        return true;
+    }
     protected static final int PICKUP_REACH = 1;
     public static final float MAX_WEARING_ARMOR_CHANCE = 0.15F;
     public static final float WEARING_ARMOR_UPGRADE_MATERIAL_CHANCE = 0.1087F;

@@ -81,6 +81,7 @@ import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.Relative;
 
 public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl implements ServerGamePacketListener, ServerPlayerConnection, TickablePacketListener, GameProtocols.Context {
+    private int clientLoadedTimeoutTimer;
     public ServerGamePacketListenerImpl(Connection connection) {
         super(connection);
     }

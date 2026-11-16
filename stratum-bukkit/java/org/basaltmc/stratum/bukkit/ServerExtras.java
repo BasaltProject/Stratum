@@ -309,6 +309,30 @@ public abstract class ServerExtras extends MiscServer {
             public void restart() {
                 ServerExtras.this.restart();
             }
+
+            @Override
+            public org.bukkit.configuration.file.YamlConfiguration getConfig() {
+                return yaml("spigot.yml");
+            }
+
+            @Override
+            public org.bukkit.configuration.file.YamlConfiguration getSpigotConfig() {
+                return yaml("spigot.yml");
+            }
+
+            @Override
+            public org.bukkit.configuration.file.YamlConfiguration getBukkitConfig() {
+                return yaml("bukkit.yml");
+            }
+
+            @Override
+            public org.bukkit.configuration.file.YamlConfiguration getPaperConfig() {
+                return yaml("config/paper-global.yml");
+            }
+
+            private org.bukkit.configuration.file.YamlConfiguration yaml(String name) {
+                return org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.File(name));
+            }
         };
     }
 

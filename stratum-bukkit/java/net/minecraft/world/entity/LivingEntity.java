@@ -65,6 +65,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.waypoints.Waypoint;
 public class LivingEntity extends Entity implements Attackable, WaypointTransmitter {
+    public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect, org.bukkit.event.entity.EntityKnockbackEvent.KnockbackCause cause) {
+        knockback(power, xd, zd, source, damage, comesFromEffect);
+    }
     @Override
     public org.bukkit.craftbukkit.entity.CraftLivingEntity getBukkitEntity() {
         return (org.bukkit.craftbukkit.entity.CraftLivingEntity) super.getBukkitEntity();
@@ -910,7 +913,9 @@ public class LivingEntity extends Entity implements Attackable, WaypointTransmit
     }
     public AttributeMap getAttributes() {
         if (attributeMap == null) {
-            attributeMap = new AttributeMap(net.minecraft.world.entity.ai.attributes.DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) getType()));
+            attributeMap = new AttributeMap(getType() == null
+                ? (this instanceof net.minecraft.world.entity.player.Player ? net.minecraft.world.entity.player.Player.createAttributes().build() : net.minecraft.world.entity.ai.attributes.AttributeSupplier.builder().build())
+                : net.minecraft.world.entity.ai.attributes.DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) getType()));
         }
         return attributeMap;
     }

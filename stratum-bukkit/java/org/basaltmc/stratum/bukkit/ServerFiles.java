@@ -7,7 +7,7 @@ import java.util.Properties;
 import org.basaltmc.stratum.bukkit.fs.PathTranslator;
 import org.bukkit.Server;
 
-/** Writes the server.properties and bukkit.yml a Paper server would have, into the shadow root plugins read from. */
+/** Writes the server.properties, bukkit.yml and spigot.yml a Paper server has, into the shadow root plugins read. */
 final class ServerFiles {
     private ServerFiles() {
     }
@@ -39,6 +39,16 @@ final class ServerFiles {
             if (!Files.exists(bukkit)) {
                 Files.writeString(bukkit, "settings:\n  allow-end: true\n  warn-on-overload: true\n"
                     + "  world-container: worlds\n  connection-throttle: 4000\n");
+            }
+            Path spigot = dir.resolve("spigot.yml");
+            if (!Files.exists(spigot)) {
+                Files.writeString(spigot, "settings:\n  bungeecord: false\n  save-user-cache-on-stop-only: false\n");
+            }
+            Path paper = dir.resolve("config").resolve("paper-global.yml");
+            if (!Files.exists(paper)) {
+                Files.createDirectories(paper.getParent());
+                Files.writeString(paper, "proxies:\n  velocity:\n    enabled: false\n    online-mode: true\n"
+                    + "  bungee-cord:\n    online-mode: true\n");
             }
         } catch (IOException | RuntimeException ignored) {
             // A plugin that needs these files then reports its own read error.

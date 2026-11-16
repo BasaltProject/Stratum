@@ -78,6 +78,13 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 public class ServerPlayer extends Player {
+    public boolean isRealPlayer;
+    public int listOrder;
+    public void initMenu(net.minecraft.world.inventory.AbstractContainerMenu menu) {
+    }
+    public int nextContainerCounter() {
+        return 0;
+    }
     private org.bukkit.entity.Player player;
     private ServerStatsCounter stats;
     private ServerRecipeBook recipeBook;
@@ -538,7 +545,9 @@ public class ServerPlayer extends Player {
         connection.send(new net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket(getAbilities()));
     }
     public boolean setGameMode(GameType mode) {
-        player.setGameMode(org.bukkit.GameMode.getByValue(mode.getId()));
+        if (player != null) {
+            player.setGameMode(org.bukkit.GameMode.getByValue(mode.getId()));
+        }
         return true;
     }
     public GameType gameMode() {

@@ -329,7 +329,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface 
         return super.useNativeTransport();
     }
     public DedicatedPlayerList getPlayerList() {
-        throw org.basaltmc.stratum.bukkit.facade.NmsStub.unsupported("net.minecraft.server.dedicated.DedicatedServer#getPlayerList");
+        return (DedicatedPlayerList) super.getPlayerList();
     }
     public boolean isPublished() {
         return super.isPublished();

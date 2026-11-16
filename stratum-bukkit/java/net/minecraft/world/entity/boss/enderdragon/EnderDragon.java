@@ -25,6 +25,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 public class EnderDragon extends Mob implements Enemy {
+    private void hurt(net.minecraft.server.level.ServerLevel level, java.util.List<Entity> entities) {
+    }
+    private void knockBack(net.minecraft.server.level.ServerLevel level, java.util.List<Entity> entities) {
+    }
     public static final EntityDataAccessor<Integer> DATA_PHASE = net.minecraft.network.syncher.EntityDataSerializers.INT.createAccessor(16);
     public final DragonFlightHistory flightHistory = null;
     public final EnderDragonPart head = null;

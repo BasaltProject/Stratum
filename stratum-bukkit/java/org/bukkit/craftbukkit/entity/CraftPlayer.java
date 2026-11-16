@@ -11,6 +11,11 @@ public class CraftPlayer extends BasaltPlayer {
     private ServerPlayer handle;
     private Connection connection;
 
+    public CraftPlayer(org.bukkit.craftbukkit.CraftServer server, net.minecraft.server.level.ServerPlayer handle) {
+        this(handle.getUUID(), handle.getScoreboardName());
+        this.entity = handle;
+    }
+
     public CraftPlayer(UUID id, String name) {
         super(id, name);
     }

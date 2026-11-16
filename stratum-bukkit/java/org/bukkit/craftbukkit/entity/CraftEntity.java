@@ -5,6 +5,7 @@ import org.basaltmc.stratum.bukkit.EntityBridge;
 
 public abstract class CraftEntity {
     private volatile Entity handle;
+    protected Entity entity;
 
     protected CraftEntity() {
     }

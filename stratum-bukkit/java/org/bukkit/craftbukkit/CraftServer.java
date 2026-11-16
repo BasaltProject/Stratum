@@ -34,4 +34,11 @@ public final class CraftServer extends BasaltServer {
     public DedicatedServer getServer() {
         return console;
     }
+
+    private final org.bukkit.craftbukkit.metadata.EntityMetadataStore entityMetadata =
+        new org.bukkit.craftbukkit.metadata.EntityMetadataStore();
+
+    public org.bukkit.craftbukkit.metadata.EntityMetadataStore getEntityMetadata() {
+        return entityMetadata;
+    }
 }

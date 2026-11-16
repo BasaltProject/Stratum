@@ -16,6 +16,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 public class Interaction extends Entity implements Attackable, Targeting {
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_WIDTH_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(8);
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Float> DATA_HEIGHT_ID = net.minecraft.network.syncher.EntityDataSerializers.FLOAT.createAccessor(9);
     public Interaction(EntityType<?> type, Level level) {
         super(type, level);
     }

@@ -33,6 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 public class PlayerList {
+    public final java.util.List<net.minecraft.server.level.ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList<>();
     public static final File USERBANLIST_FILE = new File("banned-players.json");
     public static final File IPBANLIST_FILE = new File("banned-ips.json");
     public static final File OPLIST_FILE = new File("ops.json");

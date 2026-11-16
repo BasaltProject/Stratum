@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 public class WitherBoss extends Monster implements RangedAttackMob {
+    public final net.minecraft.server.level.ServerBossEvent bossEvent = new net.minecraft.server.level.ServerBossEvent(java.util.UUID.randomUUID(), net.minecraft.network.chat.Component.empty(), net.minecraft.world.BossEvent.BossBarColor.PURPLE, net.minecraft.world.BossEvent.BossBarOverlay.PROGRESS);
     private final float[] headYRots = new float[2];
     private final float[] headXRots = new float[2];
     private final int[] alternativeTargets = new int[2];

@@ -44,6 +44,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.storage.LevelStorageSource;
 
 public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerProvider, GeneratingChunkMap {
+    public int serverViewDistance = 10;
+    public void updatePlayerStatus(ServerPlayer player, boolean added) {
+    }
     private final ServerChunkCache source;
     private final ServerPlayer watcher;
     private volatile RandomState randomState;
@@ -342,7 +345,8 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
             super.bind(world);
         }
     }
-    class TrackedEntity implements ServerEntity.Synchronizer {
+    public class TrackedEntity implements ServerEntity.Synchronizer {
+        public final java.util.Set<net.minecraft.server.network.ServerPlayerConnection> seenBy = new java.util.HashSet<>();
         private final Entity entity;
         public TrackedEntity(Entity entity, int range, UpdateInterval updateInterval, boolean trackDelta) {
             this.entity = entity;

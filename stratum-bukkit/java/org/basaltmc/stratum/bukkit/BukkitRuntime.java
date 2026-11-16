@@ -91,9 +91,15 @@ public final class BukkitRuntime {
                 java.nio.charset.StandardCharsets.UTF_8));
         System.setErr(new java.io.PrintStream(new StandardStream(2, "STDERR"), true,
                 java.nio.charset.StandardCharsets.UTF_8));
-        Thread.setDefaultUncaughtExceptionHandler((thread, failure) -> org.basaltmc.stratum.bukkit.log.LogTags.write(3,
-            org.basaltmc.stratum.bukkit.log.LogTags.ofThrowable(failure, "STDERR"),
-            "Exception in thread \"" + thread.getName() + "\"", failure));
+        Thread.setDefaultUncaughtExceptionHandler((thread, failure) -> {
+            // parity: the VM unwinds daemon threads through finally blocks at exit, which breaks lock ownership
+            if (exiting && failure instanceof IllegalMonitorStateException) {
+                return;
+            }
+            org.basaltmc.stratum.bukkit.log.LogTags.write(3,
+                org.basaltmc.stratum.bukkit.log.LogTags.ofThrowable(failure, "STDERR"),
+                "Exception in thread \"" + thread.getName() + "\"", failure);
+        });
     }
 
     /** A file named dump-threads in the working directory makes the VM print every thread's stack and delete it. */
@@ -197,7 +203,10 @@ public final class BukkitRuntime {
         return rows;
     }
 
+    private static volatile boolean exiting;
+
     public static boolean shutdown() {
+        exiting = true;
         if (server != null) {
             server.pluginManagerImpl().disablePlugins();
         }

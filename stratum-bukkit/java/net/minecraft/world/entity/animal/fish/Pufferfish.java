@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class Pufferfish extends AbstractFish {
+    private int inflateCounter;
+    private int deflateTimer;
     public static final int STATE_SMALL = 0;
     public static final int STATE_MID = 1;
     public static final int STATE_FULL = 2;

@@ -14,6 +14,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class Mannequin extends Avatar {
+    public void setDescription(net.minecraft.network.chat.Component description) {
+        this.description = description;
+    }
     private ResolvableProfile profile;
     private Component description;
     protected static final EntityDataAccessor<ResolvableProfile> DATA_PROFILE = net.minecraft.network.syncher.EntityDataSerializers.RESOLVABLE_PROFILE.createAccessor(17);

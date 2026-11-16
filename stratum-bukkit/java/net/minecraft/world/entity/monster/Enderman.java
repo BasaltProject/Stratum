@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 public class Enderman extends Monster implements NeutralMob {
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> DATA_CREEPY = net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN.createAccessor(17);
     private long angerEndTime = -1L;
     private net.minecraft.world.entity.EntityReference<net.minecraft.world.entity.LivingEntity> angerTarget;
     public static final int MAX_TELEPORT_RADIUS = 32;

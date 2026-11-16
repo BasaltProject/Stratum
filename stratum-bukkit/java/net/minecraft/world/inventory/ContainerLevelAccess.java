@@ -8,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 public interface ContainerLevelAccess {
+    default org.bukkit.Location getLocation() {
+        return null;
+    }
     ContainerLevelAccess NULL = new ContainerLevelAccess() {
         @Override
         public <T> Optional<T> evaluate(BiFunction<Level, BlockPos, T> action) {
