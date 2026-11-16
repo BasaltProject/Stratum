@@ -13,10 +13,14 @@ public final class LegacyMaterials {
         static final Material[] kLegacy = Arrays.stream(Material.values()).filter(Material::isLegacy)
             .toArray(Material[]::new);
         static final Map<Integer, Material> kById = new HashMap<>();
+        static final Map<Material, Integer> kIndex = new HashMap<>();
+        static final Map<Material, Material> kModern = new java.util.concurrent.ConcurrentHashMap<>();
+        static final Map<Material, Material> kLegacyOf = new java.util.concurrent.ConcurrentHashMap<>();
 
         static {
-            for (Material each : kLegacy) {
-                kById.putIfAbsent(each.getId(), each);
+            for (int at = 0; at < kLegacy.length; at++) {
+                kById.putIfAbsent(kLegacy[at].getId(), kLegacy[at]);
+                kIndex.put(kLegacy[at], at);
             }
         }
     }
@@ -34,19 +38,18 @@ public final class LegacyMaterials {
     public static Material valueOf(String name) {
         Objects.requireNonNull(name, "Name is null");
         if (!name.startsWith(Material.LEGACY_PREFIX)) {
-            Material modern = Material.getMaterial(name);
-            if (modern != null) {
-                return modern;
-            }
-            return Material.valueOf(Material.LEGACY_PREFIX + name);
+            Material legacy = Material.getMaterial(Material.LEGACY_PREFIX + name);
+            return legacy != null ? legacy : Material.valueOf(name);
         }
         return Material.valueOf(name);
     }
 
     public static Material getMaterial(String name) {
-        Material found = Material.getMaterial(name);
-        return found != null || name == null || name.startsWith(Material.LEGACY_PREFIX) ? found
-            : Material.getMaterial(Material.LEGACY_PREFIX + name);
+        if (name == null || name.startsWith(Material.LEGACY_PREFIX)) {
+            return Material.getMaterial(name);
+        }
+        Material legacy = Material.getMaterial(Material.LEGACY_PREFIX + name);
+        return legacy != null ? legacy : Material.getMaterial(name);
     }
 
     public static Material matchMaterial(String name) {
@@ -55,7 +58,50 @@ public final class LegacyMaterials {
         }
         String plain = name.trim().toUpperCase(java.util.Locale.ROOT).replace(' ', '_').replace("MINECRAFT:", "");
         Material found = getMaterial(plain);
-        return found != null ? found : Material.matchMaterial(name);
+        return found != null ? found : toLegacy(Material.matchMaterial(name));
+    }
+
+    /** The index among the LEGACY_ constants, which is what values() lists; a modern one has none and gets the last. */
+    public static int ordinal(Material material) {
+        Integer at = material.isLegacy() ? Holder.kIndex.get(material) : null;
+        return at != null ? at : Holder.kLegacy.length - 1;
+    }
+
+    public static boolean isTagged(org.bukkit.Tag<?> tag, org.bukkit.Keyed value) {
+        @SuppressWarnings("unchecked")
+        org.bukkit.Tag<org.bukkit.Keyed> typed = (org.bukkit.Tag<org.bukkit.Keyed>) tag;
+        return typed.isTagged(value instanceof Material material ? modern(material) : value);
+    }
+
+    /** The modern Material a call into the API takes for the LEGACY_ constant a plugin passes. */
+    public static Material modern(Material material) {
+        if (material == null || !material.isLegacy()) {
+            return material;
+        }
+        Material found = Holder.kModern.get(material);
+        if (found == null) {
+            found = org.bukkit.Bukkit.getUnsafe().fromLegacy(material);
+            Holder.kModern.put(material, found);
+        }
+        return found;
+    }
+
+    public static Material modern(Material material, byte data) {
+        return material != null && material.isLegacy() && data != 0 && material.getId() < 256
+            ? org.bukkit.Bukkit.getUnsafe().fromLegacy(material, data).getMaterial() : modern(material);
+    }
+
+    /** The LEGACY_ constant a pre-flattening plugin compares a Material from the API against. */
+    public static Material legacy(Material material) {
+        if (material == null || material.isLegacy()) {
+            return material;
+        }
+        Material found = Holder.kLegacyOf.get(material);
+        if (found == null) {
+            found = toLegacy(material);
+            Holder.kLegacyOf.put(material, found);
+        }
+        return found;
     }
 
     public static String name(Material material) {

@@ -4,6 +4,7 @@ package org.basaltmc.stratum.bukkit.legacy;
 public record ApiVersion(int major, int minor, int patch) implements Comparable<ApiVersion> {
     public static final ApiVersion kNone = new ApiVersion(Integer.MIN_VALUE, 0, 0);
     public static final ApiVersion kFlattening = new ApiVersion(1, 13, 0);
+    public static final ApiVersion kRegistryEnums = new ApiVersion(1, 21, 3);
 
     public static ApiVersion parse(String text) {
         if (text == null || text.isBlank() || text.equalsIgnoreCase("none")) {

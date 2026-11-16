@@ -83,4 +83,36 @@ public final class LegacyNames {
     public static Sound valueOf_Sound(String name) {
         return Sound.valueOf(of(kCurrent, "org/bukkit/Sound", name));
     }
+
+    private static final String[] kKeyedOwners = {"org/bukkit/enchantments/Enchantment",
+        "org/bukkit/potion/PotionEffectType", "org/bukkit/attribute/Attribute", "org/bukkit/block/Biome",
+        "org/bukkit/entity/EntityType"};
+
+    /** A Registry lookup that retries the renamed key when a key from an older version finds nothing. */
+    public static <T extends org.bukkit.Keyed> org.bukkit.Keyed registryGet(org.bukkit.Registry<T> registry,
+            org.bukkit.NamespacedKey key) {
+        T found = registry.get(key);
+        if (found != null || key == null || !key.getNamespace().equals(org.bukkit.NamespacedKey.MINECRAFT)) {
+            return found;
+        }
+        String upper = key.getKey().toUpperCase(java.util.Locale.ROOT).replace('.', '_');
+        for (String owner : kKeyedOwners) {
+            String renamed = LegacyRenames.rename(kCurrent, owner, upper);
+            if (!renamed.equals(upper)) {
+                found = registry.get(org.bukkit.NamespacedKey.minecraft(renamed.toLowerCase(java.util.Locale.ROOT)));
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Enchantment getByKey_Enchantment(org.bukkit.NamespacedKey key) {
+        return (Enchantment) registryGet(org.bukkit.Registry.ENCHANTMENT, key);
+    }
+
+    public static PotionEffectType getByKey_PotionEffectType(org.bukkit.NamespacedKey key) {
+        return (PotionEffectType) registryGet(org.bukkit.Registry.EFFECT, key);
+    }
 }

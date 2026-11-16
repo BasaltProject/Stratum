@@ -6,6 +6,8 @@ import java.util.Map;
 final class LegacyCalls {
     record Target(String owner, String name, String descriptor) {}
 
+    private record Gated(Target target, ApiVersion before) {}
+
     private static final String kMaterials = "org/basaltmc/stratum/bukkit/legacy/LegacyMaterials";
     private static final String kEvil = "org/basaltmc/stratum/bukkit/legacy/LegacyEvil";
     private static final String kMaterial = "org/bukkit/Material";
@@ -15,8 +17,15 @@ final class LegacyCalls {
     private static final String kWorld = "org/bukkit/World";
     private static final String kMaterialType = "Lorg/bukkit/Material;";
     private static final String kString = "Ljava/lang/String;";
+    private static final String kLegacyEnums = "org/basaltmc/stratum/bukkit/legacy/LegacyEnums";
+    private static final String kNames = "org/basaltmc/stratum/bukkit/legacy/LegacyNames";
+    private static final String kKey = "Lorg/bukkit/NamespacedKey;";
+    private static final String kKeyed = "Lorg/bukkit/Keyed;";
+    private static final String kObject = "Ljava/lang/Object;";
+    private static final java.util.Set<String> kKeyedReceiver =
+        java.util.Set.of("getKey", "getKeyOrThrow", "getKeyOrNull", "key", "isRegistered");
 
-    private static final Map<String, Target> kStatic = Map.of(
+    private static final Map<String, Target> kFlatteningStatic = Map.of(
         kMaterial + " getMaterial (I)" + kMaterialType, new Target(kMaterials, "getMaterial", "(I)" + kMaterialType),
         kMaterial + " values ()[" + kMaterialType, new Target(kMaterials, "values", "()[" + kMaterialType),
         kMaterial + " valueOf (" + kString + ")" + kMaterialType,
@@ -26,7 +35,7 @@ final class LegacyCalls {
         kMaterial + " matchMaterial (" + kString + ")" + kMaterialType,
         new Target(kMaterials, "matchMaterial", "(" + kString + ")" + kMaterialType));
 
-    private static final Map<String, Target> kInstance = Map.ofEntries(
+    private static final Map<String, Target> kFlatteningInstance = Map.ofEntries(
         Map.entry(kMaterial + " name ()" + kString,
             new Target(kMaterials, "name", "(" + kMaterialType + ")" + kString)),
         Map.entry(kMaterial + " toString ()" + kString,
@@ -41,7 +50,23 @@ final class LegacyCalls {
         Map.entry(kStack + " getTypeId ()I", new Target(kEvil, "getTypeId", "(L" + kStack + ";)I")),
         Map.entry(kStack + " setTypeId (I)V", new Target(kEvil, "setTypeId", "(L" + kStack + ";I)V")),
         Map.entry(kWorld + " getBlockTypeIdAt (III)I",
-            new Target(kEvil, "getBlockTypeIdAt", "(L" + kWorld + ";III)I")));
+            new Target(kEvil, "getBlockTypeIdAt", "(L" + kWorld + ";III)I")),
+        Map.entry(kMaterial + " ordinal ()I", new Target(kMaterials, "ordinal", "(" + kMaterialType + ")I")),
+        Map.entry("org/bukkit/Tag isTagged (Lorg/bukkit/Keyed;)Z",
+            new Target(kMaterials, "isTagged", "(Lorg/bukkit/Tag;Lorg/bukkit/Keyed;)Z")));
+
+    private static final Map<String, Target> kEnumStatic = Map.of(
+        "org/bukkit/enchantments/Enchantment getByKey (" + kKey + ")Lorg/bukkit/enchantments/Enchantment;",
+        new Target(kNames, "getByKey_Enchantment", "(" + kKey + ")Lorg/bukkit/enchantments/Enchantment;"),
+        "org/bukkit/potion/PotionEffectType getByKey (" + kKey + ")Lorg/bukkit/potion/PotionEffectType;",
+        new Target(kNames, "getByKey_PotionEffectType", "(" + kKey + ")Lorg/bukkit/potion/PotionEffectType;"));
+
+    private static final Map<String, Target> kEnumInstance = Map.of(
+        "java/lang/Enum name ()" + kString, new Target(kLegacyEnums, "name", "(" + kObject + ")" + kString),
+        "java/lang/Enum toString ()" + kString, new Target(kLegacyEnums, "toString", "(" + kObject + ")" + kString),
+        "java/lang/Enum ordinal ()I", new Target(kLegacyEnums, "ordinal", "(" + kObject + ")I"),
+        "org/bukkit/Registry get (" + kKey + ")" + kKeyed,
+        new Target(kNames, "registryGet", "(Lorg/bukkit/Registry;" + kKey + ")" + kKeyed));
 
     private static final Target kWorldAtLocation =
         new Target(kEvil, "getBlockTypeIdAt", "(L" + kWorld + ";Lorg/bukkit/Location;)I");
@@ -49,12 +74,29 @@ final class LegacyCalls {
     private LegacyCalls() {}
 
     /** A static call that keeps its shape and only changes its owner. */
-    static Target staticCall(String owner, String name, String descriptor) {
-        return kStatic.get(owner + " " + name + " " + descriptor);
+    static Target staticCall(ApiVersion plugin, String owner, String name, String descriptor) {
+        String key = owner + " " + name + " " + descriptor;
+        if (plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
+            Target found = kEnumStatic.get(key);
+            if (found != null) {
+                return found;
+            }
+        }
+        return plugin.isOlderThan(ApiVersion.kFlattening) ? kFlatteningStatic.get(key) : null;
     }
 
     /** A call on an instance that becomes a static helper taking the instance first. */
-    static Target instanceCall(String owner, String name, String descriptor) {
+    static Target instanceCall(ApiVersion plugin, String owner, String name, String descriptor) {
+        String key = owner + " " + name + " " + descriptor;
+        if (plugin.isOlderThan(ApiVersion.kRegistryEnums)) {
+            Target found = kEnumInstance.get(key);
+            if (found != null) {
+                return found;
+            }
+        }
+        if (!plugin.isOlderThan(ApiVersion.kFlattening)) {
+            return null;
+        }
         if (owner.startsWith("org/bukkit/block/") && !owner.equals(kBlock)) {
             if (name.equals("getTypeId") && descriptor.equals("()I")) {
                 return new Target(kEvil, "getTypeId", "(L" + kBlockState + ";)I");
@@ -66,6 +108,18 @@ final class LegacyCalls {
         if (owner.equals(kWorld) && name.equals("getBlockTypeIdAt") && descriptor.equals("(Lorg/bukkit/Location;)I")) {
             return kWorldAtLocation;
         }
-        return kInstance.get(owner + " " + name + " " + descriptor);
+        return kFlatteningInstance.get(key);
+    }
+
+    /** Whether a call into the Bukkit API passes or returns a Material, which a pre-flattening plugin holds as LEGACY_. */
+    static boolean bridgesMaterial(ApiVersion plugin, String owner, String name, String descriptor, boolean isStatic) {
+        return plugin.isOlderThan(ApiVersion.kFlattening) && owner.startsWith("org/bukkit/")
+            && (descriptor.contains(kMaterialType) || !isStatic && modernReceiver(owner, name)) && !owner.startsWith("org/bukkit/material/")
+            && !(owner.equals(kMaterial) && isStatic) && !(owner.equals(kStack) && name.equals("<init>"));
+    }
+
+    /** A Material method that rejects a LEGACY_ receiver, so the receiver is made modern first. */
+    static boolean modernReceiver(String owner, String name) {
+        return owner.equals(kMaterial) && kKeyedReceiver.contains(name);
     }
 }

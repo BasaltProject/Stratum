@@ -229,9 +229,12 @@ final class ConstantPoolPatch {
         int pair = ref(index, 1);
         String name = utf8(ref(pair, 0));
         String renamed = LegacyRenames.rename(plugin, owner, name);
-        if (owner.equals("org/bukkit/Material") && plugin.isOlderThan(ApiVersion.kFlattening)
-                && !modernMaterial.test(renamed) && legacyMaterial.test("LEGACY_" + renamed)) {
-            renamed = "LEGACY_" + renamed;
+        if (owner.equals("org/bukkit/Material") && plugin.isOlderThan(ApiVersion.kFlattening)) {
+            if (legacyMaterial.test("LEGACY_" + name)) {
+                renamed = "LEGACY_" + name;
+            } else if (!modernMaterial.test(renamed) && legacyMaterial.test("LEGACY_" + renamed)) {
+                renamed = "LEGACY_" + renamed;
+            }
         }
         if (renamed.equals(name)) {
             return;
@@ -291,16 +294,15 @@ final class ConstantPoolPatch {
             widenEnumCall(index);
             return;
         }
-        if (plugin.isOlderThan(ApiVersion.kFlattening)) {
-            LegacyCalls.Target replaced = LegacyCalls.staticCall(owner, name, desc);
-            if (replaced != null) {
-                retarget(index, replaced);
-                return;
-            }
-            if (LegacyCalls.instanceCall(owner, name, desc) != null) {
-                formerClassCalls = true;
-                return;
-            }
+        LegacyCalls.Target replaced = LegacyCalls.staticCall(plugin, owner, name, desc);
+        if (replaced != null) {
+            retarget(index, replaced);
+            return;
+        }
+        if (LegacyCalls.instanceCall(plugin, owner, name, desc) != null
+                || LegacyCalls.bridgesMaterial(plugin, owner, name, desc, false)) {
+            formerClassCalls = true;
+            return;
         }
         if (!owner.startsWith("org/bukkit/")) {
             return;
