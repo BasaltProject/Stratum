@@ -7,5 +7,6 @@ void registerWorldNatives(JNIEnv* env, jclass natives) {
     registerWorldNativesEntities(env, natives);
     registerWorldNativesChunks(env, natives);
     registerWorldNativesJobs(env, natives);
+    registerWorldNativesNpc(env, natives);
 }
 } // namespace basalt::stratum::bukkit

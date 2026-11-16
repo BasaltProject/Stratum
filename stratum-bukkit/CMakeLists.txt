@@ -37,6 +37,7 @@ basalt_module(stratum-bukkit
         src/BukkitWorldEntitiesNatives.cpp
         src/BukkitWorldChunksNatives.cpp
         src/BukkitWorldJobsNatives.cpp
+        src/BukkitNpcNatives.cpp
         src/BukkitWorldEnvNatives.cpp
         src/BukkitWorldEnvMoreNatives.cpp
         src/ShimHost.cpp

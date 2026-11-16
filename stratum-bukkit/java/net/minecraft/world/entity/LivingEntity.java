@@ -247,6 +247,9 @@ public class LivingEntity extends Entity implements Attackable, WaypointTransmit
     public boolean hasLandedInLiquid() {
         return getDeltaMovement().y < 1.0E-5 && isInLiquid();
     }
+    protected boolean effectsDirty;
+    public void detectEquipmentUpdatesPublic() {
+    }
     public void baseTick() {
         tickCount++;
     }

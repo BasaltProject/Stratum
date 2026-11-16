@@ -731,6 +731,9 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
 
     }
     public void removePlayerImmediately(ServerPlayer player, Entity.RemovalReason reason) {
+        if (player.fakePlayer()) {
+            player.discard();
+        }
     }
     public void destroyBlockProgress(int id, BlockPos blockPos, int progress) {
 

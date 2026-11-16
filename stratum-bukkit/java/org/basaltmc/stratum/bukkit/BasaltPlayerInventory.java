@@ -54,12 +54,19 @@ public final class BasaltPlayerInventory extends PlayerInventoryBase {
 
     @Override
     public ItemStack getItem(int slot) {
-        ItemStack found = Items.fromBytes(InventoryNatives.playerItem(uuid, basaltSlot(slot)));
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(uuid);
+        ItemStack found = Items.fromBytes(fake != null ? fake.fakeState().item(slot)
+            : InventoryNatives.playerItem(uuid, basaltSlot(slot)));
         return found instanceof BasaltItemStack own ? own.bound(stored -> setItem(slot, stored)) : found;
     }
 
     @Override
     public void setItem(int slot, ItemStack item) {
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(uuid);
+        if (fake != null) {
+            fake.fakeState().setItem(slot, Items.toBytes(item));
+            return;
+        }
         InventoryNatives.setPlayerItem(uuid, basaltSlot(slot), Items.toBytes(item));
     }
 
@@ -220,13 +227,19 @@ public final class BasaltPlayerInventory extends PlayerInventoryBase {
 
     @Override
     public int getHeldItemSlot() {
-        return WorldNatives.inventoryHeld(uuid);
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(uuid);
+        return fake != null ? fake.fakeState().held() : WorldNatives.inventoryHeld(uuid);
     }
 
     @Override
     public void setHeldItemSlot(int slot) {
         if (slot < 0 || slot > 8) {
             throw new IllegalArgumentException("Slot must be between 0 and 8, got " + slot);
+        }
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(uuid);
+        if (fake != null) {
+            fake.fakeState().setHeld(slot);
+            return;
         }
         InventoryNatives.setHeldSlot(uuid, slot);
     }
@@ -318,6 +331,11 @@ public final class BasaltPlayerInventory extends PlayerInventoryBase {
 
     @Override
     public void clear() {
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(uuid);
+        if (fake != null) {
+            fake.fakeState().clear();
+            return;
+        }
         WorldNatives.inventoryClear(uuid);
     }
 

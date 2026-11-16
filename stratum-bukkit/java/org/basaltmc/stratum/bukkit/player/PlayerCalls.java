@@ -8,7 +8,8 @@ public final class PlayerCalls {
     private PlayerCalls() {}
 
     public static Object get(UUID id, String name) {
-        return PlayerNatives.get(id.toString(), name);
+        net.minecraft.server.level.ServerPlayer fake = org.basaltmc.stratum.bukkit.FakePlayers.of(id);
+        return fake != null ? fake.fakeGet(name) : PlayerNatives.get(id.toString(), name);
     }
 
     public static boolean flag(UUID id, String name) {
@@ -28,11 +29,13 @@ public final class PlayerCalls {
     }
 
     public static boolean set(UUID id, String name, Object value) {
-        return PlayerNatives.set(id.toString(), name, value);
+        net.minecraft.server.level.ServerPlayer fake = org.basaltmc.stratum.bukkit.FakePlayers.of(id);
+        return fake != null ? fake.fakeSet(name, value) : PlayerNatives.set(id.toString(), name, value);
     }
 
     public static Object call(UUID id, String operation, Object... arguments) {
-        return PlayerNatives.call(id.toString(), operation, arguments);
+        net.minecraft.server.level.ServerPlayer fake = org.basaltmc.stratum.bukkit.FakePlayers.of(id);
+        return fake != null ? fake.fakeCall(operation, arguments) : PlayerNatives.call(id.toString(), operation, arguments);
     }
 
     public static boolean done(UUID id, String operation, Object... arguments) {

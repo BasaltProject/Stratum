@@ -18,6 +18,7 @@ void registerWorldNativesBlocks(JNIEnv* env, jclass natives);
 void registerWorldNativesEntities(JNIEnv* env, jclass natives);
 void registerWorldNativesChunks(JNIEnv* env, jclass natives);
 void registerWorldNativesJobs(JNIEnv* env, jclass natives);
+void registerWorldNativesNpc(JNIEnv* env, jclass natives);
 
 namespace shared {
 using server::plugins::PluginEntityRef;

@@ -224,4 +224,17 @@ public interface Component extends FormattedText, Message {
     static Component translationArg(URI uri) {
         return literal(uri.toString());
     }
+
+    final class Serializer {
+        private Serializer() {
+        }
+
+        public static Component fromJson(String json) {
+            return org.basaltmc.stratum.bukkit.facade.ChatJson.fromJson(com.google.gson.JsonParser.parseString(json));
+        }
+
+        public static String toJson(Component component) {
+            return org.basaltmc.stratum.bukkit.facade.ChatJson.toJson(component).toString();
+        }
+    }
 }

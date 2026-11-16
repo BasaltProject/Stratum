@@ -82,6 +82,7 @@ import net.minecraft.world.entity.Relative;
 
 public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl implements ServerGamePacketListener, ServerPlayerConnection, TickablePacketListener, GameProtocols.Context {
     private int clientLoadedTimeoutTimer;
+    private boolean waitingForRespawn;
     public ServerGamePacketListenerImpl(Connection connection) {
         super(connection);
     }

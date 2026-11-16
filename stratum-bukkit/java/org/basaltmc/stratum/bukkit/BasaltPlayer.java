@@ -96,7 +96,8 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
     }
 
     private double number(int index) {
-        double[] values = Natives.playerNumbers(uuid);
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(id);
+        double[] values = fake != null ? fake.fakeNumbers() : Natives.playerNumbers(uuid);
         return values == null ? 0.0 : values[index];
     }
 
@@ -118,21 +119,33 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
     private String text(int index) {
         long now = kSerial;
         if (now != textSerial) {
-            String[] fresh = Natives.playerStrings(uuid);
+            net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(id);
+            String[] fresh = fake != null ? fake.fakeStrings() : Natives.playerStrings(uuid);
             texts = fresh;
             textSerial = fresh != null && !fresh[1].isEmpty() ? now : -1;
         }
         return texts == null ? "" : texts[index];
     }
 
+    private double[] rawExtra() {
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(id);
+        return fake != null ? fake.fakeExtra() : WorldNatives.playerExtra(uuid);
+    }
+
     private double[] extra() {
         long now = kSerial;
         if (now != extraSerial) {
-            double[] fresh = WorldNatives.playerExtra(uuid);
+            double[] fresh = rawExtra();
             extras = fresh;
             extraSerial = fresh == null ? -1 : now;
         }
         return extras;
+    }
+
+    @Override
+    public org.bukkit.attribute.AttributeInstance getAttribute(org.bukkit.attribute.Attribute attribute) {
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(id);
+        return fake != null ? fake.fakeState().attribute(attribute) : super.getAttribute(attribute);
     }
 
     @Override
@@ -162,7 +175,7 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public boolean isOnline() {
-        return Natives.playerStrings(uuid) != null;
+        return FakePlayers.of(id) != null || Natives.playerStrings(uuid) != null;
     }
 
     @Override
@@ -225,7 +238,7 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
 
     @Override
     public Location getLocation() {
-        double[] extra = WorldNatives.playerExtra(uuid);
+        double[] extra = rawExtra();
         return new Location(getWorld(), number(kX), number(kY), number(kZ), extra == null ? 0f : (float) extra[0],
             extra == null ? 0f : (float) extra[1]);
     }
@@ -247,6 +260,12 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
     @Override
     public boolean teleport(Location location) {
         World world = location.getWorld() == null ? getWorld() : location.getWorld();
+        net.minecraft.server.level.ServerPlayer fake = FakePlayers.of(id);
+        if (fake != null) {
+            invalidateCaches();
+            return fake.fakeTeleport(world.getName(), location.getX(), location.getY(), location.getZ(),
+                location.getYaw(), location.getPitch());
+        }
         Blocks.flushAll();
         invalidateCaches();
         return WorldNatives.playerMove(uuid, world.getName(), location.getX(), location.getY(), location.getZ(),
@@ -483,7 +502,7 @@ public class BasaltPlayer extends org.basaltmc.stratum.bukkit.player.PlayerLivin
     }
 
     private double extra(int index) {
-        double[] values = WorldNatives.playerExtra(uuid);
+        double[] values = rawExtra();
         return values == null ? 0.0 : values[index];
     }
 

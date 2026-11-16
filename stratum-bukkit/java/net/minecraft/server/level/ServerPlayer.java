@@ -93,7 +93,7 @@ public class ServerPlayer extends Player {
     private net.minecraft.world.entity.monster.warden.WardenSpawnTracker wardenSpawnTracker;
     private net.minecraft.world.entity.player.Input lastClientInput = new net.minecraft.world.entity.player.Input(false, false, false, false, false, false, false);
     public void bindPlayer(org.bukkit.entity.Player player){this.player=player;bindBukkitEntity(player);}
-    public org.bukkit.entity.Player bukkitPlayer(){return player;}
+    public org.bukkit.entity.Player bukkitPlayer(){return player==null&&fake?getBukkitEntity():player;}
     @Override public org.bukkit.entity.Entity live(){return player;}
     @Override
     public org.bukkit.craftbukkit.entity.CraftPlayer getBukkitEntity() {
@@ -116,6 +116,250 @@ public class ServerPlayer extends Player {
 
     public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile profile, ClientInformation information) {
         bindLevel(level);
+        this.gameProfile = profile;
+        this.fake = true;
+        beginPending(net.minecraft.world.entity.EntityTypes.PLAYER, level, profile.id());
+    }
+
+    private boolean fake;
+    private boolean fakeSpawned;
+    private boolean fakeHeadSet;
+    private float fakeHeadYaw;
+    private byte fakeFlags;
+    private net.minecraft.world.entity.Pose fakePose = net.minecraft.world.entity.Pose.STANDING;
+    private String fakeSkin;
+    private final org.basaltmc.stratum.bukkit.FakePlayerState fakeState = new org.basaltmc.stratum.bukkit.FakePlayerState();
+
+    private float fakeHealth = 20.0F;
+
+    @Override
+    public float getHealth() {
+        return fake ? fakeHealth : super.getHealth();
+    }
+
+    @Override
+    public void setHealth(float health) {
+        if (fake) {
+            fakeHealth = Math.max(0.0F, Math.min(health, 20.0F));
+            return;
+        }
+        super.setHealth(health);
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return fake ? 20.0F : super.getMaxHealth();
+    }
+
+    @Override
+    public void remove(net.minecraft.world.entity.Entity.RemovalReason reason) {
+        if (!fake) {
+            super.remove(reason);
+        } else if (reason.shouldDestroy()) {
+            discard();
+        }
+    }
+
+    public boolean fakePlayer() {
+        return fake;
+    }
+
+    public org.basaltmc.stratum.bukkit.FakePlayerState fakeState() {
+        return fakeState;
+    }
+
+    public boolean spawnFake() {
+        String world = level().getWorld().getName();
+        int made = org.basaltmc.stratum.bukkit.WorldNatives.npcCreate(world, getUUID().toString(),
+            getScoreboardName(), getX(), getY(), getZ());
+        if (made < 0) {
+            return false;
+        }
+        adoptId(made);
+        fakeSpawned = true;
+        valid = true;
+        org.basaltmc.stratum.bukkit.FakePlayers.register(this);
+        pushSkin();
+        pushPlace();
+        pushPosture();
+        fakeState.pushAll(world, made);
+        return true;
+    }
+
+    @Override
+    public String getScoreboardName() {
+        return fake && gameProfile != null ? gameProfile.name() : super.getScoreboardName();
+    }
+
+    private void pushSkin() {
+        if (!fakeSpawned || gameProfile == null) {
+            return;
+        }
+        String value = null;
+        String signature = null;
+        for (com.mojang.authlib.properties.Property property : gameProfile.properties().get("textures")) {
+            value = property.value();
+            signature = property.signature();
+            break;
+        }
+        String key = value == null ? "" : value + "|" + signature;
+        if (value != null && !key.equals(fakeSkin)) {
+            fakeSkin = key;
+            org.basaltmc.stratum.bukkit.WorldNatives.npcSkin(level().getWorld().getName(), getId(), value, signature);
+        }
+    }
+
+    private void pushPlace() {
+        if (fakeSpawned) {
+            float head = fakeHeadSet ? fakeHeadYaw : getYRot();
+            org.basaltmc.stratum.bukkit.WorldNatives.npcPlace(level().getWorld().getName(), getId(), getX(), getY(),
+                getZ(), getYRot(), getXRot(), head, onGround);
+        }
+    }
+
+    private void pushPosture() {
+        if (fakeSpawned) {
+            org.basaltmc.stratum.bukkit.WorldNatives.npcPosture(level().getWorld().getName(), getId(), fakeFlags & 0xFF,
+                fakePose.ordinal());
+        }
+    }
+
+    public void tickFake() {
+        pushSkin();
+        tick();
+        doTick();
+        pushPlace();
+    }
+
+    @Override
+    protected void onPendingMoved() {
+        if (fake) {
+            pushPlace();
+        }
+    }
+
+    @Override
+    protected void onPendingDiscarded() {
+        if (fake && fakeSpawned) {
+            fakeSpawned = false;
+            valid = false;
+            org.basaltmc.stratum.bukkit.FakePlayers.unregister(this);
+            org.basaltmc.stratum.bukkit.WorldNatives.npcRemove(level().getWorld().getName(), getId());
+        }
+    }
+
+    @Override
+    public void setYHeadRot(float yHeadRot) {
+        if (fake) {
+            fakeHeadSet = true;
+            fakeHeadYaw = yHeadRot;
+            pushPlace();
+            return;
+        }
+        super.setYHeadRot(yHeadRot);
+    }
+
+    @Override
+    public float getYHeadRot() {
+        return fake && fakeHeadSet ? fakeHeadYaw : super.getYHeadRot();
+    }
+
+    @Override
+    public void setOnGround(boolean onGround) {
+        super.setOnGround(onGround);
+        if (fake) {
+            pushPlace();
+        }
+    }
+
+    @Override
+    public void setPose(net.minecraft.world.entity.Pose pose) {
+        if (!fake) {
+            super.setPose(pose);
+            return;
+        }
+        fakePose = pose;
+        pushPosture();
+    }
+
+    @Override
+    public net.minecraft.world.entity.Pose getPose() {
+        return fake ? fakePose : super.getPose();
+    }
+
+    @Override
+    public byte sharedFlags() {
+        return fake ? fakeFlags : super.sharedFlags();
+    }
+
+    @Override
+    public void sharedFlags(byte flags) {
+        if (!fake) {
+            super.sharedFlags(flags);
+            return;
+        }
+        fakeFlags = flags;
+        pushPosture();
+    }
+
+    public Object fakeGet(String name) {
+        return switch (name) {
+            case "sneaking" -> (fakeFlags & 2) != 0;
+            case "sprinting" -> (fakeFlags & 8) != 0;
+            case "gliding" -> (fakeFlags & 128) != 0;
+            case "swimming" -> (fakeFlags & 16) != 0;
+            case "fixed_pose" -> (long) fakePose.ordinal();
+            default -> null;
+        };
+    }
+
+    public boolean fakeSet(String name, Object value) {
+        int bit = switch (name) {
+            case "sneaking" -> 2;
+            case "sprinting" -> 8;
+            case "swimming" -> 16;
+            case "gliding" -> 128;
+            default -> 0;
+        };
+        if (bit == 0 || !(value instanceof Boolean on)) {
+            return false;
+        }
+        fakeFlags = (byte) (on ? fakeFlags | bit : fakeFlags & ~bit);
+        if (bit == 2) {
+            fakePose = on ? net.minecraft.world.entity.Pose.CROUCHING : net.minecraft.world.entity.Pose.STANDING;
+        }
+        pushPosture();
+        return true;
+    }
+
+    public Object fakeCall(String operation, Object[] arguments) {
+        if (operation.equals("swing") && fakeSpawned) {
+            boolean off = arguments != null && arguments.length > 0 && arguments[0] instanceof Boolean flag && flag;
+            org.basaltmc.stratum.bukkit.WorldNatives.npcAnimate(level().getWorld().getName(), getId(), off ? 3 : 0);
+            return Boolean.TRUE;
+        }
+        return null;
+    }
+
+    public double[] fakeNumbers() {
+        return new double[] {fakeHealth, 20.0, 0.0, getX(), getY(), getZ(), 0.0, (fakeFlags & 2) != 0 ? 1.0 : 0.0, 0.0};
+    }
+
+    public String[] fakeStrings() {
+        return new String[] {getScoreboardName(), level().getWorld().getName(), "survival", "1"};
+    }
+
+    public double[] fakeExtra() {
+        return new double[] {getYRot(), getXRot(), 0.0, 0.0, onGround ? 1.0 : 0.0, (fakeFlags & 8) != 0 ? 1.0 : 0.0,
+            getId(), 0.0, 0.0, 0.0, fakeState.held(), 0.0};
+    }
+
+    public boolean fakeTeleport(String world, double x, double y, double z, float yaw, float pitch) {
+        if (!world.equals(level().getWorld().getName())) {
+            return false;
+        }
+        absSnapTo(x, y, z, yaw, pitch);
+        return true;
     }
 
     public void bindLevel(ServerLevel level){this.level=level;gameMode.setLevel(level);}
@@ -551,6 +795,9 @@ public class ServerPlayer extends Player {
         return true;
     }
     public GameType gameMode() {
+        if (fake && player == null) {
+            return GameType.SURVIVAL;
+        }
         return GameType.byId(player.getGameMode().getValue());
     }
     public CommandSource commandSource() {

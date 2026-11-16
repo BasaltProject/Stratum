@@ -22,6 +22,16 @@ public final class WorldNatives {
     public static native String fixName(String kind, String text, int fromVersion);
     public static native String[] entityTypes();
 
+    public static native int npcCreate(String world, String uuid, String name, double x, double y, double z);
+    public static native void npcSkin(String world, int id, String texture, String signature);
+    public static native void npcPlace(String world, int id, double x, double y, double z, float yaw, float pitch,
+        float headYaw, boolean onGround);
+    public static native void npcPosture(String world, int id, int flags, int pose);
+    public static native void npcListed(String world, int id, boolean shown);
+    public static native void npcEquip(String world, int id, int slot, byte[] stack);
+    public static native void npcAnimate(String world, int id, int action);
+    public static native void npcRemove(String world, int id);
+
     public static native String[] worldStrings(String world);
     public static native long[] worldNumbers(String world);
     public static native void setTime(String world, long ticks);

@@ -137,6 +137,7 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
             if(entity instanceof org.bukkit.entity.Player player){player.setSneaking((flags&2)!=0);player.setSprinting((flags&8)!=0);}
             if(entity instanceof org.bukkit.entity.LivingEntity living){living.setSwimming((flags&16)!=0);living.setGliding((flags&128)!=0);}}
     }
+    protected final EntityFluidInteraction fluidInteraction = new EntityFluidInteraction(java.util.Set.of());
     public boolean generation = false;
     public CreatureSpawnEvent.SpawnReason spawnReason;
 
@@ -165,6 +166,24 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     }
 
     protected void onSpawned() {
+    }
+
+    protected final void beginPending(EntityType<?> kind, ServerLevel where, UUID identity) {
+        this.type = kind;
+        this.level = where;
+        this.pending = new CompoundTag();
+        this.pending.putString("id", EntityType.getKey(kind).toString());
+        setUUID(identity);
+    }
+
+    protected final void adoptId(int made) {
+        this.id = made;
+    }
+
+    protected void onPendingMoved() {
+    }
+
+    protected void onPendingDiscarded() {
     }
 
     public static Entity view(ServerLevel level, int id, UUID uuid, EntityType<?> type) {
@@ -295,11 +314,13 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
         rotation.add(FloatTag.valueOf(yRot));
         rotation.add(FloatTag.valueOf(xRot));
         pending.put("Rotation", rotation);
+        onPendingMoved();
     }
 
     public void discard() {
         if (pending != null) {
             removed = true;
+            onPendingDiscarded();
             return;
         }
         snapshot = nbt();
@@ -414,6 +435,9 @@ public class Entity implements Nameable, EntityAccess, ScoreHolder, SyncedDataHo
     public boolean spawnIn(String cause) {
         if (pending == null) {
             return true;
+        }
+        if (this instanceof net.minecraft.server.level.ServerPlayer fake && fake.fakePlayer()) {
+            return fake.spawnFake();
         }
         int made = WorldNatives.spawnEntityNbt(world(), NbtCodec.toBytes(pending), cause);
         if (made < 0) {

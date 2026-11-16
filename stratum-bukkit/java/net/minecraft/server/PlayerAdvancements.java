@@ -14,6 +14,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 public class PlayerAdvancements {
     private ServerPlayer player;
+    private final java.util.Map<Object, Object> progress = new java.util.LinkedHashMap<>();
+    private final java.util.Set<Object> visible = new java.util.LinkedHashSet<>();
+    private final java.util.Set<Object> progressChanged = new java.util.LinkedHashSet<>();
+    private final java.util.Set<Object> rootsToUpdate = new java.util.LinkedHashSet<>();
     public PlayerAdvancements(DataFixer dataFixer, PlayerList playerList, ServerAdvancementManager manager, Path playerSavePath, ServerPlayer player) {
         
     }

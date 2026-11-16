@@ -44,6 +44,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.storage.LevelStorageSource;
 
 public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerProvider, GeneratingChunkMap {
+    public final it.unimi.dsi.fastutil.ints.Int2ObjectMap<Object> entityMap = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
+
     public int serverViewDistance = 10;
     public void updatePlayerStatus(ServerPlayer player, boolean added) {
     }

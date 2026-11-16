@@ -162,6 +162,7 @@ public final class BukkitRuntime {
                 net.minecraft.server.MinecraftServer.currentTick = (int) Natives.currentTick();
                 net.minecraft.server.level.ServerChunkCache.tickAll();
                 VibrationDispatch.tick();
+                FakePlayers.tickAll();
             }, 1L, 1L);
             EventBridge.ready();
             server.messengerImpl().listenForClientChannels();
