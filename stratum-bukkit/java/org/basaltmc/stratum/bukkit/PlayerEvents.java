@@ -211,11 +211,6 @@ final class PlayerEvents {
                 ? new org.bukkit.event.player.PlayerBucketFishEvent(who, fish, original, filled, hand(f.text("hand")))
                 : null;
         }, PlayerEvents::writeBucketEntity);
-        EventBridge.map("player.bed", org.bukkit.event.player.PlayerBedEnterEvent.class, f -> {
-            Player who = f.player();
-            return who == null || !f.flag("entering") ? null : new org.bukkit.event.player.PlayerBedEnterEvent(who,
-                f.block(), org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.OK, BedAction.ALLOWED);
-        });
         EventBridge.map("player.bed", org.bukkit.event.player.PlayerBedLeaveEvent.class, f -> {
             Player who = f.player();
             return who == null || f.flag("entering") ? null
@@ -706,11 +701,24 @@ final class PlayerEvents {
     }
 
     static final class BedAction implements io.papermc.paper.block.bed.BedEnterAction {
-        static final BedAction ALLOWED = new BedAction();
+        static final BedAction ALLOWED = new BedAction("ok", "allowed", null);
+        private final String reason;
+        private final String canSleep;
+        private final Component message;
+
+        BedAction(String reason, String canSleep, Component message) {
+            this.reason = reason;
+            this.canSleep = canSleep;
+            this.message = message;
+        }
 
         @Override
         public io.papermc.paper.block.bed.BedRuleResult canSleep() {
-            return io.papermc.paper.block.bed.BedRuleResult.ALLOWED;
+            if (canSleep.equals("allowed")) {
+                return io.papermc.paper.block.bed.BedRuleResult.ALLOWED;
+            }
+            return reason.equals("not_possible_now") ? io.papermc.paper.block.bed.BedRuleResult.TOO_MUCH_LIGHT
+                : io.papermc.paper.block.bed.BedRuleResult.NEVER;
         }
 
         @Override
@@ -720,12 +728,18 @@ final class PlayerEvents {
 
         @Override
         public io.papermc.paper.block.bed.BedEnterProblem problem() {
-            return null;
+            return switch (reason) {
+                case "too_far_away" -> io.papermc.paper.block.bed.BedEnterProblem.TOO_FAR_AWAY;
+                case "obstructed" -> io.papermc.paper.block.bed.BedEnterProblem.OBSTRUCTED;
+                case "not_safe" -> io.papermc.paper.block.bed.BedEnterProblem.NOT_SAFE;
+                case "ok", "not_possible_here", "not_possible_now" -> null;
+                default -> io.papermc.paper.block.bed.BedEnterProblem.OTHER;
+            };
         }
 
         @Override
         public Component errorMessage() {
-            return null;
+            return message;
         }
     }
 

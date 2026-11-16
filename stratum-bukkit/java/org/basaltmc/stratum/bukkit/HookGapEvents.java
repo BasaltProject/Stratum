@@ -1,5 +1,6 @@
 package org.basaltmc.stratum.bukkit;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
@@ -98,7 +99,43 @@ final class HookGapEvents {
                 ? f.player().getInventory().getItemInOffHand() : f.player().getInventory().getItemInMainHand();
             return new com.destroystokyo.paper.event.player.PlayerElytraBoostEvent(f.player(), used.clone(), rocket, hand);
         }, (e, f) -> f.put("consume", ((com.destroystokyo.paper.event.player.PlayerElytraBoostEvent) e).shouldConsume()));
+        EventBridge.map("player.bed_try", org.bukkit.event.player.PlayerBedEnterEvent.class, f -> {
+            String reason = f.text("result");
+            org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult result = switch (reason) {
+                case "not_possible_here" -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.NOT_POSSIBLE_HERE;
+                case "not_possible_now" -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.NOT_POSSIBLE_NOW;
+                case "too_far_away" -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.TOO_FAR_AWAY;
+                case "obstructed" -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.OBSTRUCTED;
+                case "not_safe" -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.NOT_SAFE;
+                default -> org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult.OK;
+            };
+            return f.player() == null ? null : new org.bukkit.event.player.PlayerBedEnterEvent(f.player(), f.block(),
+                result, new PlayerEvents.BedAction(reason, f.text("can_sleep"), null));
+        }, (e, f) -> f.put("use_bed", ((org.bukkit.event.player.PlayerBedEnterEvent) e).useBed().name().toLowerCase()));
+        EventBridge.map("player.bed_fail_enter", io.papermc.paper.event.player.PlayerBedFailEnterEvent.class, f -> {
+            String reason = f.text("reason");
+            io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason fail = switch (reason) {
+                case "not_possible_here" -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.NOT_POSSIBLE_HERE;
+                case "too_far_away" -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.TOO_FAR_AWAY;
+                case "obstructed" -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.OBSTRUCTED;
+                case "not_safe" -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.NOT_SAFE;
+                case "other_problem" -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.OTHER_PROBLEM;
+                default -> io.papermc.paper.event.player.PlayerBedFailEnterEvent.FailReason.NOT_POSSIBLE_NOW;
+            };
+            String key = f.text("message");
+            Component message = key.isEmpty() ? null : Component.translatable(key);
+            return f.player() == null ? null : new io.papermc.paper.event.player.PlayerBedFailEnterEvent(f.player(),
+                fail, f.block(), f.flag("will_explode"), message, new PlayerEvents.BedAction(reason, "denied", message));
+        }, (e, f) -> {
+            io.papermc.paper.event.player.PlayerBedFailEnterEvent bed = (io.papermc.paper.event.player.PlayerBedFailEnterEvent) e;
+            f.put("will_explode", bed.getWillExplode());
+            Component message = bed.getMessage();
+            f.put("message", message == null ? ""
+                : message instanceof net.kyori.adventure.text.TranslatableComponent t ? t.key()
+                : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(message));
+        });
     }
+
 
     private static org.bukkit.potion.PotionEffectType effectOf(String id) {
         NamespacedKey key = id.isEmpty() ? null : NamespacedKey.fromString(id);
