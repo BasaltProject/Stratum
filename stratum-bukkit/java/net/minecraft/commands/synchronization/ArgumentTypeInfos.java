@@ -48,8 +48,8 @@ import net.minecraft.commands.synchronization.brigadier.StringArgumentSerializer
 import net.minecraft.core.Registry;
 
 public class ArgumentTypeInfos {
-    private static final ArgumentTypeInfo<?, ?>[] kById = new ArgumentTypeInfo<?, ?>[64];
     private static final Map<Class<?>, ArgumentTypeInfo<?, ?>> kByClass = new HashMap<>();
+    private static final ArgumentTypeInfo<?, ?>[] kById = new ArgumentTypeInfo<?, ?>[64];
 
     static {
         add(0, BoolArgumentType.class, SingletonArgumentInfo.contextFree(BoolArgumentType::bool));

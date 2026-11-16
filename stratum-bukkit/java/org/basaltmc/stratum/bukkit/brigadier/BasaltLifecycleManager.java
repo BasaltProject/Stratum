@@ -16,6 +16,8 @@ public final class BasaltLifecycleManager implements LifecycleEventManager<Plugi
     private static final java.util.Map<BasaltLifecycleEventTypeProvider.Handler<?>, Plugin> kCommandHandlers =
         new java.util.concurrent.ConcurrentHashMap<>();
 
+    private static volatile boolean kStarted;
+
     private final Plugin plugin;
 
     public BasaltLifecycleManager(Plugin plugin) {
@@ -47,7 +49,9 @@ public final class BasaltLifecycleManager implements LifecycleEventManager<Plugi
 
     public static void runCommands(Plugin plugin, BasaltLifecycleEventTypeProvider.Handler<?> handler) {
         kCommandHandlers.put(handler, plugin);
-        runCommands(plugin, handler, ReloadableRegistrarEvent.Cause.INITIAL);
+        if (kStarted) {
+            runCommands(plugin, handler, ReloadableRegistrarEvent.Cause.INITIAL);
+        }
     }
 
     public static void reloadCommands() {
@@ -55,6 +59,9 @@ public final class BasaltLifecycleManager implements LifecycleEventManager<Plugi
     }
 
     public static void reloadCommands(ReloadableRegistrarEvent.Cause cause) {
+        if (cause == ReloadableRegistrarEvent.Cause.INITIAL) {
+            kStarted = true;
+        }
         for (var entry : new java.util.ArrayList<>(kCommandHandlers.entrySet())) {
             runCommands(entry.getValue(), entry.getKey(), cause);
         }

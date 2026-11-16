@@ -285,6 +285,41 @@ public class BuiltInRegistries {
     public static final Registry<ContextKeySet> CONTEXT_KEY_SET = new MappedRegistry<>(net.minecraft.core.registries.Registries.CONTEXT_KEY_SET);
     public static final Registry<Consumer<GameTestHelper>> TEST_FUNCTION = new MappedRegistry<>(net.minecraft.core.registries.Registries.TEST_FUNCTION);
     public static final Registry<? extends Registry<?>> REGISTRY = empty(net.minecraft.resources.ResourceKey.createRegistryKey(net.minecraft.core.registries.Registries.ROOT_REGISTRY_NAME));
+    private static final String[] kArgumentTypeNames = {
+        "brigadier:bool", "brigadier:float", "brigadier:double", "brigadier:integer", "brigadier:long",
+        "brigadier:string", "entity", "game_profile", "block_pos", "column_pos", "vec3", "vec2", "block_state",
+        "block_predicate", "item_stack", "item_predicate", "color", "hex_color", "component", "style", "message",
+        "nbt_compound_tag", "nbt_tag", "nbt_path", "objective", "objective_criteria", "operation", "particle", "angle",
+        "rotation", "scoreboard_slot", "score_holder", "swizzle", "team", "item_slot", "item_slots", "resource_location",
+        "function", "entity_anchor", "int_range", "float_range", "dimension", "gamemode", "time", "resource_or_tag",
+        "resource_or_tag_key", "resource", "resource_key"};
+
+    static {
+        MappedRegistry<ArgumentTypeInfo<?, ?>> arguments = (MappedRegistry<ArgumentTypeInfo<?, ?>>) COMMAND_ARGUMENT_TYPE;
+        for (int id = 0; id < kArgumentTypeNames.length; id++) {
+            ArgumentTypeInfo<?, ?> info = net.minecraft.commands.synchronization.ArgumentTypeInfos.byId(id);
+            if (info != null) {
+                arguments.register(Identifier.parse(kArgumentTypeNames[id].contains(":") ? kArgumentTypeNames[id]
+                    : "minecraft:" + kArgumentTypeNames[id]), info);
+            }
+        }
+        arguments.register(Identifier.withDefaultNamespace("uuid"), net.minecraft.commands.synchronization.ArgumentTypeInfos.byId(61));
+        MappedRegistry<Registry<?>> roots = (MappedRegistry<Registry<?>>) (MappedRegistry<?>) REGISTRY;
+        for (java.lang.reflect.Field field : BuiltInRegistries.class.getDeclaredFields()) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) && Registry.class.isAssignableFrom(field.getType())
+                    && field.getType() != Object.class && !field.getName().equals("REGISTRY")) {
+                try {
+                    Registry<?> registry = (Registry<?>) field.get(null);
+                    if (registry != null && registry.key() != null) {
+                        roots.register(registry.key().identifier(), registry);
+                    }
+                } catch (ReflectiveOperationException | RuntimeException skipped) {
+                    continue;
+                }
+            }
+        }
+    }
+
     public static void bootStrap() {
         return;
     }
