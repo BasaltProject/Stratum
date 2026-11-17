@@ -28,7 +28,23 @@ public final class WorldNatives {
         float headYaw, boolean onGround);
     public static native void npcPosture(String world, int id, int flags, int pose);
     public static native void npcListed(String world, int id, boolean shown);
-    public static native void npcEquip(String world, int id, int slot, byte[] stack);
+    public static native double npcHealth(String world, int id);
+    public static native void npcSetHealth(String world, int id, double value);
+    public static native int npcPostureOf(String world, int id);
+    public static native byte[] npcItem(String world, int id, int slot);
+    public static native void npcSetItem(String world, int id, int slot, byte[] stack);
+    public static native void npcClearItems(String world, int id);
+    public static native int npcHeld(String world, int id);
+    public static native void npcSetHeld(String world, int id, int slot);
+    public static native void npcAttrRegister(String world, int id, String key, double fallback, double lowest,
+        double highest);
+    public static native double npcAttrBase(String world, int id, String key);
+    public static native void npcAttrSetBase(String world, int id, String key, double value);
+    public static native double npcAttrValue(String world, int id, String key);
+    public static native String[] npcAttrModifiers(String world, int id, String key);
+    public static native void npcAttrAdd(String world, int id, String key, String modifierId, double amount,
+        int operation, String slot);
+    public static native void npcAttrRemove(String world, int id, String key, String modifierId);
     public static native void npcAnimate(String world, int id, int action);
     public static native void npcRemove(String world, int id);
     public static native String profileUuid(String name);

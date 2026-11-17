@@ -119,28 +119,27 @@ public class ServerPlayer extends Player {
         this.gameProfile = profile;
         this.fake = true;
         beginPending(net.minecraft.world.entity.EntityTypes.PLAYER, level, profile.id());
+        if (fakeState.bind(level.getWorld().getName(), profile.id().toString(), profile.name())) {
+            adoptId(fakeState.id());
+        }
     }
 
     private boolean fake;
     private boolean fakeSpawned;
     private boolean fakeHeadSet;
     private float fakeHeadYaw;
-    private byte fakeFlags;
-    private net.minecraft.world.entity.Pose fakePose = net.minecraft.world.entity.Pose.STANDING;
     private String fakeSkin;
     private final org.basaltmc.stratum.bukkit.FakePlayerState fakeState = new org.basaltmc.stratum.bukkit.FakePlayerState();
 
-    private float fakeHealth = 20.0F;
-
     @Override
     public float getHealth() {
-        return fake ? fakeHealth : super.getHealth();
+        return fake ? (float) fakeState.health() : super.getHealth();
     }
 
     @Override
     public void setHealth(float health) {
         if (fake) {
-            fakeHealth = Math.max(0.0F, Math.min(health, 20.0F));
+            fakeState.setHealth(health);
             return;
         }
         super.setHealth(health);
@@ -148,7 +147,7 @@ public class ServerPlayer extends Player {
 
     @Override
     public float getMaxHealth() {
-        return fake ? 20.0F : super.getMaxHealth();
+        return fake ? (float) fakeState.maxHealth() : super.getMaxHealth();
     }
 
     @Override
@@ -169,19 +168,13 @@ public class ServerPlayer extends Player {
     }
 
     public boolean spawnFake() {
-        String world = level().getWorld().getName();
-        int made = org.basaltmc.stratum.bukkit.WorldNatives.npcCreate(world, getUUID().toString(),
-            getScoreboardName(), getX(), getY(), getZ());
-        if (made < 0) {
+        if (!fakeState.bound()) {
             return false;
         }
-        adoptId(made);
         fakeSpawned = true;
         valid = true;
         org.basaltmc.stratum.bukkit.FakePlayers.register(this);
         pushSkin();
-        pushPosture();
-        fakeState.pushAll(world, made);
         return true;
     }
 
@@ -216,13 +209,6 @@ public class ServerPlayer extends Player {
         }
     }
 
-    private void pushPosture() {
-        if (fakeSpawned) {
-            org.basaltmc.stratum.bukkit.WorldNatives.npcPosture(level().getWorld().getName(), getId(), fakeFlags & 0xFF,
-                fakePose.ordinal());
-        }
-    }
-
     public void tickFake() {
         pushSkin();
         tick();
@@ -239,11 +225,11 @@ public class ServerPlayer extends Player {
 
     @Override
     protected void onPendingDiscarded() {
-        if (fake && fakeSpawned) {
+        if (fake && fakeState.bound()) {
             fakeSpawned = false;
             valid = false;
             org.basaltmc.stratum.bukkit.FakePlayers.unregister(this);
-            org.basaltmc.stratum.bukkit.WorldNatives.npcRemove(level().getWorld().getName(), getId());
+            fakeState.unbind();
         }
     }
 
@@ -277,18 +263,17 @@ public class ServerPlayer extends Player {
             super.setPose(pose);
             return;
         }
-        fakePose = pose;
-        pushPosture();
+        fakeState.setPosture(fakeState.flags(), pose.ordinal());
     }
 
     @Override
     public net.minecraft.world.entity.Pose getPose() {
-        return fake ? fakePose : super.getPose();
+        return fake ? net.minecraft.world.entity.Pose.values()[fakeState.pose()] : super.getPose();
     }
 
     @Override
     public byte sharedFlags() {
-        return fake ? fakeFlags : super.sharedFlags();
+        return fake ? (byte) fakeState.flags() : super.sharedFlags();
     }
 
     @Override
@@ -297,17 +282,17 @@ public class ServerPlayer extends Player {
             super.sharedFlags(flags);
             return;
         }
-        fakeFlags = flags;
-        pushPosture();
+        fakeState.setPosture(flags & 0xFF, fakeState.pose());
     }
 
     public Object fakeGet(String name) {
+        int flags = fakeState.flags();
         return switch (name) {
-            case "sneaking" -> (fakeFlags & 2) != 0;
-            case "sprinting" -> (fakeFlags & 8) != 0;
-            case "gliding" -> (fakeFlags & 128) != 0;
-            case "swimming" -> (fakeFlags & 16) != 0;
-            case "fixed_pose" -> (long) fakePose.ordinal();
+            case "sneaking" -> (flags & 2) != 0;
+            case "sprinting" -> (flags & 8) != 0;
+            case "gliding" -> (flags & 128) != 0;
+            case "swimming" -> (flags & 16) != 0;
+            case "fixed_pose" -> (long) fakeState.pose();
             default -> null;
         };
     }
@@ -323,11 +308,11 @@ public class ServerPlayer extends Player {
         if (bit == 0 || !(value instanceof Boolean on)) {
             return false;
         }
-        fakeFlags = (byte) (on ? fakeFlags | bit : fakeFlags & ~bit);
-        if (bit == 2) {
-            fakePose = on ? net.minecraft.world.entity.Pose.CROUCHING : net.minecraft.world.entity.Pose.STANDING;
-        }
-        pushPosture();
+        int flags = fakeState.flags();
+        flags = on ? flags | bit : flags & ~bit;
+        int pose = bit == 2 ? (on ? net.minecraft.world.entity.Pose.CROUCHING : net.minecraft.world.entity.Pose.STANDING).ordinal()
+            : fakeState.pose();
+        fakeState.setPosture(flags, pose);
         return true;
     }
 
@@ -341,7 +326,8 @@ public class ServerPlayer extends Player {
     }
 
     public double[] fakeNumbers() {
-        return new double[] {fakeHealth, 20.0, 0.0, getX(), getY(), getZ(), 0.0, (fakeFlags & 2) != 0 ? 1.0 : 0.0, 0.0};
+        return new double[] {fakeState.health(), fakeState.maxHealth(), 0.0, getX(), getY(), getZ(), 0.0,
+            (fakeState.flags() & 2) != 0 ? 1.0 : 0.0, 0.0};
     }
 
     public String[] fakeStrings() {
@@ -349,7 +335,7 @@ public class ServerPlayer extends Player {
     }
 
     public double[] fakeExtra() {
-        return new double[] {getYRot(), getXRot(), 0.0, 0.0, onGround ? 1.0 : 0.0, (fakeFlags & 8) != 0 ? 1.0 : 0.0,
+        return new double[] {getYRot(), getXRot(), 0.0, 0.0, onGround ? 1.0 : 0.0, (fakeState.flags() & 8) != 0 ? 1.0 : 0.0,
             getId(), 0.0, 0.0, 0.0, fakeState.held(), 0.0};
     }
 
