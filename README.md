@@ -23,7 +23,7 @@
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-green">
 </p>
 
-> **Pre-1.0.** Stratum is consumed by Basalt Server and Basalt Proxy, which move together with it,
+> Stratum is consumed by Basalt Server and Basalt Proxy, which move together with it,
 > so its APIs change without notice. The Bukkit layer is the most complete; the BungeeCord and
 > Velocity layers are still in development.
 
