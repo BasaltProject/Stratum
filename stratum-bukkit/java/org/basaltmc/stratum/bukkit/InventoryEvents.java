@@ -79,6 +79,8 @@ final class InventoryEvents {
             f -> f.text("kind").equals("crafting") ? takeCraft(f) : null);
         EventBridge.map("inventory.take", org.bukkit.event.inventory.SmithItemEvent.class,
             f -> f.text("kind").equals("smithing") ? takeSmith(f) : null);
+        EventBridge.map("inventory.take", io.papermc.paper.event.player.CartographyItemEvent.class,
+            f -> f.text("kind").equals("cartography") ? takeCartography(f) : null);
         EventBridge.map("inventory.open", InventoryOpenEvent.class, f -> {
             Player player = f.player();
             BasaltInventoryView view = player == null ? null : Windows.pending(player, f.text("kind"),
@@ -381,6 +383,18 @@ final class InventoryEvents {
             ? new org.bukkit.event.inventory.CraftItemEvent(recipe, click.view(), click.slotType(), click.raw(),
                 click.click(), click.action(), click.key())
             : new org.bukkit.event.inventory.CraftItemEvent(recipe, click.view(), click.slotType(), click.raw(),
+                click.click(), click.action());
+    }
+
+    private static Event takeCartography(EventBridge.Fields f) {
+        Click click = lastClick.get(f.text("player_uuid"));
+        if (click == null) {
+            return null;
+        }
+        return click.key() >= 0
+            ? new io.papermc.paper.event.player.CartographyItemEvent(click.view(), click.slotType(), click.raw(),
+                click.click(), click.action(), click.key())
+            : new io.papermc.paper.event.player.CartographyItemEvent(click.view(), click.slotType(), click.raw(),
                 click.click(), click.action());
     }
 

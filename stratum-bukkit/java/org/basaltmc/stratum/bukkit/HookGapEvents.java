@@ -40,6 +40,29 @@ final class HookGapEvents {
             return !(f.entity() instanceof org.bukkit.entity.LivingEntity living) || stack == null ? null
                 : new org.bukkit.event.block.BlockDispenseArmorEvent(f.block(), stack, living);
         });
+        EventBridge.map("server.whitelist_toggle", com.destroystokyo.paper.event.server.WhitelistToggleEvent.class,
+            f -> new com.destroystokyo.paper.event.server.WhitelistToggleEvent(f.flag("enabled")));
+        EventBridge.map("player.chunk_load", io.papermc.paper.event.packet.PlayerChunkLoadEvent.class, f -> {
+            org.bukkit.World world = f.world();
+            return f.player() == null || world == null ? null
+                : new io.papermc.paper.event.packet.PlayerChunkLoadEvent(
+                    world.getChunkAt((int) f.whole("chunk_x"), (int) f.whole("chunk_z")), f.player());
+        });
+        EventBridge.map("player.chunk_unload", io.papermc.paper.event.packet.PlayerChunkUnloadEvent.class, f -> {
+            org.bukkit.World world = f.world();
+            return f.player() == null || world == null ? null
+                : new io.papermc.paper.event.packet.PlayerChunkUnloadEvent(
+                    world.getChunkAt((int) f.whole("chunk_x"), (int) f.whole("chunk_z")), f.player());
+        });
+        EventBridge.map("player.advancement_criterion_grant",
+            com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent.class, f -> {
+                org.bukkit.NamespacedKey key = org.bukkit.NamespacedKey.fromString(f.text("advancement"));
+                org.bukkit.advancement.Advancement advancement = key == null ? null
+                    : BasaltServer.instance().getAdvancement(key);
+                return f.player() == null || advancement == null ? null
+                    : new com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent(f.player(),
+                        advancement, f.text("criterion"));
+            });
         EventBridge.map("block.shear_entity", org.bukkit.event.block.BlockShearEntityEvent.class, f -> {
             org.bukkit.inventory.ItemStack tool = PlayerEvents.stackOf(f.text("tool"), 1);
             return f.entity() == null || tool == null ? null
