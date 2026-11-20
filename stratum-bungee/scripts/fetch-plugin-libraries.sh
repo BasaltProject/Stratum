@@ -13,8 +13,8 @@ while read -r coord; do
     target="$out/lib/$artifact-$version.jar"
     [ -s "$target" ] && continue
     url="https://repo1.maven.org/maven2/${group//.//}/$artifact/$version/$artifact-$version.jar"
-    expected="$(curl -fsSL --retry 3 "$url.sha1" | cut -c1-40)" || { echo "REFUSED $coord: no published SHA-1" >&2; continue; }
-    curl -fsSL --retry 3 "$url" -o "$target.part"
+    expected="$(curl -fsSL --retry 8 --retry-all-errors "$url.sha1" | cut -c1-40)" || { echo "REFUSED $coord: no published SHA-1" >&2; continue; }
+    curl -fsSL --retry 8 --retry-all-errors "$url" -o "$target.part"
     if [ "$(sha1_of "$target.part" | cut -c1-40)" = "$expected" ]; then
         mv "$target.part" "$target"
         echo "fetched $coord"
